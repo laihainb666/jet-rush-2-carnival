@@ -1,0 +1,2977 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>激流快艇2 · 浪花嘉年华</title>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet"/>
+<script>
+/* 全局错误提示条：脚本再出问题时红条显示具体报错，不再无声卡死 */
+window.addEventListener('error',function(e){try{
+  var d=document.getElementById('errbar');
+  if(!d){d=document.createElement('div');d.id='errbar';
+    d.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#c0392b;color:#fff;padding:6px 10px;font:12px/1.5 monospace;white-space:pre-wrap';
+    document.body.appendChild(d);}
+  d.textContent='⚠ 脚本错误：'+(e.message||'未知')+'  （请截图反馈）';
+}catch(_){}});
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#4cbdf0;touch-action:none;
+  font-family:'ZCOOL KuaiLe','Baloo 2','Comic Sans MS',sans-serif;user-select:none;-webkit-user-select:none}
+#sea{position:fixed;inset:0;display:block}
+#hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:14px 68px 14px 16px;pointer-events:none;z-index:6;gap:8px}
+.grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.grp:first-child{justify-content:flex-start}
+.chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.3);border:2.5px solid rgba(255,255,255,.85);
+  border-radius:999px;padding:5px 14px;color:#0d4d7a;font-size:20px;font-weight:800;white-space:nowrap;
+  box-shadow:0 3px 0 rgba(13,77,122,.18);backdrop-filter:blur(3px)}
+.chip.warn{color:#e23b2e;border-color:#ffb3ab;background:rgba(255,235,232,.55);animation:pulse .5s infinite alternate}
+@keyframes pulse{to{transform:scale(1.08)}}
+#muteBtn{pointer-events:auto;cursor:pointer;background:rgba(255,255,255,.3);border:2.5px solid rgba(255,255,255,.85);
+  border-radius:999px;width:46px;height:46px;font-size:20px;display:flex;align-items:center;justify-content:center;color:#0d4d7a;box-shadow:0 3px 0 rgba(13,77,122,.18)}
+#speedChip{position:fixed;left:16px;bottom:16px;z-index:6}
+#boostWrap{position:fixed;left:16px;bottom:64px;z-index:6;width:170px;height:14px;border:2.5px solid rgba(255,255,255,.85);
+  border-radius:99px;background:rgba(255,255,255,.25);overflow:hidden;box-shadow:0 3px 0 rgba(13,77,122,.18)}
+#boostFill{height:100%;width:100%;background:linear-gradient(90deg,#37c996,#ffd23e,#ff8a1e);border-radius:99px;transition:width .1s linear}
+#fxChip{position:fixed;left:16px;bottom:88px;z-index:6;display:flex;gap:6px}
+.fx{background:rgba(255,255,255,.75);border-radius:99px;padding:2px 10px;color:#0d4d7a;font-size:14px;font-weight:800}
+#comboChip{position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:6;font-size:26px;color:#ffd23e;
+  text-shadow:0 2px 0 #0d4d7a,0 0 14px rgba(255,210,62,.5);pointer-events:none}
+#hint{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);z-index:6;color:#fff;font-size:18px;
+  text-shadow:0 2px 4px rgba(13,77,122,.6);opacity:0;transition:opacity .6s;pointer-events:none;text-align:center}
+#touch{position:fixed;left:0;right:0;bottom:0;padding:0 22px 26px;display:none;justify-content:space-between;align-items:flex-end;z-index:7}
+#touch.on{display:flex}
+.tgrp{display:flex;gap:12px;align-items:flex-end}
+.tbtn{width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.3);border:3px solid rgba(255,255,255,.85);
+  color:#0d4d7a;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(13,77,122,.18);touch-action:none}
+.tbtn:active{transform:translateY(2px);background:rgba(255,255,255,.55)}
+.tbtn.big{width:86px;height:86px;font-size:32px;background:rgba(255,255,255,.42)}
+.tbtn.zap{background:rgba(255,210,62,.5);border-color:#ffd23e;font-size:24px}
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;background:rgba(11,74,120,.28);backdrop-filter:blur(2px);padding:12px}
+.overlay.hide{display:none}
+.panel{background:#fff;border:4px solid #1b6fae;border-radius:28px;padding:26px 34px;text-align:center;
+  box-shadow:0 10px 0 rgba(13,77,122,.35);max-width:94vw;max-height:92vh;overflow:auto;animation:pop .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.title{font-size:50px;color:#1b6fae;letter-spacing:5px;text-shadow:3px 3px 0 #bfe6fa}
+.sub{color:#3b87bd;font-size:18px;margin:8px 0 14px}
+button.cta{font-family:inherit;font-size:24px;letter-spacing:6px;color:#fff;background:linear-gradient(#ffb43a,#ff8a1e);
+  border:none;border-radius:999px;padding:12px 44px 12px 50px;cursor:pointer;box-shadow:0 6px 0 #d96a10;transition:transform .08s}
+button.cta:active{transform:translateY(4px);box-shadow:0 2px 0 #d96a10}
+.btn{font-family:inherit;font-size:18px;color:#1b6fae;background:#eef7fe;border:2.5px solid #9fd3f2;border-radius:999px;
+  padding:9px 22px;cursor:pointer;box-shadow:0 4px 0 rgba(27,111,174,.25);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:none}
+.btn.sm{font-size:14px;padding:5px 12px;box-shadow:0 3px 0 rgba(27,111,174,.2)}
+.btn.danger{color:#e23b2e;border-color:#ffb3ab;background:#fff0ee}
+.mrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.cards{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.mcard{width:185px;background:#f2f9ff;border:3px solid #9fd3f2;border-radius:18px;padding:14px 12px;cursor:pointer;transition:transform .12s}
+.mcard:hover{transform:translateY(-4px);border-color:#1b6fae}
+.mcard .em{font-size:38px}
+.mcard h3{color:#1b6fae;font-size:19px;margin:6px 0 4px}
+.mcard p{color:#5b7d99;font-size:13px;line-height:1.6;min-height:56px}
+.mcard .bst{font-size:12px;color:#ff8a1e;margin-top:6px;font-weight:800}
+.tbtns{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.wide{width:min(800px,96vw)}
+.bcards{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.bcard{width:215px;background:#f2f9ff;border:3px solid #9fd3f2;border-radius:16px;padding:10px;text-align:left}
+.bcard.sel{border-color:#ff8a1e;background:#fff7ec}
+.bcard h3{color:#1b6fae;font-size:19px}
+.bcard .d{font-size:12px;color:#5b7d99;min-height:34px;margin:2px 0 6px}
+.bcard .pk{font-size:12px;color:#8e6cf0;font-weight:800;margin-bottom:4px}
+.srow{display:flex;align-items:center;gap:6px;font-size:12px;color:#3b87bd;margin:3px 0}
+.srow b{width:32px}
+.sbar{flex:1;height:8px;background:#dceefb;border-radius:99px;overflow:hidden}
+.sbar i{display:block;height:100%;background:linear-gradient(90deg,#37b6f0,#1b6fae)}
+.brow{display:flex;gap:6px;margin-top:8px}
+#customizer{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(11,74,120,.35)}
+#customizer.hide{display:none}
+.cpanel{background:#fff;border:4px solid #8e6cf0;border-radius:24px;padding:20px 26px;width:min(560px,94vw);max-height:92vh;overflow:auto}
+.crow{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;margin:10px 0}
+.crow label{font-size:15px;color:#3b87bd;display:flex;align-items:center;gap:6px}
+input[type=color]{width:40px;height:32px;border:2px solid #9fd3f2;border-radius:8px;cursor:pointer;background:#fff}
+.stp{display:flex;align-items:center;gap:8px;background:#f2f9ff;border-radius:12px;padding:6px 12px}
+.stp button{width:30px;height:30px;border-radius:50%;border:2px solid #9fd3f2;background:#fff;color:#1b6fae;font-size:18px;cursor:pointer;font-weight:800}
+.stp span{width:22px;text-align:center;font-size:18px;color:#1b6fae;font-weight:800}
+input[type=text],input[type=number],select{font-family:inherit;font-size:15px;color:#1b6fae;border:2px solid #9fd3f2;border-radius:10px;padding:6px 10px;background:#fff}
+#ebar{position:fixed;top:0;left:0;right:0;z-index:8;background:rgba(255,255,255,.94);border-bottom:3px solid #9fd3f2;
+  padding:8px 12px;display:none;flex-wrap:wrap;gap:7px;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(13,77,122,.2)}
+#ebar.on{display:flex}
+.etool{font-family:inherit;font-size:15px;border:2px solid #9fd3f2;background:#fff;color:#1b6fae;border-radius:12px;padding:6px 12px;cursor:pointer}
+.etool.sel{background:#1b6fae;color:#fff;border-color:#1b6fae}
+#eInfo{font-size:13px;color:#5b7d99}
+.lcard{display:flex;align-items:center;gap:10px;background:#f2f9ff;border:2.5px solid #9fd3f2;border-radius:14px;padding:10px 14px;margin:8px auto;max-width:520px;text-align:left;flex-wrap:wrap}
+.lcard h4{color:#1b6fae;font-size:18px}
+.lcard .meta{font-size:12px;color:#5b7d99}
+.arow{display:flex;align-items:center;gap:12px;background:#f2f9ff;border:2.5px solid #d5e8f5;border-radius:14px;padding:10px 14px;margin:8px auto;max-width:520px;text-align:left;opacity:.62}
+.arow.done{background:#effae9;border-color:#8fd98a;opacity:1}
+.arow .ic{font-size:26px;width:34px;text-align:center}
+.arow h4{color:#1b6fae;font-size:17px}
+.arow .meta{font-size:12px;color:#5b7d99}
+.arow .rw{margin-left:auto;font-size:13px;color:#ff8a1e;font-weight:800;white-space:nowrap}
+.mirow{display:flex;align-items:center;gap:12px;background:#f2f9ff;border:2.5px solid #9fd3f2;border-radius:14px;padding:10px 14px;margin:8px auto;max-width:520px;text-align:left}
+.mirow .ic{font-size:24px;width:32px;text-align:center}
+.mirow h4{color:#1b6fae;font-size:16px}
+.mirow .meta{font-size:12px;color:#5b7d99}
+.mirow .pbar{margin-top:5px;height:9px;background:#dceefb;border-radius:99px;overflow:hidden;width:220px;max-width:100%}
+.mirow .pbar i{display:block;height:100%;background:linear-gradient(90deg,#37c996,#ffd23e)}
+.mirow .rw{margin-left:auto;font-size:13px;color:#ff8a1e;font-weight:800;white-space:nowrap}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(13,77,122,.9);color:#fff;
+  padding:10px 24px;border-radius:99px;font-size:16px;z-index:30;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
+.bigNum{font-size:56px;color:#1b6fae;margin:4px 0}
+.stat{color:#557;font-size:16px;margin:3px 0}
+#overBody .medal{font-size:44px}
+.hide{display:none!important}
+#setBtn,#devBtn{position:fixed;width:46px;height:46px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;z-index:8;background:rgba(255,255,255,.3);border:2.5px solid rgba(255,255,255,.85);
+  color:#0d4d7a;box-shadow:0 3px 0 rgba(13,77,122,.18);backdrop-filter:blur(3px)}
+#setBtn{top:14px;right:14px}
+#devBtn{bottom:16px;right:16px;animation:devpop .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes devpop{from{transform:scale(0) rotate(-360deg)}}
+.spin{display:inline-block;animation:vspin .8s ease}
+@keyframes vspin{to{transform:rotate(720deg)}}
+#verWrap{margin-top:16px;text-align:center}
+#verNum{font-size:12px;color:#9bb8cc;cursor:pointer;display:inline-block;padding:4px 10px;border-radius:8px;transition:.2s}
+#verNum:hover{background:#eef7fe;color:#3b87bd}
+#verCode{margin-top:8px;background:#0d2233;color:#7ee0ff;font:11px/1.7 monospace;padding:10px 12px;border-radius:10px;text-align:left;word-break:break-all;white-space:pre-wrap}
+.srow2{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:16px;color:#3b87bd}
+.srow2>span:first-child{width:70px;text-align:right}
+.srow2>span:last-child{width:48px;font-weight:800;color:#1b6fae}
+input[type=range]{flex:1;accent-color:#1b6fae;height:26px;cursor:pointer}
+.dgrid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.dgrid .etool{font-size:13.5px}
+.sect{margin-top:12px;border-top:2px dashed #d5e8f5;padding-top:10px}
+.etool.on{background:#37c996!important;border-color:#2fae66!important;color:#fff!important}
+.tglass .panel,.tglass .cpanel{background:rgba(255,255,255,.22)!important;border-color:rgba(255,255,255,.6)!important;backdrop-filter:blur(16px) saturate(1.4)!important}
+.tslime .panel,.tslime .cpanel{background:linear-gradient(#d9ffab,#a8ef62)!important;border-color:#3e8e1c!important}
+.tslime .title,.tslime h3,.tslime h4{color:#2f6b12!important}
+.tslime #sea{filter:hue-rotate(95deg) saturate(1.25)}
+.train #sea{animation:rainhue 5s linear infinite}
+@keyframes rainhue{to{filter:hue-rotate(360deg)}}
+@media (max-width:640px){.title{font-size:34px}.chip{font-size:16px;padding:4px 10px}#speedChip{bottom:172px}#boostWrap{bottom:216px}#fxChip{bottom:238px}
+  .etool{font-size:12px;padding:4px 8px}#ebar{padding:6px;gap:5px}.mcard{width:150px}.mcard p{min-height:70px}}
+</style>
+</head>
+<body>
+<canvas id="sea"></canvas>
+
+<div id="hud" style="display:none">
+  <div class="grp"><div class="chip" id="scoreChip">🛟 0</div><div class="chip" id="coinChip">🪙 0</div><div class="chip" id="livesChip" style="display:none">❤❤❤</div></div>
+  <div class="grp">
+    <div class="chip" id="raceChip" style="display:none"></div>
+    <div class="chip" id="timeChip">⏱ 0</div>
+    <div id="muteBtn">🔊</div>
+  </div>
+</div>
+<div class="chip" id="speedChip" style="display:none">⛵ 0 km/h</div>
+<div id="boostWrap" style="display:none"><div id="boostFill"></div></div>
+<div id="fxChip"></div>
+<div id="comboChip"></div>
+<div id="hint">⬆ 油门 · ⬅ ➡ 转向 · Shift/⚡ 冲刺 · 🔺跳板腾空旋转做特技</div>
+
+<div id="touch">
+  <div class="tgrp"><div class="tbtn" data-k="l">◀</div><div class="tbtn" data-k="r">▶</div></div>
+  <div class="tgrp"><div class="tbtn zap" data-k="boost">⚡</div><div class="tbtn" data-k="d">▾</div><div class="tbtn big" data-k="u">▲</div></div>
+</div>
+
+<div class="overlay" id="menu">
+  <div class="panel">
+    <div class="title">🌊 激流快艇 2</div>
+    <div class="sub">浪花嘉年华 · 大海等你征服！</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
+      <div class="chip" id="lvChip">🏅 Lv.1</div>
+      <div class="chip" id="menuCoins">🪙 0</div>
+    </div>
+    <div class="mrow"><button class="cta" id="btnPlay">开始游戏</button></div>
+    <div class="mrow">
+      <button class="btn" id="btnGarage">🚤 船坞</button>
+      <button class="btn" id="btnShop">🔧 改装厂</button>
+      <button class="btn" id="btnWork">🛠 工坊</button>
+    </div>
+    <div class="mrow">
+      <button class="btn" id="btnWheel">🎡 转盘</button>
+      <button class="btn" id="btnAch">🏆 成就</button>
+      <button class="btn" id="btnMis">📋 任务</button>
+    </div>
+    <div class="mrow" style="margin-top:14px">
+      <button class="btn sm" id="btnSound">🔊 声音</button>
+      <button class="btn sm danger" id="btnReset">♻️ 重置存档</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hide" id="modeSel">
+  <div class="panel wide">
+    <div class="title" style="font-size:36px">选择模式</div>
+    <div class="cards" id="modeCards"></div>
+    <button class="btn" id="btnModeBack">← 返回</button>
+  </div>
+</div>
+
+<div class="overlay hide" id="tracks">
+  <div class="panel wide">
+    <div class="title" style="font-size:36px">🏁 赛道</div>
+    <div class="sub">🏁 竞速（vs AI·三档难度）或 ⏱ 单人计时（带👻幽灵船）</div>
+    <div class="mrow" id="diffRow"></div>
+    <div class="cards" id="trackCards"></div>
+    <button class="btn" id="btnTrackBack">← 返回</button>
+  </div>
+</div>
+
+<div class="overlay hide" id="garage">
+  <div class="panel wide">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div class="title" style="font-size:34px">🚤 船坞</div>
+      <div style="display:flex;gap:8px;align-items:center"><div class="chip" id="garageCoins">🪙 0</div>
+      <button class="btn sm" id="btnGarageBack">← 返回</button></div>
+    </div>
+    <div class="bcards" id="boatList"></div>
+  </div>
+</div>
+
+<div class="overlay hide" id="shop">
+  <div class="panel wide">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div class="title" style="font-size:34px">🔧 改装厂</div>
+      <div style="display:flex;gap:8px;align-items:center"><div class="chip" id="shopCoins">🪙 0</div>
+      <button class="btn sm" id="btnShopBack">← 返回</button></div>
+    </div>
+    <div class="sub">改装对<b>所有船只</b>生效，与船特性叠加</div>
+    <div id="shopList"></div>
+  </div>
+</div>
+
+<div class="overlay hide" id="ach">
+  <div class="panel wide">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div class="title" style="font-size:34px">🏆 成就</div>
+      <button class="btn sm" id="btnAchBack">← 返回</button>
+    </div>
+    <div class="sub" id="achSummary"></div>
+    <div id="achList"></div>
+  </div>
+</div>
+
+<div class="overlay hide" id="mis">
+  <div class="panel wide">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div class="title" style="font-size:34px">📋 每日任务</div>
+      <button class="btn sm" id="btnMisBack">← 返回</button>
+    </div>
+    <div class="sub" id="misDate"></div>
+    <div id="misList"></div>
+  </div>
+</div>
+
+<div id="customizer" class="hide">
+  <div class="cpanel">
+    <div class="title" style="font-size:28px;color:#8e6cf0;text-shadow:2px 2px 0 #e6dcff" id="custTitle">定制我的艇</div>
+    <div class="crow">
+      <canvas id="custPrev" width="320" height="180" style="width:280px;height:158px;border-radius:14px;border:3px solid #e6dcff"></canvas>
+    </div>
+    <div class="crow">
+      <label>艇身<input type="color" id="cHull"></label>
+      <label>条纹<input type="color" id="cStripe"></label>
+      <label>船头<input type="color" id="cNose"></label>
+      <label>骑手<input type="color" id="cRider"></label>
+    </div>
+    <div class="crow" id="statRow">
+      <div class="stp"><b style="color:#3b87bd;font-size:14px">极速</b><button data-f="spd" data-d="-1">−</button><span id="vSpd">4</span><button data-f="spd" data-d="1">＋</button></div>
+      <div class="stp"><b style="color:#3b87bd;font-size:14px">加速</b><button data-f="acc" data-d="-1">−</button><span id="vAcc">4</span><button data-f="acc" data-d="1">＋</button></div>
+      <div class="stp"><b style="color:#3b87bd;font-size:14px">操控</b><button data-f="trn" data-d="-1">−</button><span id="vTrn">4</span><button data-f="trn" data-d="1">＋</button></div>
+    </div>
+    <div class="sub" id="custTotal">属性点：12 / 16（每项 2~8）</div>
+    <div class="mrow"><button class="cta" id="custSave">保 存</button><button class="btn" id="custClose">取消</button></div>
+  </div>
+</div>
+
+<div class="overlay hide" id="levels">
+  <div class="panel wide">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div class="title" style="font-size:34px">🛠 关卡工坊</div>
+      <button class="btn sm" id="btnLevelsBack">← 返回</button>
+    </div>
+    <div class="mrow">
+      <button class="btn" id="btnNewLevel">✚ 新建关卡</button>
+      <button class="btn" id="btnImport">📥 导入分享码</button>
+    </div>
+    <div id="levelList"></div>
+  </div>
+</div>
+
+<div id="ebar">
+  <b style="color:#1b6fae;font-size:16px">🛠 编辑器</b>
+  <button class="etool sel" data-tool="buoy">🛟浮标</button>
+  <button class="etool" data-tool="coin">🪙金币</button>
+  <button class="etool" data-tool="item">🎁道具</button>
+  <button class="etool" data-tool="chest">📦宝箱</button>
+  <button class="etool" data-tool="island">🏝小岛</button>
+  <button class="etool" data-tool="gate">🚪门</button>
+  <button class="etool" data-tool="ramp">🔺跳板</button>
+  <button class="etool" data-tool="mine">💣水雷</button>
+  <button class="etool" data-tool="vortex">🌀漩涡</button>
+  <button class="etool" data-tool="start">🚤起点</button>
+  <button class="etool" data-tool="erase">✖删除</button>
+  <button class="etool" data-tool="pan">✋移动</button>
+  <select id="eType"><option value="collect">限时收集</option><option value="gates">穿门计时</option></select>
+  <input type="number" id="eTime" min="20" max="300" value="60" style="width:70px" title="时限(秒)"/>
+  <input type="text" id="eName" placeholder="关卡名" maxlength="12" style="width:100px"/>
+  <button class="etool" id="eSave">💾保存</button>
+  <button class="etool" id="eTest" style="background:#ffd23e;border-color:#e0a000">▶测试</button>
+  <button class="etool" id="eClear">🧹清空</button>
+  <button class="etool" id="eExit">✅完成</button>
+  <span id="eInfo"></span>
+</div>
+
+<div class="overlay hide" id="over">
+  <div class="panel">
+    <div class="title" style="font-size:40px" id="overTitle">⏱ 时间到！</div>
+    <div id="overBody"></div>
+    <div class="mrow" id="overBtns" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<div class="overlay hide" id="pause">
+  <div class="panel">
+    <div class="title" style="font-size:36px">⏸ 暂停</div>
+    <div class="mrow" style="margin:16px 0">
+      <button class="cta" id="btnResume">继 续</button>
+      <button class="btn" id="btnQuit">退出</button>
+    </div>
+  </div>
+</div>
+
+<div id="setBtn">⚙️</div>
+<div id="devBtn" class="hide">🛠️</div>
+
+<div class="overlay hide" id="settings">
+  <div class="panel">
+    <div class="title" style="font-size:34px">⚙️ 设置</div>
+    <div class="srow2"><span>🔆 亮度</span><input type="range" id="brightSlider" min="50" max="130" value="100"/><span id="brightVal">100%</span></div>
+    <div class="srow2"><span>🔊 音量</span><input type="range" id="volSlider" min="0" max="100" value="100"/><span id="volVal">100%</span></div>
+    <div class="mrow" style="margin-top:14px"><button class="btn sm" id="btnSetBack">← 返回</button></div>
+    <div id="verWrap">
+      <span id="verNum">激流快艇2 · v3.8.0</span>
+      <div id="verCode" class="hide"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hide" id="vehPick">
+  <div class="panel wide">
+    <div class="title" style="font-size:34px">⚔️ 选择作战单位</div>
+    <div class="sub">90 秒歼灭战 · 自动索敌开火 · 你只管走位！</div>
+    <div class="cards" id="vehCards"></div>
+    <button class="btn" id="btnVehBack">← 返回</button>
+  </div>
+</div>
+
+<div class="overlay hide" id="wheelO">
+  <div class="panel">
+    <div class="title" style="font-size:32px">🎡 幸运转盘</div>
+    <div class="sub" id="wheelInfo"></div>
+    <canvas id="wheelCv" width="600" height="600" style="width:min(76vw,300px);height:auto;cursor:pointer"></canvas>
+    <div class="mrow" style="margin-top:10px"><button class="cta" id="btnSpin">转！</button><button class="btn" id="btnWheelBack">← 返回</button></div>
+  </div>
+</div>
+
+<div class="overlay hide" id="devPanel">
+  <div class="panel wide" style="text-align:left">
+    <div class="title" style="font-size:30px">🛠️ 开发者面板</div>
+    <div class="sect"><h3 style="color:#1b6fae;text-align:center;margin-bottom:4px">🔧 调试</h3>
+      <div class="dgrid">
+        <button class="etool" data-act="coin1">∞ 金币+10000</button>
+        <button class="etool" data-act="coin2">∞ 金币+100000</button>
+        <button class="etool" data-act="xp">🏅 经验+10000</button>
+        <button class="etool" data-act="lv">🏅 等级+1</button>
+        <button class="etool" data-act="ships">🔓 解锁全部船</button>
+        <button class="etool" data-act="c2">🔓 解锁二号自定义艇</button>
+        <button class="etool" data-act="inf">⚡ 无限冲刺</button>
+        <button class="etool" data-act="inv">🛡 无敌模式</button>
+        <button class="etool" data-act="fev">🌈 狂热常驻</button>
+        <button class="etool" data-act="items">📈 获得所有道具</button>
+        <button class="etool" data-act="finish">🏁 立即完成比赛</button>
+        <button class="etool" data-act="krak">🐙 海怪距离+500</button>
+        <button class="etool" data-act="t30">⏱ 当前模式+30秒</button>
+        <button class="etool" data-act="best">💯 得分为当前模式最佳</button>
+        <button class="etool" data-act="reset">🌊 重置当前局</button>
+        <button class="etool" data-act="clrlv">🗑 清空自定义关卡</button>
+        <button class="etool" data-act="ach">🏆 解锁全部成就</button>
+        <button class="etool" data-act="mis">📋 完成所有每日任务</button>
+        <button class="etool" data-act="upg">🔧 改装全部满级</button>
+        <button class="etool" data-act="rec">🗺 解锁全部模式记录</button>
+        <button class="etool" data-act="ghost">👻 生成幽灵船</button>
+        <button class="etool" data-act="mute">🔊 静音切换</button>
+        <button class="etool" data-act="save">💾 强制存档</button>
+        <button class="etool" data-act="wipe">🔄 恢复默认存档</button>
+      </div>
+    </div>
+    <div class="sect"><h3 style="color:#8e6cf0;text-align:center;margin-bottom:6px">🧪 巨魔分区</h3>
+      <button class="btn sm" id="trollLock" style="display:block;margin:0 auto">🔑 输入密码进入</button>
+      <div class="dgrid hide" id="trollGrid">
+        <button class="etool" data-act="glass">💧 液态玻璃UI</button>
+        <button class="etool" data-act="tslime">🟢 史莱姆UI</button>
+        <button class="etool" data-act="rain">🌈 彩虹背景</button>
+        <button class="etool" data-act="trail">🌀 粘液拖尾</button>
+        <button class="etool" data-act="fx">⭐ 全屏特效</button>
+      </div>
+    </div>
+    <div class="mrow" style="margin-top:14px"><button class="btn sm" data-act="close">✅ 关闭面板</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+(function(){if(window.AudioParam&&AudioParam.prototype){var origExp=AudioParam.prototype.exponentialRampToValueAtTime;AudioParam.prototype.exponentialRampToValueAtTime=function(value,endTime){if(!Number.isFinite(value)||value<=0||!Number.isFinite(endTime)){return this;}return origExp.call(this,value,endTime);};['setValueAtTime','linearRampToValueAtTime'].forEach(function(n){var orig=AudioParam.prototype[n];if(orig){AudioParam.prototype[n]=function(value,endTime){if(!Number.isFinite(value)||!Number.isFinite(endTime)){return this;}return orig.call(this,value,endTime);};}});}})();
+(function(){if(window.AudioScheduledSourceNode&&AudioScheduledSourceNode.prototype){var origStart=AudioScheduledSourceNode.prototype.start;AudioScheduledSourceNode.prototype.start=function(when){var a=[].slice.call(arguments);if(!Number.isFinite(a[0]))a[0]=0;return origStart.apply(this,a);};var origStop=AudioScheduledSourceNode.prototype.stop;AudioScheduledSourceNode.prototype.stop=function(when){var a=[].slice.call(arguments);if(!Number.isFinite(a[0]))a[0]=0;return origStop.apply(this,a);};}})();
+(function(){if(window.AudioParam&&AudioParam.prototype){var origExp=AudioParam.prototype.exponentialRampToValueAtTime;AudioParam.prototype.exponentialRampToValueAtTime=function(value,endTime){if(!Number.isFinite(value)||value<=0||!Number.isFinite(endTime)){return this;}return origExp.call(this,value,endTime);};['setValueAtTime','linearRampToValueAtTime'].forEach(function(n){var orig=AudioParam.prototype[n];if(orig){AudioParam.prototype[n]=function(value,endTime){if(!Number.isFinite(value)||!Number.isFinite(endTime)){return this;}return orig.call(this,value,endTime);};}});}})();
+(function(){if(window.AudioParam&&AudioParam.prototype){var origExp=AudioParam.prototype.exponentialRampToValueAtTime;AudioParam.prototype.exponentialRampToValueAtTime=function(value,endTime){if(!Number.isFinite(value)||value<=0||!Number.isFinite(endTime)){return this;}return origExp.call(this,value,endTime);};['setValueAtTime','linearRampToValueAtTime'].forEach(function(n){var orig=AudioParam.prototype[n];if(orig){AudioParam.prototype[n]=function(value,endTime){if(!Number.isFinite(value)||!Number.isFinite(endTime)){return this;}return orig.call(this,value,endTime);};}});}})();
+(function(){if(window.AudioScheduledSourceNode&&AudioScheduledSourceNode.prototype){var origStart=AudioScheduledSourceNode.prototype.start;AudioScheduledSourceNode.prototype.start=function(when){var a=[].slice.call(arguments);if(!Number.isFinite(a[0]))a[0]=0;return origStart.apply(this,a);};var origStop=AudioScheduledSourceNode.prototype.stop;AudioScheduledSourceNode.prototype.stop=function(when){var a=[].slice.call(arguments);if(!Number.isFinite(a[0]))a[0]=0;return origStop.apply(this,a);};}})();
+/* ================= 基础 ================= */
+const $=id=>document.getElementById(id);
+const cv=$('sea'),ctx=cv.getContext('2d');
+let W=innerWidth,H=innerHeight;const DPR=Math.min(devicePixelRatio||1,2);
+let waterGrad=null,vign=null;
+function resize(){W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;
+  cv.style.width=W+'px';cv.style.height=H+'px';waterGrad=vign=null;}
+addEventListener('resize',resize);resize();
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
+function rr(c,x,y,w,h,r){if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);}
+function rnd(cx,cy,n){let h=(cx*73856093)^(cy*19349663)^(n*83492791);
+  h=Math.imul(h^(h>>>13),3266489917);h^=h>>>16;return(h>>>0)/4294967296;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function fmtT(s){const m=Math.floor(s/60),x=s-m*60;return m+':'+(x<10?'0':'')+x.toFixed(1);}
+function toast(msg){const t=$('toast');t.textContent=msg;t.style.opacity=1;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity=0,2100);}
+
+/* ================= 存档 ================= */
+function loadP(){try{const d=JSON.parse(localStorage.getItem('jsq2_profile'));if(d)return d;}catch(e){}
+  return{coins:300,sel:'egret',unlocked:['egret'],c2locked:true,
+    customs:{c1:{hull:'#fff6e8',stripe:'#ff8a3d',nose:'#37c996',rider:'#8e6cf0',pts:{spd:4,acc:4,trn:4}}},
+    best:{},levels:[]};}
+let P=loadP();
+P.best=Object.assign({free:0,coin:0,gates:0,surv:0,krak:0,mush:0,end:0,boss:0,war:0},P.best||{});
+P.stats=Object.assign({plays:0,earned:0,bestCombo:0,bestScore:0,gold:0,survBest:0,
+  tricks:0,chests:0,krakenBest:0,fever:0,hardWin:0,modes:{},
+  rings:0,portals:0,whales:0,bossWin:0,wheel:0,endBest:0,warKills:0},P.stats||{});
+P.ach=P.ach||{};P.daily=P.daily||0;P.dailyR=P.dailyR||0;
+P.xp=P.xp||0;P.lv=P.lv||1;P.tt=P.tt||{};P.missions=null;P.ghost=P.ghost||{};
+P.raceDiff=(P.raceDiff==null?1:P.raceDiff);
+P.upg=Object.assign({eng:0,nos:0,mag:0,fin:0},P.upg||{});
+P.theme=P.theme||'tro';P.themes=P.themes||{tro:1};P.startBuff=P.startBuff||null;
+const THEMES=[
+ {id:'tro',n:'热带晴空',price:0,g:['#6fd0f6','#2e9ade']},
+ {id:'pol',n:'极夜深蓝',price:800,g:['#16406e','#081f3d']},
+ {id:'sak',n:'樱花浅海',price:1200,g:['#ffdcea','#82c8ea']}];
+function saveP(){try{localStorage.setItem('jsq2_profile',JSON.stringify(P));}catch(e){}}
+function addCoins(n){P.coins+=n;P.stats.earned+=n;}
+
+/* ================= 等级 & 称号 ================= */
+const TITLES=[[1,'见习水手'],[3,'浪花骑士'],[5,'疾风艇长'],[8,'海域达人'],[12,'大洋传说'],[16,'四海之王']];
+function titleOf(lv){let t='见习水手';for(const e of TITLES)if(lv>=e[0])t=e[1];return t;}
+function gainXP(n){P.xp+=n;const nl=Math.floor(Math.sqrt(P.xp/120))+1;
+  if(nl>P.lv){P.lv=nl;const rw=60*nl;addCoins(rw);
+    toast('🏅 等级提升！Lv.'+nl+'「'+titleOf(nl)+'」+🪙'+rw);achSnd();}
+  $('lvChip').textContent='🏅 Lv.'+P.lv+' · '+titleOf(P.lv);}
+
+/* ================= 船只数据（12 预设 + 特性） ================= */
+const BOATS={
+  egret:{name:'小白鹭',price:0,hull:'#ffffff',stripe:'#2f8fd6',nose:'#ffb43a',rider:'#ff8a3d',top:4.6,btop:6.4,acc:.062,turn:.052,desc:'均衡可靠的新手艇',pk:'none',pkd:'—'},
+  penguin:{name:'企鹅破冰者',price:700,hull:'#f4f7fa',stripe:'#37485c',nose:'#ffb43a',rider:'#37485c',top:4.4,btop:6.2,acc:.06,turn:.055,desc:'圆滚滚的极地选手',pk:'wind',pkd:'🌪 免疫风暴漂移'},
+  breeze:{name:'风之子',price:900,hull:'#ffffff',stripe:'#37c996',nose:'#ffd23e',rider:'#37c996',top:4.3,btop:6.1,acc:.07,turn:.062,desc:'轻盈灵活，指哪转哪',pk:'regen',pkd:'⚡ 冲刺回复 +60%'},
+  bolt:{name:'蓝闪电',price:900,hull:'#eef7ff',stripe:'#1b6fae',nose:'#ffd23e',rider:'#1b6fae',top:5.5,btop:7.7,acc:.066,turn:.047,desc:'直线之王，过弯偏硬',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
+  dolphin:{name:'海豚号',price:1200,hull:'#eaf6ff',stripe:'#4aa8e0',nose:'#ffd23e',rider:'#4aa8e0',top:4.9,btop:6.9,acc:.065,turn:.057,desc:'聪明的小伙伴',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
+  waverider:{name:'浪尖号',price:1500,hull:'#fff0f5',stripe:'#ff6fb5',nose:'#37c996',rider:'#ff6fb5',top:5.0,btop:7.1,acc:.062,turn:.054,desc:'气垫悬浮黑科技',pk:'hover',pkd:'🌀 免疫漩涡吸力'},
+  shark:{name:'碎浪鲨',price:1800,hull:'#e8f4ff',stripe:'#38506b',nose:'#e23b2e',rider:'#e23b2e',top:5.9,btop:8.2,acc:.06,turn:.041,desc:'狂暴极速，转向迟缓',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
+  phoenix:{name:'火凤凰',price:2200,hull:'#fff2e8',stripe:'#ff6a3d',nose:'#ffd23e',rider:'#ff6a3d',top:5.3,btop:7.5,acc:.068,turn:.055,desc:'浴火重生的表演家',pk:'trick',pkd:'🌀 特技得分 ×2'},
+  unicorn:{name:'独角兽号',price:3500,hull:'#fdf4ff',stripe:'#d86ff0',nose:'#ffd23e',rider:'#d86ff0',top:5.3,btop:7.4,acc:.067,turn:.056,desc:'梦境彩虹坐骑',pk:'fever',pkd:'🌈 狂热得分×1.9 且更久'},
+  ghost:{name:'深海幽灵',price:2600,hull:'#eef2ff',stripe:'#7f8fb0',nose:'#c9d6f0',rider:'#7f8fb0',top:5.4,btop:7.6,acc:.066,turn:.052,desc:'半透明的神秘之影',pk:'shield',pkd:'🛡 每局开局带护盾'},
+  aurora:{name:'极光号',price:3000,hull:'#f4ecff',stripe:'#8e6cf0',nose:'#8e6cf0',rider:'#c05df0',top:5.6,btop:8.0,acc:.072,turn:.058,desc:'全能旗舰，物有所值',pk:'item',pkd:'🎁 道具时长 +50%'},
+  king:{name:'金色传说',price:4500,hull:'#fff8e0',stripe:'#e0a93f',nose:'#ffd23e',rider:'#e0a93f',top:5.8,btop:8.1,acc:.07,turn:.056,desc:'闪耀的传说之艇',pk:'combo',pkd:'🔥 连击窗口 +1.2s'},
+  dragon:{name:'龙王号',price:6000,hull:'#f0fff4',stripe:'#1d8a5a',nose:'#ffd23e',rider:'#1d8a5a',top:6.2,btop:8.6,acc:.074,turn:.054,desc:'统御四海的霸主',pk:'royal',pkd:'🛡开局护盾+🪙金币×1.15'},
+  leviathan:{name:'利维坦',price:7000,hull:'#e3f2fd',stripe:'#0d47a1',nose:'#00bcd4',rider:'#0d47a1',top:6.4,btop:8.9,acc:.076,turn:.053,desc:'深海巨兽，冲刺无与伦比',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
+  manta:{name:'魔鬼鱼',price:6500,hull:'#f3e5f5',stripe:'#6a1b9a',nose:'#00e5ff',rider:'#6a1b9a',top:5.9,btop:8.4,acc:.07,turn:.059,desc:'优雅的滑翔专家',pk:'trick',pkd:'🌀 特技得分 ×2'},
+  tempest:{name:'风暴信使',price:7200,hull:'#eceff1',stripe:'#37474f',nose:'#ffd600',rider:'#37474f',top:6.3,btop:8.8,acc:.073,turn:.052,desc:'驾驭风暴，无视漂移',pk:'wind',pkd:'🌪 免疫风暴漂移'},
+  corsair:{name:'黑珍珠号',price:5800,hull:'#efebe9',stripe:'#3e2723',nose:'#ffab00',rider:'#3e2723',top:5.7,btop:8.0,acc:.068,turn:.057,desc:'劫掠金币的幽灵海盗船',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
+  titan:{name:'泰坦巨舰',price:8500,hull:'#fff8e1',stripe:'#bf360c',nose:'#ffd600',rider:'#bf360c',top:6.0,btop:8.5,acc:.071,turn:.055,desc:'坚不可摧的海上堡垒',pk:'shield',pkd:'🛡 每局开局带护盾'},
+  nimbus:{name:'七彩祥云',price:7800,hull:'#fce4ec',stripe:'#c2185b',nose:'#ffeb3b',rider:'#c2185b',top:5.8,btop:8.3,acc:.069,turn:.06,desc:'驾着彩虹创造狂热',pk:'fever',pkd:'🌈 狂热得分×1.9 且更久'},
+  vortex:{name:'漩涡行者',price:6800,hull:'#e0f7fa',stripe:'#006064',nose:'#00e676',rider:'#006064',top:5.6,btop:8.1,acc:.067,turn:.058,desc:'在漩涡中如履平地',pk:'hover',pkd:'🌀 免疫漩涡吸力'},
+  megashark:{name:'巨齿鲨号',price:9000,hull:'#eceff1',stripe:'#455a64',nose:'#ff1744',rider:'#455a64',top:6.5,btop:9.1,acc:.077,turn:.05,desc:'远古霸主，一口咬碎纪录',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
+  trident:{name:'海王三叉戟',price:9500,hull:'#e1f5fe',stripe:'#0277bd',nose:'#ffd600',rider:'#0277bd',top:6.3,btop:8.8,acc:.074,turn:.058,desc:'海洋之王的权柄，全能无短板',pk:'royal',pkd:'🛡开局护盾+🪙金币×1.15'},
+  neon:{name:'霓虹幽灵',price:8800,hull:'#1a1030',stripe:'#00e5ff',nose:'#ff40ff',rider:'#b388ff',top:6.0,btop:8.6,acc:.072,turn:.061,desc:'赛博夜色里的幻影',pk:'fever',pkd:'🌈 狂热得分×1.9 且更久'},
+  dragonboat:{name:'龙舟号',price:7600,hull:'#ffebee',stripe:'#c62828',nose:'#ffd54f',rider:'#c62828',top:5.9,btop:8.5,acc:.075,turn:.057,desc:'端午战魂，鼓点就是引擎声',pk:'trick',pkd:'🌀 特技得分 ×2'},
+  breakerX:{name:'破浪者X',price:8000,hull:'#f5f5f5',stripe:'#263238',nose:'#00b0ff',rider:'#263238',top:6.2,btop:8.9,acc:.071,turn:.054,desc:'次世代破浪工程机',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
+  seahorse:{name:'海马号',price:7400,hull:'#fffde7',stripe:'#fbc02d',nose:'#ff8a65',rider:'#f9a825',top:5.5,btop:8.0,acc:.07,turn:.063,desc:'小巧灵动，转向如丝般顺滑',pk:'regen',pkd:'⚡ 冲刺回复 +60%'},
+  carrier:{name:'航母甲板',price:11000,hull:'#eceff1',stripe:'#37474f',nose:'#ffab00',rider:'#37474f',top:6.1,btop:8.7,acc:.068,turn:.049,desc:'移动的海上要塞，稳如泰山',pk:'shield',pkd:'🛡 每局开局带护盾'},
+  rocketray:{name:'火箭鳐',price:10500,hull:'#efebe9',stripe:'#dd2c00',nose:'#ffea00',rider:'#dd2c00',top:6.6,btop:9.3,acc:.078,turn:.052,desc:'背绑火箭推进器的魔鬼鱼',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
+  xuanwu:{name:'玄武龟甲',price:9800,hull:'#e8f5e9',stripe:'#1b5e20',nose:'#aeea00',rider:'#1b5e20',top:5.7,btop:8.2,acc:.066,turn:.055,desc:'北方守护神兽，防御无双',pk:'shield',pkd:'🛡 每局开局带护盾'},
+  ghostfleet:{name:'幽灵舰队',price:11500,hull:'#eceffc',stripe:'#78909c',nose:'#cfd8dc',rider:'#546e7a',top:6.2,btop:9.0,acc:.073,turn:.056,desc:'沉船湾驶来的亡灵旗舰',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
+  abyss:{name:'深渊巡洋舰',price:12500,hull:'#101828',stripe:'#00bfa5',nose:'#64ffda',rider:'#00bfa5',top:6.4,btop:9.2,acc:.075,turn:.053,desc:'从海沟深处升起的钢铁巨影',pk:'item',pkd:'🎁 道具时长 +50%'},
+  heishen:{name:'黑神',price:99999,hull:'#111418',stripe:'#ffd23e',nose:'#ff4060',rider:'#ffd23e',top:6.4,btop:9.0,acc:.078,turn:.064,desc:'六边形战士 · 数据对比基准艇',pk:'none',pkd:'📊 六边形全满 · 对比图专用'}
+};
+const CSLOT={c1:'自定义一号艇',c2:'自定义二号艇'};
+const GHOST_SPEC={hull:'#f2f8ff',stripe:'#bcd8f0',nose:'#bcd8f0',rider:'#bcd8f0'};
+function boatSpec(id){
+  if(BOATS[id])return Object.assign({id},BOATS[id]);
+  const c=P.customs[id];if(!c)return Object.assign({id:'egret'},BOATS.egret);
+  const p=c.pts,top=3.9+p.spd*.27;
+  return{id,name:CSLOT[id],hull:c.hull,stripe:c.stripe,nose:c.nose,rider:c.rider,
+    top,btop:top*1.42,acc:.048+p.acc*.0042,turn:.038+p.trn*.0032,custom:true,desc:'你的专属定制艇',pk:'none',pkd:'—'};}
+function hasPk(sp,name){return sp.pk===name||sp.pk==='royal'&&(name==='shield'||name==='coin');}
+
+/* ================= 改装厂 ================= */
+const UPG=[
+ {id:'eng',ic:'⚙️',n:'引擎强化',d:'极速 +2%/级（冲刺极速同步提升）',cost:l=>250+l*250},
+ {id:'nos',ic:'⚡',n:'氮气罐',d:'冲刺能量回复 +8%/级',cost:l=>250+l*250},
+ {id:'mag',ic:'🧲',n:'财富磁场',d:'金币收益 +4%/级',cost:l=>200+l*200},
+ {id:'fin',ic:'🧭',n:'稳定舵',d:'转向灵敏度 +2%/级',cost:l=>200+l*200}];
+function buildShop(){$('shopCoins').textContent='🪙 '+P.coins;
+  const box=$('shopList');box.innerHTML='';
+  for(const u of UPG){const lv=P.upg[u.id],max=lv>=5;
+    const div=document.createElement('div');div.className='mirow';
+    let pips='';for(let i=0;i<5;i++)
+      pips+='<span style="color:'+(i<lv?'#37c996':'#c8d8e6')+';font-size:14px">●</span>';
+    div.innerHTML='<div class="ic">'+u.ic+'</div>'+
+      '<div style="flex:1"><h4>'+u.n+' <span style="color:#37c996">Lv.'+lv+'</span></h4>'+
+      '<div class="meta">'+u.d+'</div><div style="margin-top:4px">'+pips+'</div></div>'+
+      '<div class="rw">'+(max?'✅ 已满级':'+🪙'+u.cost(lv))+'</div>';
+    const b=document.createElement('button');b.className='btn sm';
+    b.textContent=max?'满级':'升级';
+    if(max){b.disabled=true;b.style.opacity=.5;}
+    else b.onclick=()=>{const c=u.cost(lv);
+      if(P.coins>=c){P.coins-=c;P.upg[u.id]++;saveP();checkAch();
+        blip(700,.12,.2,1000);toast('🔧 '+u.n+' 升级到 Lv.'+P.upg[u.id]);buildShop();}
+      else toast('金币不足！');};
+    div.appendChild(b);box.appendChild(div);}
+  const sect=document.createElement('div');sect.className='sect';
+  sect.innerHTML='<h3 style="color:#1b6fae;text-align:center;margin-bottom:6px">🎨 海域主题</h3>';
+  box.appendChild(sect);
+  for(const th of THEMES){const owned=!!P.themes[th.id];
+    const row=document.createElement('div');row.className='mirow';
+    row.innerHTML='<div class="ic">🌊</div><div style="flex:1"><h4>'+th.n+
+      (P.theme===th.id?' <span style="color:#37c996">使用中</span>':'')+'</h4>'+
+      '<div class="meta">全海域换装 · '+th.g[0]+' → '+th.g[1]+'</div></div>';
+    const b=document.createElement('button');b.className='btn sm';
+    if(P.theme===th.id){b.textContent='✓ 使用中';b.disabled=true;b.style.opacity=.55;}
+    else if(owned){b.textContent='使用';
+      b.onclick=()=>{P.theme=th.id;saveP();waterGrad=null;buildShop();toast('🌊 已切换：'+th.n);};}
+    else{b.textContent='🪙'+th.price;
+      b.onclick=()=>{if(P.coins>=th.price){P.coins-=th.price;P.themes[th.id]=1;P.theme=th.id;
+        saveP();waterGrad=null;refreshCoins();buildShop();toast('🎉 已购入主题：'+th.n);}
+        else toast('金币不足！');};}
+    row.appendChild(b);box.appendChild(row);}}
+
+
+/* ================= 赛道（6 条） ================= */
+const TRACKS=[
+ {id:'r1',name:'碧湾环道',laps:2,par:75,weather:'clear',desc:'宽阔流畅的高速椭圆',
+  gates:[[0,-900],[600,-1350],[1300,-1150],[1700,-450],[1500,300],[850,750],[100,850],[-700,550],[-1150,-100],[-850,-750]],
+  islands:[{x:-1500,y:-900,r:85},{x:1900,y:1000,r:70},{x:1200,y:-1750,r:60},{x:-1650,y:800,r:75}],
+  rampsG:[6],padsG:[4],tmines:[]},
+ {id:'r2',name:'翠礁回廊',laps:2,par:70,weather:'sunset',desc:'礁石环抱的技巧型赛道',
+  gates:[[0,-700],[500,-1050],[900,-700],[750,-120],[1050,420],[500,820],[-150,650],[-550,80],[-350,-480]],
+  islands:[{x:250,y:-40,r:62},{x:640,y:160,r:48},{x:-80,y:230,r:46},{x:-1150,y:-820,r:80},{x:1500,y:-1250,r:70}],
+  rampsG:[2],padsG:[6],tmines:[[300,-880]]},
+ {id:'r3',name:'落日海峡',laps:2,par:95,weather:'sunset',desc:'超长海岸线，跳板加速带齐飞',
+  gates:[[0,-1400],[800,-1800],[1800,-1650],[2400,-800],[2300,200],[1600,900],[500,1200],[-600,1200],[-1500,700],[-1800,-200],[-1400,-1100],[-600,-1350]],
+  islands:[{x:2600,y:-1500,r:90},{x:-2300,y:1200,r:85},{x:400,y:0,r:75},{x:2900,y:900,r:70}],
+  rampsG:[1,5,9],padsG:[3,7,10],tmines:[]},
+ {id:'r4',name:'风暴环礁',laps:2,par:80,weather:'storm',desc:'夜晚风暴+赛道水雷，勇者试炼',
+  gates:[[0,-800],[450,-1150],[950,-900],[900,-300],[1250,200],[900,700],[300,900],[-300,700],[-750,300],[-600,-300],[-950,-800],[-450,-1150]],
+  islands:[{x:150,y:150,r:55},{x:620,y:120,r:44},{x:-180,y:120,r:46},{x:1500,y:-1200,r:75},{x:-1400,y:800,r:80},{x:1300,y:1100,r:60}],
+  rampsG:[3,7],padsG:[1,5,9],tmines:[[700,-1050],[1100,-100],[150,1000],[-700,600],[-820,-350]]},
+ {id:'r5',name:'极地冰湾',laps:2,par:88,weather:'snow',desc:'极夜雪原中的高速长廊，小心浮冰',
+  gates:[[0,-900],[650,-1250],[1350,-1000],[1750,-350],[1500,350],[800,800],[0,900],[-750,650],[-1150,0],[-800,-700]],
+  islands:[{x:-1600,y:-1100,r:95},{x:1900,y:-500,r:75},{x:300,y:150,r:70},{x:1500,y:1200,r:80}],
+  rampsG:[3,8],padsG:[1,5],tmines:[]},
+ {id:'r6',name:'熔岩火环',laps:2,par:92,weather:'ember',desc:'火山灰弥漫的技术型赛道，火星四溅',
+  gates:[[0,-800],[550,-1150],[1150,-950],[1500,-400],[1350,200],[800,650],[100,850],[-600,700],[-1000,250],[-900,-350],[-450,-700]],
+  islands:[{x:250,y:-50,r:58},{x:-350,y:100,r:52},{x:1600,y:-1300,r:85},{x:-1500,y:1000,r:80}],
+  rampsG:[2,6],padsG:[4,9],tmines:[[800,-1050],[-1150,-100],[400,950]]}
+];
+for(const tr of TRACKS){const Gt=tr.gates,n=Gt.length;
+  tr.gates=Gt.map((g,i)=>{const p=Gt[(i-1+n)%n];
+    return{x:g[0],y:g[1],ang:Math.atan2(g[1]-p[1],g[0]-p[0])};});
+  tr.ramps=tr.rampsG.map(gi=>{const g=tr.gates[gi];
+    return{x:g.x-Math.cos(g.ang)*230,y:g.y-Math.sin(g.ang)*230,ang:g.ang};});
+  tr.pads=tr.padsG.map(gi=>{const g=tr.gates[gi];
+    return{x:g.x-Math.cos(g.ang)*130,y:g.y-Math.sin(g.ang)*130,ang:g.ang};});
+  tr.mines=tr.tmines.map((m,i)=>({x:m[0],y:m[1],ph:i*1.7,id:'Tm'+i}));}
+
+/* ================= 钢铁大战单位 ================= */
+const WARVEH={
+ ship:{n:'战舰',em:'🚢',hp:10,top:2.7,acc:.02,turn:.032,cd:.75,dmg:2,splash:70,ramMe:0,ramIt:2,
+   desc:'重甲巨炮 · 榴弹范围溅射 · 撞击免伤'},
+ jet:{n:'战斗机',em:'✈️',hp:5,top:4.9,acc:.05,turn:.06,cd:.2,dmg:1,splash:0,ramMe:2,ramIt:1,
+   desc:'极速贴脸缠斗 · 双联机炮 · 脆皮小心弹幕'},
+ tank:{n:'两栖坦克',em:'🚜',hp:7,top:3.3,acc:.03,turn:.046,cd:1.0,dmg:3,splash:95,ramMe:1,ramIt:3,
+   desc:'重炮狙击 · 大范围爆轰 · 撞击之王'},
+ heli:{n:'武装直升机',em:'🚁',hp:6,top:4.2,acc:.045,turn:.056,cd:.5,dmg:1,splash:30,ramMe:1,ramIt:1,
+   desc:'空中火箭巢 · 高频双联点射 · 机动缠斗大师'},
+ sub:{n:'潜艇',em:'⚓',hp:6,top:2.9,acc:.025,turn:.04,cd:.9,dmg:2,splash:55,ramMe:0,ramIt:2,
+   desc:'周期潜航无敌 · 鱼雷冷射 · 下潜时加速25%'},
+ arty:{n:'火箭炮车',em:'🚀',hp:5,top:2.2,acc:.02,turn:.034,cd:2.2,dmg:3,splash:115,ramMe:2,ramIt:2,hom:true,
+   desc:'超远程制导火箭 · 巨范围覆盖 · 别被贴脸'}};
+
+/* ================= 全局状态 ================= */
+const S={t:0,screen:'menu',paused:false,shake:0,muted:localStorage.getItem('jsq2_mute')==='1'};
+/* 调试/巨魔开关（开发者面板控制） */
+const DEV={infBoost:false,invul:false,fever:false,slime:false,fx:false};
+S.vol=(function(){const v=parseFloat(localStorage.getItem('jsq2_vol'));return isFinite(v)?clamp(v,0,1):1;})();
+const cam={x:0,y:0};
+const boat={x:0,y:0,a:-Math.PI/2,sp:0,lean:0,z:0,vz:0,spin:0,spinAnim:0,rc:0,pc:0};
+const keys={u:0,d:0,l:0,r:0,boost:0};
+let G=null,ED=null;
+let parts=[],trail=[],pops=[],rings=[],gulls=[];
+for(let i=0;i<3;i++)gulls.push({ox:(i-1)*320,oy:(i%2?-1:1)*190,ph:i*2.3});
+const dolphins=[{ph:0,side:-1},{ph:2.2,side:1}];
+
+/* ================= 音频 ================= */
+let AC=null,master,engOsc,engGain,sprayGain,noiseBuf;
+function initAudio(){if(AC)return;
+  try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+  master=AC.createGain();master.gain.value=S.muted?0:S.vol;master.connect(AC.destination);
+  engOsc=AC.createOscillator();engOsc.type='sawtooth';engOsc.frequency.value=46;
+  const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=300;
+  engGain=AC.createGain();engGain.gain.value=0;
+  engOsc.connect(lp);lp.connect(engGain);engGain.connect(master);engOsc.start();
+  noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);
+  const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const ns=AC.createBufferSource();ns.buffer=noiseBuf;ns.loop=true;
+  const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2300;bp.Q.value=.5;
+  sprayGain=AC.createGain();sprayGain.gain.value=0;
+  ns.connect(bp);bp.connect(sprayGain);sprayGain.connect(master);ns.start();
+  BGM.next=AC.currentTime+.15;}
+function blip(f,vol,dur,f2){if(!AC)return;
+  const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
+  o.type="sine";
+  const startFreq=(Number.isFinite(f)&&f>0)?f:440;
+  o.frequency.setValueAtTime(startFreq,t);
+  const endFreq=(Number.isFinite(f2)&&f2>0)?f2:((Number.isFinite(f)&&f>0)?f*2:880);
+  if(Number.isFinite(endFreq)&&endFreq>0){
+    o.frequency.exponentialRampToValueAtTime(endFreq,t+dur*.6);
+  }else{
+    o.frequency.linearRampToValueAtTime(endFreq,t+dur*.6);
+  }
+  const startGain=(Number.isFinite(vol)&&vol>0)?vol:.1;
+  g.gain.setValueAtTime(startGain,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.05);}
+function coinSnd(){blip(1180,.1,.1,1500);setTimeout(()=>blip(1560,.09,.12,1900),60);}
+function coinSnd(){blip(1180,.1,.1,1500);setTimeout(()=>blip(1560,.09,.12,1900),60);}
+function itemSnd(){blip(520,.14,.3,1040);}
+function gateSnd(){blip(700,.13,.18,980);}
+function uiSnd(){blip(840,.07,.07,560);}
+function uiHover(){blip(520,.025,.05,560);}
+function achSnd(){blip(660,.12,.2);setTimeout(()=>blip(880,.12,.2),120);setTimeout(()=>blip(1100,.13,.4),240);}
+function jumpSnd(){blip(300,.12,.25,700);}
+function trickSnd(){blip(500,.14,.15,750);setTimeout(()=>blip(750,.14,.15,1100),110);setTimeout(()=>blip(1000,.15,.3,1500),220);}
+function chestSnd(){blip(400,.12,.2,600);setTimeout(()=>blip(600,.12,.2,900),120);setTimeout(()=>blip(900,.14,.4,1350),240);}
+function feverSnd(){blip(700,.14,.3,1000);setTimeout(()=>blip(1000,.14,.3,1400),140);setTimeout(()=>blip(1400,.14,.5,1800),280);}
+function thunderSnd(){if(!AC)return;
+  const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain(),t=AC.currentTime;
+  s.buffer=noiseBuf;f.type='lowpass';f.frequency.setValueAtTime(420,t);
+  f.frequency.exponentialRampToValueAtTime(60,t+1.1);
+  g.gain.setValueAtTime(.4,t);g.gain.exponentialRampToValueAtTime(.001,t+1.2);
+  s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+1.25);}
+function splashSound(vol,f0){if(!AC)return;
+  const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain(),t=AC.currentTime;
+  s.buffer=noiseBuf;f.type='lowpass';
+  f.frequency.setValueAtTime(f0||1400,t);f.frequency.exponentialRampToValueAtTime(250,t+.3);
+  g.gain.setValueAtTime(vol||.3,t);g.gain.exponentialRampToValueAtTime(.001,t+.4);
+  s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+.45);}
+function jingle(){blip(523,.12,.5);setTimeout(()=>blip(784,.12,.5),160);setTimeout(()=>blip(1046,.14,.7),320);}
+const BGM={idx:0,next:0};
+const MEL=[523,0,659,784,0,784,659,523,587,0,659,0,784,659,587,0,
+           523,0,659,784,0,880,784,659,587,659,784,659,523,0,392,0];
+const BAS=[131,0,165,0,196,0,165,0,131,0,110,0,175,0,196,0];
+function bgmNote(f,t,d,type,vol){const o=AC.createOscillator(),g=AC.createGain();
+  o.type=type;o.frequency.value=f;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.02);
+  g.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05);}
+function bgmTick(){if(!AC||S.muted)return;
+  const t=AC.currentTime,inGame=S.screen==='play',beat=.27;
+  if(BGM.next<t-1)BGM.next=t+.05;
+  while(BGM.next<t+.35){
+    const i=BGM.idx%32,m=MEL[i],b=BAS[i%16];
+    if(m)bgmNote(m,BGM.next,.2,'square',inGame?.016:.028);
+    if(b)bgmNote(b,BGM.next,.5,'triangle',inGame?.032:.05);
+    BGM.next+=beat;BGM.idx++;}}
+function tickAudio(){if(!AC)return;
+  const n=clamp(Math.abs(boat.sp)/5,0,1),boosting=G&&keys.boost&&G.boost>0&&G.cd<=0&&!G.finished;
+  engOsc.frequency.value=44+n*100+(boosting?26:0);
+  engGain.gain.value=(G&&!G.finished?0.045:0.015)+n*0.075;
+  sprayGain.gain.value=n>0.35&&boat.z<=0?(n-0.3)*0.14:0;}
+document.addEventListener('pointerdown',e=>{
+  initAudio();if(AC&&AC.state==='suspended')AC.resume();
+  if(e.target.closest&&e.target.closest('button,.mcard,.etool,.tbtn,select'))uiSnd();
+},true);
+document.addEventListener('pointerover',e=>{
+  if(!e.target.closest)return;
+  const t=e.target.closest('button,.mcard');
+  if(t&&!t._hv){t._hv=1;uiHover();setTimeout(()=>t._hv=0,150);}
+},true);
+
+/* ================= 区块世界 ================= */
+const CH=720,cache=new Map(),gone=new Map();
+let CURCFG=cfgFor('idle');
+function cfgFor(m){switch(m){
+  case'free':return{islands:true,buoy:[2,3],coin:[1,2],item:.07,mine:.035,vortex:.02,ramp:.05,chest:.035,mush:.03,ring:.05,portal:.02,whale:.02,pool:['time','mag','x2','burst','shield','anti']};
+  case'coin':return{islands:true,buoy:[0,0],coin:[6,9],item:.09,mine:.05,vortex:.03,ramp:0,chest:.03,mush:.02,ring:.02,portal:.02,whale:.02,pool:['mag','x2','burst','shield']};
+  case'gates':return{islands:false,buoy:[0,0],coin:[1,2],item:.05,mine:0,vortex:0,ramp:.04,chest:0,mush:0,ring:.03,portal:0,whale:0,pool:['time','mag','burst']};
+  case'surv':return{islands:true,buoy:[2,3],coin:[2,3],item:.1,mine:.05,vortex:.035,ramp:.06,chest:.035,mush:.04,ring:.04,portal:.02,whale:.02,pool:['shield','mag','x2','burst','anti']};
+  case'kraken':return{islands:true,buoy:[1,2],coin:[2,3],item:.09,mine:.04,vortex:.03,ramp:.05,chest:.03,mush:.03,ring:.04,portal:.02,whale:.02,pool:['shield','burst','time','mag','anti']};
+  case'endless':return{islands:true,buoy:[2,3],coin:[1,2],item:.09,mine:.05,vortex:.03,ramp:.06,chest:.04,mush:.04,ring:.05,portal:.02,whale:.03,pool:['shield','mag','x2','burst','anti']};
+  case'mushpanic':return{islands:true,buoy:[3,4],coin:[1,2],item:.12,mine:.03,vortex:.02,ramp:.05,chest:.03,mush:.13,ring:.03,portal:.02,whale:.02,pool:['anti','anti','mag','x2','shield','burst']};
+  case'boss':return{islands:false,buoy:[2,3],coin:[0,0],item:.06,mine:0,vortex:0,ramp:.03,chest:0,mush:.02,ring:0,portal:0,whale:.04,pool:['shield','anti','burst']};
+  case'war':return{islands:false,buoy:[0,0],coin:[0,0],item:0,mine:0,vortex:0,ramp:0,chest:0,mush:0,ring:0,portal:0,whale:0,pool:[]};
+  case'wteam':return{islands:false,buoy:[0,0],coin:[0,0],item:0,mine:0,vortex:0,ramp:0,chest:0,mush:0,ring:0,portal:0,whale:0,pool:[]};
+  case'idle':return{islands:true,buoy:[2,3],coin:[0,0],item:0,mine:0,vortex:0,ramp:0,chest:0,mush:0,ring:0,portal:0,whale:0,pool:[]};
+  default:return{islands:false,buoy:[0,0],coin:[0,0],item:0,mine:0,vortex:0,ramp:0,chest:0,mush:0,ring:0,portal:0,whale:0,pool:[]};}}
+function islandOf(cx,cy){if(!CURCFG.islands||rnd(cx,cy,1)>=0.13)return null;
+  return{x:cx*CH+150+rnd(cx,cy,2)*(CH-300),y:cy*CH+150+rnd(cx,cy,3)*(CH-300),
+         r:52+rnd(cx,cy,4)*52,seed:rnd(cx,cy,5)*100};}
+function getChunk(cx,cy){const k=cx+','+cy;let c=cache.get(k);if(c)return c;
+  c={island:islandOf(cx,cy),buoys:[],coins:[],items:[],mines:[],vortexes:[],ramps:[],chests:[],
+     mush:[],rings:[],portals:[],whale:[]};
+  const safe=(x,y,ex)=>{for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){
+    const is=islandOf(cx+dx,cy+dy);
+    if(is&&Math.hypot(x-is.x,y-is.y)<is.r+(ex||95))return false;}return true;};
+  {const b0=CURCFG.buoy[0],b1=CURCFG.buoy[1];
+   const n=b0+(b1>b0&&rnd(cx,cy,6)<.55?1:0);
+   for(let i=0;i<n;i++){const x=cx*CH+90+rnd(cx,cy,10+i)*(CH-180),y=cy*CH+90+rnd(cx,cy,20+i)*(CH-180);
+     if(safe(x,y))c.buoys.push({x,y,id:k+':b'+i,ph:rnd(cx,cy,30+i)*TAU});}}
+  {const c0=CURCFG.coin[0],c1=CURCFG.coin[1];
+   const n=c0+(c1>c0?(rnd(cx,cy,7)<.6?1:0)+(c1-c0>2?Math.floor(rnd(cx,cy,8)*(c1-c0-1)):0):0);
+   for(let i=0;i<n;i++){const x=cx*CH+70+rnd(cx,cy,60+i)*(CH-140),y=cy*CH+70+rnd(cx,cy,70+i)*(CH-140);
+     if(safe(x,y))c.coins.push({x,y,id:k+':c'+i});}}
+  if(CURCFG.item>0&&rnd(cx,cy,9)<CURCFG.item){
+    const x=cx*CH+120+rnd(cx,cy,95)*(CH-240),y=cy*CH+120+rnd(cx,cy,96)*(CH-240);
+    if(safe(x,y))c.items.push({x,y,id:k+':m0',tp:CURCFG.pool[Math.floor(rnd(cx,cy,97)*CURCFG.pool.length)]});}
+  if(CURCFG.mine>0&&rnd(cx,cy,11)<CURCFG.mine){
+    const x=cx*CH+100+rnd(cx,cy,13)*(CH-200),y=cy*CH+100+rnd(cx,cy,14)*(CH-200);
+    if(safe(x,y,130))c.mines.push({x,y,id:k+':x0',ph:rnd(cx,cy,15)*TAU});}
+  if(CURCFG.vortex>0&&rnd(cx,cy,12)<CURCFG.vortex){
+    const x=cx*CH+140+rnd(cx,cy,16)*(CH-280),y=cy*CH+140+rnd(cx,cy,17)*(CH-280);
+    if(safe(x,y,230))c.vortexes.push({x,y,id:k+':v0',ph:rnd(cx,cy,18)*TAU});}
+  if(CURCFG.ramp>0&&rnd(cx,cy,19)<CURCFG.ramp){
+    const x=cx*CH+120+rnd(cx,cy,21)*(CH-240),y=cy*CH+120+rnd(cx,cy,22)*(CH-240);
+    if(safe(x,y,120))c.ramps.push({x,y,ang:rnd(cx,cy,23)*TAU});}
+  if(CURCFG.chest>0&&rnd(cx,cy,24)<CURCFG.chest){
+    const x=cx*CH+110+rnd(cx,cy,25)*(CH-220),y=cy*CH+110+rnd(cx,cy,26)*(CH-220);
+    if(safe(x,y))c.chests.push({x,y,id:k+':h0'});}
+  if(CURCFG.mush>0&&rnd(cx,cy,27)<CURCFG.mush){
+    const x=cx*CH+110+rnd(cx,cy,34)*(CH-220),y=cy*CH+110+rnd(cx,cy,35)*(CH-220);
+    if(safe(x,y))c.mush.push({x,y});}
+  if(CURCFG.ring>0){
+    const n=rnd(cx,cy,28)<CURCFG.ring?(rnd(cx,cy,36)<.35?2:1):0;
+    for(let i=0;i<n;i++){const x=cx*CH+90+rnd(cx,cy,37+i)*(CH-180),y=cy*CH+90+rnd(cx,cy,40+i)*(CH-180);
+      if(safe(x,y))c.rings.push({x,y,id:k+':r'+i});}}
+  if(CURCFG.portal>0&&rnd(cx,cy,29)<CURCFG.portal){
+    const x=cx*CH+150+rnd(cx,cy,43)*(CH-300),y=cy*CH+150+rnd(cx,cy,44)*(CH-300);
+    if(safe(x,y))c.portals.push({x,y,dx:cx*CH+CH-x,dy:cy*CH+CH-y,ph:rnd(cx,cy,45)*TAU});}
+  if(CURCFG.whale>0&&rnd(cx,cy,30)<CURCFG.whale){
+    const x=cx*CH+200+rnd(cx,cy,46)*(CH-400),y=cy*CH+200+rnd(cx,cy,47)*(CH-400);
+    if(safe(x,y,160))c.whale.push({x,y,ph:rnd(cx,cy,48)*TAU});}
+  cache.set(k,c);return c;}
+function activeChunks(fn){const r=Math.ceil(Math.max(W,H)/CH/2)+1;
+  const ccx=Math.floor(cam.x/CH),ccy=Math.floor(cam.y/CH);
+  for(let x=-r;x<=r;x++)for(let y=-r;y<=r;y++)fn(getChunk(ccx+x,ccy+y));}
+let pruneT=0;
+function prune(){const ccx=Math.floor(cam.x/CH),ccy=Math.floor(cam.y/CH);
+  for(const k of cache.keys()){const p=k.split(',');
+    if(Math.abs(+p[0]-ccx)>7||Math.abs(+p[1]-ccy)>7)cache.delete(k);}
+  for(const kv of gone)if(S.t-kv[1]>26)gone.delete(kv[0]);}
+
+/* ================= 每日挑战 ================= */
+function dailySeed(){const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();}
+function dailyLevel(){
+  const seed=dailySeed(),R=mulberry32(seed),d=new Date(),objs=[];
+  const put=(t,n,r0,r1,extra)=>{for(let i=0;i<n;i++){let ok=false,x=0,y=0,tr=0;
+    while(!ok&&tr++<50){const a=R()*TAU,rd=r0+R()*(r1-r0);x=Math.cos(a)*rd;y=Math.sin(a)*rd;
+      ok=objs.every(o=>Math.hypot(o.x-x,o.y-y)>(o.t==='i'?o.r+140:150));}
+    if(ok)objs.push(Object.assign({t,x:Math.round(x),y:Math.round(y)},extra));}};
+  put('i',7,700,2400,{r:55+Math.floor(R()*3)*27});
+  put('b',24,300,2300);put('c',18,300,2200);
+  put('m',4,400,2000,{tp:['shield','mag','x2','burst'][Math.floor(R()*4)]});
+  put('x',6,500,2200);put('v',3,900,2400);put('j',5,500,2200);put('h',3,600,2000);
+  return{id:-2,name:'每日挑战 '+(d.getMonth()+1)+'/'+d.getDate(),type:'collect',time:75,
+    start:{x:0,y:0},objects:objs};}
+
+/* ================= 每日任务 ================= */
+const MIS_T=[
+ {k:'coin',ic:'🪙',tgt:60,rew:120,d:'收集 60 枚金币'},
+ {k:'gate',ic:'🚪',tgt:15,rew:120,d:'穿越 15 道大门'},
+ {k:'trick',ic:'🌀',tgt:6,rew:150,d:'完成 6 次空中特技'},
+ {k:'combo',ic:'🔥',tgt:5,rew:150,d:'单局连击达到 ×5',max:1},
+ {k:'fever',ic:'🌈',tgt:1,rew:150,d:'触发一次连击狂热',max:1},
+ {k:'score',ic:'🏄',tgt:2000,rew:180,d:'单局得分达到 2000',max:1},
+ {k:'survT',ic:'⏱',tgt:60,rew:160,d:'生存/海怪模式坚持 60 秒',max:1},
+ {k:'chest',ic:'📦',tgt:3,rew:140,d:'打开 3 个宝箱'},
+ {k:'plays',ic:'🎮',tgt:3,rew:100,d:'完成 3 局比赛'},
+ {k:'medal',ic:'🏅',tgt:1,rew:200,d:'竞速获得任意奖牌',max:1}];
+function ensureMissions(){const seed=dailySeed();
+  if(P.missions&&P.missions.date===seed)return;
+  const R=mulberry32(seed^0x9e37),pool=[...MIS_T],pick=[];
+  for(let i=0;i<3;i++)pick.push(pool.splice(Math.floor(R()*pool.length),1)[0]);
+  P.missions={date:seed,items:pick.map(t=>({k:t.k,ic:t.ic,tgt:t.tgt,rew:t.rew,d:t.d,max:t.max||0,prog:0,done:false}))};
+  saveP();}
+function mBump(k,val){if(!P.missions)return;
+  for(const m of P.missions.items){
+    if(m.k!==k||m.done)continue;
+    m.prog=m.max?Math.max(m.prog,val):m.prog+val;
+    if(m.prog>=m.tgt){m.done=true;m.prog=m.tgt;addCoins(m.rew);
+      toast('📋 任务完成：'+m.d+' +🪙'+m.rew);achSnd();}}
+  saveP();}
+function buildMissions(){ensureMissions();const box=$('misList');box.innerHTML='';
+  const d=new Date();
+  $('misDate').textContent='📅 '+(d.getMonth()+1)+'月'+d.getDate()+'日 · 每天 0 点刷新';
+  for(const m of P.missions.items){const div=document.createElement('div');div.className='mirow';
+    const pc=Math.min(100,m.prog/m.tgt*100|0);
+    div.innerHTML='<div class="ic">'+m.ic+'</div>'+
+      '<div style="flex:1"><h4>'+m.d+'</h4>'+
+      '<div class="pbar"><i style="width:'+pc+'%"></i></div>'+
+      '<div class="meta">'+m.prog+' / '+m.tgt+'</div></div>'+
+      '<div class="rw">'+(m.done?'✅ 已完成':'+🪙'+m.rew)+'</div>';
+    box.appendChild(div);}}
+
+/* ================= 成就 ================= */
+const ACH=[
+ {id:'first',ic:'🚤',n:'初次启航',d:'完成第一局比赛',r:100,c:()=>P.stats.plays>=1},
+ {id:'rich',ic:'🪙',n:'小有积蓄',d:'累计获得 1000 金币',r:100,c:()=>P.stats.earned>=1000},
+ {id:'rich5',ic:'💰',n:'日进斗金',d:'累计获得 5000 金币',r:250,c:()=>P.stats.earned>=5000},
+ {id:'combo5',ic:'🔥',n:'连击大师',d:'单局连击达到 ×5',r:150,c:()=>P.stats.bestCombo>=5},
+ {id:'fever1',ic:'🌈',n:'狂热时刻',d:'触发连击狂热状态',r:150,c:()=>P.stats.fever>=1},
+ {id:'s1500',ic:'🏄',n:'高分选手',d:'单局得分 1500',r:200,c:()=>P.stats.bestScore>=1500},
+ {id:'s3000',ic:'🌊',n:'海之王者',d:'单局得分 3000',r:300,c:()=>P.stats.bestScore>=3000},
+ {id:'boats3',ic:'⛵',n:'迷你船队',d:'拥有 3 艘以上的船',r:150,c:()=>P.unlocked.length+((P.c2locked?0:1))>=3},
+ {id:'fleet6',ic:'🛳',n:'船队大亨',d:'拥有 6 艘以上的船',r:300,c:()=>P.unlocked.length+((P.c2locked?0:1))>=6},
+ {id:'tuned',ic:'🔧',n:'改装达人',d:'任意改装升到满级',r:200,c:()=>Object.values(P.upg).some(v=>v>=5)},
+ {id:'gold',ic:'🥇',n:'速度之王',d:'竞速大赛获得金牌',r:300,c:()=>P.stats.gold>=1},
+ {id:'hardwin',ic:'😈',n:'强者证明',d:'困难难度竞速夺冠',r:300,c:()=>P.stats.hardWin>=1},
+ {id:'surv90',ic:'💥',n:'生存专家',d:'生存挑战坚持 90 秒',r:250,c:()=>P.stats.survBest>=90},
+ {id:'krak60',ic:'🐙',n:'屠龙勇士',d:'海怪模式坚持 60 秒',r:300,c:()=>P.stats.krakenBest>=60},
+ {id:'trick25',ic:'🌀',n:'特技明星',d:'累计完成 25 次特技',r:200,c:()=>P.stats.tricks>=25},
+ {id:'chest5',ic:'📦',n:'寻宝猎人',d:'打开 5 个宝箱',r:150,c:()=>P.stats.chests>=5},
+ {id:'lv5',ic:'🏅',n:'资深艇长',d:'等级达到 5 级',r:200,c:()=>P.lv>=5},
+ {id:'daily1',ic:'🗓',n:'每日打卡',d:'完成一次每日挑战',r:150,c:()=>P.dailyR>0},
+ {id:'allmodes',ic:'🗺',n:'全能选手',d:'游玩全部 6 种主要模式',r:400,
+   c:()=>['free','coin','gates','surv','kraken','race'].every(m=>P.stats.modes[m])},
+ {id:'designer',ic:'🛠',n:'关卡设计师',d:'保存 1 个自定义关卡',r:100,c:()=>P.levels.length>=1},
+ {id:'storm',ic:'⛈',n:'风暴驾驭者',d:'在风暴环礁获得奖牌',r:250,c:()=>!!P.best.r4},
+ {id:'end2000',ic:'♾',n:'无尽浪潮',d:'无尽模式单局得分 2000',r:300,c:()=>(P.stats.endBest||0)>=2000},
+ {id:'boss1',ic:'👑',n:'弑神者',d:'击败深渊之主',r:500,c:()=>(P.stats.bossWin||0)>=1},
+ {id:'wheel1',ic:'🎡',n:'幸运儿',d:'首次转动幸运转盘',r:80,c:()=>(P.stats.wheel||0)>=1},
+ {id:'ring30',ic:'💍',n:'穿环高手',d:'累计穿过 30 个金环',r:200,c:()=>(P.stats.rings||0)>=30},
+ {id:'whale5',ic:'🐋',n:'驭鲸者',d:'触发 5 次鲸跃助推',r:200,c:()=>(P.stats.whales||0)>=5},
+ {id:'portal10',ic:'🌀',n:'空间旅人',d:'通过传送门 10 次',r:200,c:()=>(P.stats.portals||0)>=10},
+ {id:'mush1500',ic:'🍄',n:'毒蘑菇舞者',d:'蘑菇危机单局得分 1500',r:250,c:()=>(P.best.mush||0)>=1500},
+ {id:'medal56',ic:'🏔',n:'极境征服者',d:'在极地冰湾或熔岩火环夺牌',r:300,c:()=>!!P.best.r5||!!P.best.r6},
+ {id:'war1',ic:'⚔️',n:'初上战场',d:'完成一局钢铁大战',r:100,c:()=>!!(P.stats.modes&&P.stats.modes.war)},
+ {id:'ace15',ic:'🎖',n:'王牌单位',d:'单局击毁 15 个敌方单位',r:250,c:()=>(P.best.war||0)>=15},
+ {id:'fleet50',ic:'🏴',n:'钢铁军团',d:'累计击毁 50 个敌方单位',r:300,c:()=>(P.stats.warKills||0)>=50}];
+function checkAch(){for(const a of ACH){
+  if(!P.ach[a.id]&&a.c()){P.ach[a.id]=1;addCoins(a.r);saveP();
+    toast('🏆 成就达成：'+a.n+' +🪙'+a.r);achSnd();}}}
+function buildAch(){const box=$('achList');box.innerHTML='';
+  let done=0;for(const a of ACH){if(P.ach[a.id])done++;
+    const d=document.createElement('div');d.className='arow'+(P.ach[a.id]?' done':'');
+    d.innerHTML='<div class="ic">'+(P.ach[a.id]?a.ic:'🔒')+'</div>'+
+      '<div><h4>'+a.n+'</h4><div class="meta">'+a.d+'</div></div>'+
+      '<div class="rw">+🪙'+a.r+'</div>';box.appendChild(d);}
+  $('achSummary').textContent='已解锁 '+done+' / '+ACH.length+
+    ' · 🎮 总局数 '+P.stats.plays+' · 💰 累计获得 '+P.stats.earned;}
+
+/* ================= 输入 ================= */
+const keyMap={ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',ArrowLeft:'l',KeyA:'l',
+  ArrowRight:'r',KeyD:'r',ShiftLeft:'boost',ShiftRight:'boost',Space:'boost'};
+addEventListener('keydown',e=>{
+  if(e.code==='Enter'){const o=[...document.querySelectorAll('.overlay:not(.hide)')][0];
+    if(o){const b=o.querySelector('button.cta');if(b)b.click();}return;}
+  if((e.code==='Escape'||e.code==='KeyP')&&S.screen==='play'&&G&&!G.finished){togglePause();return;}
+  const k=keyMap[e.code];if(k){keys[k]=1;e.preventDefault();}});
+addEventListener('keyup',e=>{const k=keyMap[e.code];if(k)keys[k]=0;});
+if('ontouchstart'in window){
+  document.querySelectorAll('.tbtn').forEach(b=>{const k=b.dataset.k;
+    b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=1;});
+    for(const ev of['pointerup','pointerleave','pointercancel'])b.addEventListener(ev,()=>keys[k]=0);});}
+
+/* ================= UI 切换 ================= */
+function show(id){document.querySelectorAll('.overlay').forEach(o=>o.classList.add('hide'));
+  if(id)$(id).classList.remove('hide');}
+function setPlayUI(on){const d=on?'':'none';
+  $('hud').style.display=on?'flex':'none';
+  $('speedChip').style.display=d;$('boostWrap').style.display=d;
+  $('touch').classList.toggle('on',on&&'ontouchstart'in window);
+  if(!on){$('fxChip').innerHTML='';$('comboChip').textContent='';}}
+function refreshCoins(){$('menuCoins').textContent='🪙 '+P.coins;
+  $('garageCoins').textContent='🪙 '+P.coins;$('shopCoins').textContent='🪙 '+P.coins;}
+function goMenu(){G=null;S.screen='menu';setPlayUI(false);$('ebar').classList.remove('on');
+  CURCFG=cfgFor('idle');cache.clear();show('menu');refreshCoins();
+  $('lvChip').textContent='🏅 Lv.'+P.lv+' · '+titleOf(P.lv);}
+
+/* ================= 开局 ================= */
+function newGame(mode,opts){opts=opts||{};
+  ensureMissions();
+  CURCFG=cfgFor(mode);cache.clear();gone.clear();
+  const spec=boatSpec(P.sel);
+  /* 改装厂加成（全船生效） */
+  spec.top*=1+.02*P.upg.eng;spec.btop*=1+.02*P.upg.eng;spec.turn*=1+.02*P.upg.fin;
+  G={mode,spec,cd:3,goT:0,timeLeft:0,timeUp:0,score:0,coinsGot:0,buoysGot:0,gatesGot:0,tricks:0,dodges:0,
+     combo:0,maxCombo:1,comboT:0,comboWin:4,fever:0,boost:100,fx:{mag:0,x2:0,burst:0,shield:0},
+     finished:false,fromEditor:opts.fromEditor||false,level:opts.level||null,daily:opts.daily||false,tt:opts.tt||false,
+     fixed:false,islands:[],buoys:[],coins:[],items:[],gates:[],mines:[],vortexes:[],ramps:[],pads:[],chests:[],
+     mush:[],rings:[],portals:[],whale:[],
+     ais:[],lap:0,gi:0,track:null,lives:3,inv:0,diff:0,ep:0,lapT:0,rec:[],recT:0,ghost:null,
+     weather:opts.weather||(['clear','clear','sunset','night','storm'][Math.floor(Math.random()*5)]),
+     windA:Math.random()*TAU,lightT:5+Math.random()*6,flash:0,kr:null,
+     poison:0,boss:null,bossDead:false,
+     war:null};
+  if(hasPk(spec,'item'))G.itemMul=1.5;
+  if(hasPk(spec,'combo'))G.comboWin=5.2;
+  if(hasPk(spec,'shield'))G.fx.shield=1;
+  if(P.startBuff==='shield'){G.fx.shield=1;P.startBuff=null;}
+  if(P.startBuff==='boost'){G.boost=100;P.startBuff=null;}
+  boat.x=0;boat.y=0;boat.a=-Math.PI/2;boat.sp=0;boat.lean=0;
+  boat.z=0;boat.vz=0;boat.spin=0;boat.spinAnim=0;boat.rc=0;boat.pc=0;boat.pc2=0;boat.pc3=0;
+  trail=[];parts=[];pops=[];rings=[];
+  if(mode==='free'){G.timeLeft=90;}
+  else if(mode==='coin'){G.timeLeft=60;}
+  else if(mode==='gates'){G.timeLeft=30;genGatePath();}
+  else if(mode==='surv'){}
+  else if(mode==='kraken'){G.weather='storm';
+    G.kr={d:800,spd:2.2,nextT:2.5,warns:[],shocks:[]};}
+  else if(mode==='endless'){}
+  else if(mode==='mushpanic'){G.timeLeft=90;}
+  else if(mode==='boss'){G.weather='night';
+    G.boss={hp:20,max:20,d:520,ang:boat.a,nextT:4,charging:0,warns:[],shocks:[]};}
+  else if(mode==='war'||mode==='wteam'){
+    const veh=opts.veh||'ship',v=WARVEH[veh];
+    G.timeLeft=mode==='wteam'?120:90;
+    G.war={veh,hp:v.hp,max:v.hp,fireCd:.5,waveT:1,kills:0,jetSide:1,hitT:0,ramT:0,ta:null,
+      enemies:[],bullets:[],ebullets:[],drops:[],allies:[],
+      team:mode==='wteam',ekills:0,respT:3,respA:0,respE:0,dive:false};
+    P.stats.warVeh=(P.stats.warVeh||0)|(1<<WARPOOL.indexOf(veh));
+    if(mode==='wteam'){
+      const side=(tm,i)=>{const aa=boat.a+(tm?0:Math.PI)+(i-1)*.6,r=430+Math.random()*140;
+        return{x:boat.x+Math.cos(aa)*r,y:boat.y+Math.sin(aa)*r};};
+      for(let i=0;i<2;i++){const p=side(0,i);
+        G.war.allies.push(mkWarUnit(WARPOOL[(Math.random()*6)|0],0,p.x,p.y));}
+      for(let i=0;i<3;i++){const p=side(1,i);
+        G.war.enemies.push(mkWarUnit(WARPOOL[(Math.random()*6)|0],1,p.x,p.y));}}}
+  else if(mode==='race'){const tr=opts.track;G.track=tr;G.fixed=true;G.islands=tr.islands;
+    G.ramps=tr.ramps;G.pads=tr.pads;G.mines=tr.mines;G.weather=tr.weather||'clear';
+    const g0=tr.gates[0],gl=tr.gates[tr.gates.length-1];
+    const sa=Math.atan2(g0.y-gl.y,g0.x-gl.x);
+    boat.x=g0.x-Math.cos(sa)*260;boat.y=g0.y-Math.sin(sa)*260;boat.a=sa;
+    if(G.tt){ /* 幽灵船 */
+      const gh=P.ghost[tr.id];
+      if(gh&&gh.length>1){G.ghost={pts:gh,i:0,x:gh[0].x,y:gh[0].y,a:gh[0].a};
+        setTimeout(()=>toast('👻 幽灵船登场！跟着它跑就能破纪录'),1400);}}
+    else{
+      const dm=[.88,.965,1.04][P.raceDiff];
+      const mk=(off,sp,cs)=>({x:boat.x+Math.cos(sa+Math.PI/2)*off,y:boat.y+Math.sin(sa+Math.PI/2)*off,
+        a:sa,sp:0,gi:0,lap:0,prog:-1,finished:false,ftime:0,top0:spec.top*sp*dm,z:0,vz:0,rc:0,pc:0,
+        spec:{hull:cs[0],stripe:cs[1],nose:cs[1],rider:cs[1]},trail:[]});
+      G.ais=[mk(-64,1,['#ffe9e6','#e23b2e']),mk(64,.965,['#eafae9','#2fae66'])];}
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    for(const g of tr.gates){x0=Math.min(x0,g.x);x1=Math.max(x1,g.x);y0=Math.min(y0,g.y);y1=Math.max(y1,g.y);}
+    G.mb={x0:x0-300,y0:y0-300,x1:x1+300,y1:y1+300};}
+  else if(mode==='custom'){const L=opts.level;G.fixed=true;G.type=L.type;
+    for(const o of L.objects){
+      if(o.t==='i')G.islands.push({x:o.x,y:o.y,r:o.r||60,seed:o.x*.13+o.y*.07});
+      else if(o.t==='b')G.buoys.push({x:o.x,y:o.y,id:'Lb'+G.buoys.length,ph:o.x*.01});
+      else if(o.t==='c')G.coins.push({x:o.x,y:o.y,id:'Lc'+G.coins.length});
+      else if(o.t==='m')G.items.push({x:o.x,y:o.y,id:'Lm'+G.items.length,tp:o.tp||'mag'});
+      else if(o.t==='g')G.gates.push({x:o.x,y:o.y,ang:o.ang||0});
+      else if(o.t==='x')G.mines.push({x:o.x,y:o.y,id:'Lx'+G.mines.length,ph:o.x*.01});
+      else if(o.t==='v')G.vortexes.push({x:o.x,y:o.y,id:'Lv'+G.vortexes.length,ph:o.y*.01});
+      else if(o.t==='j')G.ramps.push({x:o.x,y:o.y,ang:0});
+      else if(o.t==='h')G.chests.push({x:o.x,y:o.y,id:'Lh'+G.chests.length});}
+    boat.x=L.start.x;boat.y=L.start.y;
+    if(G.type==='gates'&&G.gates.length>1){const g=G.gates[0];
+      G.gates.forEach((gg,i)=>{const p=G.gates[(i-1+G.gates.length)%G.gates.length];
+        gg.ang=Math.atan2(gg.y-p.y,gg.x-p.x);});
+      boat.a=Math.atan2(g.y-boat.y,g.x-boat.x);}
+    if(G.type==='collect')G.timeLeft=L.time;else G.gi=0;
+    if(G.type==='gates'){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+      for(const g of G.gates){x0=Math.min(x0,g.x);x1=Math.max(x1,g.x);y0=Math.min(y0,g.y);y1=Math.max(y1,g.y);}
+      G.mb={x0:x0-260,y0:y0-260,x1:x1+260,y1:y1+260};}}
+  cam.x=boat.x;cam.y=boat.y;
+  S.screen='play';S.paused=false;setPlayUI(true);show(null);
+  $('raceChip').style.display=(mode==='race'||mode==='kraken'||mode==='war'||mode==='wteam')?'flex':'none';
+  $('livesChip').style.display=(mode==='surv'||mode==='kraken'||mode==='boss'||mode==='endless'||mode==='war'||mode==='wteam')?'flex':'none';
+  $('hint').textContent=
+    mode==='kraken'?'🐙 全速逃离海怪！躲开触手冲击波！':
+    mode==='surv'?'💥 躲开水雷与漩涡，坚持越久分越高！跳板可以飞跃它们':
+    mode==='endless'?'♾ 无尽狂潮：没有终点！每 30 秒风浪升级，❤×3 活下去':
+    mode==='mushpanic'?'🍄 别碰毒蘑菇！中毒会减速，捡 🧪 解毒，清醒连击拿高分':
+    mode==='boss'?'👑 收集浮标就是发射炮弹！轰击深渊之主，小心冲锋预警 ⚠':
+    mode==='war'||mode==='wteam'?'⚔️ 自动索敌开火 · WASD/方向键走位 · Shift 冲刺 · 躲开红色弹幕！':
+    '⬆ 油门 · ⬅ ➡ 转向 · Shift/⚡ 冲刺 · 💍金环 🌀传送门 🐋鲸鱼 · 连击×5 触发🌈狂热';
+  $('hint').style.opacity=1;setTimeout(()=>{$('hint').style.opacity=0;},4200);}
+function genGatePath(){G.head=G.head===undefined?boat.a:G.head;G.last=G.last||{x:boat.x,y:boat.y};
+  const add=()=>{G.head+=(Math.random()*2-1)*.85;
+    const d=520+Math.random()*220;
+    G.last={x:G.last.x+Math.cos(G.head)*d,y:G.last.y+Math.sin(G.head)*d};
+    G.gates.push({x:G.last.x,y:G.last.y,ang:G.head,done:false});};
+  while(G.gates.filter(g=>!g.done).length<5)add();}
+
+/* ================= 拾取 / 得分 ================= */
+function pop(x,y,txt,c,sz){pops.push({x,y,txt,b:S.t,c:c||'#fff',sz:sz||22});}
+function feverDur(){return 5*(hasPk(G.spec,'fever')?1.5:1);}
+function feverMul(){return G.fever>0?(hasPk(G.spec,'fever')?1.9:1.5):1;}
+function feverOn(m,x,y){if(m<5)return;
+  if(G.fever<=0){P.stats.fever=(P.stats.fever||0)+1;mBump('fever',1);
+    pop(x,y-84,'🌈 连击狂热！','#ff8fd8',24);feverSnd();}
+  G.fever=feverDur();}
+function collectBuoy(x,y){if(G.comboT>0)G.combo++;else G.combo=1;
+  G.maxCombo=Math.max(G.maxCombo,G.combo);G.comboT=G.comboWin;
+  P.stats.bestCombo=Math.max(P.stats.bestCombo,G.combo);mBump('combo',G.combo);
+  const m=Math.min(G.combo,5);
+  feverOn(m,x,y);
+  const x2=G.fx.x2>0?2:1,gain=Math.round(100*m*x2*feverMul());
+  G.score+=gain;G.buoysGot++;
+  if(G.mode==='boss'&&G.boss&&!G.finished){const b=G.boss;b.hp--;
+    pop(x,y-52,'⚔️ 炮弹命中！剩余 '+b.hp,'#ff9de2',20);blip(320,.18,.3,90);
+    if(b.hp===Math.floor(b.max/2))toast('💢 深渊之主进入狂暴阶段！');
+    if(b.hp<=0&&!G.bossDead){G.bossDead=true;P.stats.bossWin=(P.stats.bossWin||0)+1;
+      S.shake=14;finishGame('👑 深渊之主被击败！');return;}}
+  pop(x,y-26,'+'+gain,'#ffffff',22);
+  if(m>1)pop(x,y-54,'连击 ×'+m,'#ffd23e',19);
+  rings.push({x,y,b:S.t});burst(x,y,14);blip(620+G.combo*70,.16,.25);}
+function collectCoin(x,y){const x2=G.fx.x2>0?2:1;
+  const cm=(hasPk(G.spec,'coin')?1.25:1)*(1+.04*P.upg.mag);
+  const val=Math.round(5*cm);
+  G.coinsGot++;addCoins(val);G.score+=25*x2;coinSnd();mBump('coin',1);
+  pop(x,y-20,'+'+25*x2,'#ffd23e',17);burst(x,y,7);}
+function applyItem(tp,x,y){itemSnd();rings.push({x,y,b:S.t});
+  const mul=G.itemMul||1;
+  if(tp==='time'){G.timeLeft+=8;pop(x,y-30,'+8 秒！','#7ee0ff',22);}
+  else if(tp==='mag'){G.fx.mag=8*mul;pop(x,y-30,'🧲 磁铁！','#c9a4ff',22);}
+  else if(tp==='x2'){G.fx.x2=8*mul;pop(x,y-30,'✨ 双倍！','#ffd23e',22);}
+  else if(tp==='burst'){G.boost=100;G.fx.burst=2.5;pop(x,y-30,'⚡ 爆发！','#ffb43a',22);}
+  else if(tp==='shield'){G.fx.shield=1;pop(x,y-30,'🛡 护盾！','#7ee0ff',22);}
+  else if(tp==='anti'){G.poison=0;pop(x,y-30,'🧪 解毒成功！','#7dff5e',22);}}
+function openChest(o){gone.set(o.id,S.t);
+  P.stats.chests++;mBump('chest',1);chestSnd();rings.push({x:o.x,y:o.y,b:S.t});
+  const r=Math.random();
+  if(r<.55){const n=30+Math.floor(Math.random()*50);addCoins(n);
+    pop(o.x,o.y-34,'🪙 +'+n,'#ffd23e',24);}
+  else if(r<.8){const tp=['shield','mag','x2','burst','time'][Math.floor(Math.random()*5)];
+    applyItem(tp,o.x,o.y);}
+  else{G.boost=100;G.fx.burst=1.6;pop(o.x,o.y-34,'⚡ 能量全满！','#ffb43a',22);}
+  burst(o.x,o.y,18);}
+function burst(x,y,n){for(let i=0;i<n;i++){const a=Math.random()*TAU,v=1+Math.random()*2.6;
+  parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.6+Math.random()*.4,max:1,r:2+Math.random()*3.5});}}
+function bigSplash(x,y,n){for(let i=0;i<n;i++){const a=Math.random()*TAU,v=1.5+Math.random()*3;
+  parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.5+Math.random()*.5,max:1,r:2+Math.random()*4});}}
+function hitMine(m){
+  if(DEV.invul){pop(m.x,m.y-30,'🛡 调试无敌','#7ee0ff',18);return;}
+  if(G.fx.shield>0){G.fx.shield=0;gone.set(m.id,S.t);
+    burst(m.x,m.y,22);S.shake=8;splashSound(.4);
+    pop(m.x,m.y-30,'🛡 护盾抵挡！','#7ee0ff',22);return;}
+  if(G.inv>0)return;
+  gone.set(m.id,S.t);burst(m.x,m.y,26);S.shake=13;splashSound(.5);
+  if(G.mode==='surv'||G.mode==='kraken'||G.mode==='endless'||G.mode==='boss'){G.lives--;G.inv=2;blip(200,.2,.5,80);
+    pop(boat.x,boat.y-44,G.lives>0?'💥 剩余 ❤×'+G.lives:'💥 最后的生命！','#ff8f86',22);
+    if(G.lives<=0)finishGame('💥 生命耗尽');}
+  else{boat.sp*=.25;G.score=Math.max(0,G.score-50);G.inv=1;
+    pop(boat.x,boat.y-44,'💥 -50','#ff8f86',22);}}
+
+/* ================= 跳板 / 特技 / 加速带 ================= */
+function triggerRamp(e,isPlayer){
+  if(e.z>0||e.rc>S.t)return;
+  const test=r=>Math.hypot(e.x-r.x,e.y-r.y)<36;
+  let hit=null;
+  if(G.fixed){for(const r of G.ramps)if(test(r)){hit=r;break;}}
+  else if(isPlayer){outer:for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){
+    const cx=Math.floor(e.x/CH)+dx,cy=Math.floor(e.y/CH)+dy;
+    for(const r of getChunk(cx,cy).ramps)if(test(r)){hit=r;break outer;}}}
+  if(hit&&Math.abs(e.sp)>1.6){
+    e.vz=clamp(Math.abs(e.sp)*.35,.8,2.2);e.z=.01;e.spin=0;e.spinAnim=0;e.rc=S.t+.6;
+    if(isPlayer){jumpSnd();burst(e.x,e.y,8);}}}
+function padBoost(e,isPlayer){
+  if(e.pc>S.t)return;
+  const test=p=>Math.hypot(e.x-p.x,e.y-p.y)<42;
+  let hit=null;
+  for(const p of G.pads)if(test(p)){hit=p;break;}
+  if(hit){e.sp=Math.min(e.sp+1.5,G.spec.btop*1.28);e.pc=S.t+.7;
+    if(isPlayer){blip(900,.1,.15,1300);burst(e.x,e.y,10);}}}
+function landBoat(){
+  const impact=boat.vz;
+  boat.z=0;boat.vz=0;
+  splashSound(clamp(impact*.18,.15,.4));bigSplash(boat.x,boat.y,Math.round(6+impact*6));
+  const tm=hasPk(G.spec,'trick')?2:1;
+  const full=Math.floor(boat.spin/(TAU*.9));
+  if(full>=1){const pts=300*full*tm;G.tricks+=full;P.stats.tricks+=full;mBump('trick',full);
+    G.score+=pts;G.boost=Math.min(100,G.boost+25*full);
+    pop(boat.x,boat.y-50,'🌀 特技 ×'+full+' +'+pts,'#ffd23e',24);trickSnd();
+    rings.push({x:boat.x,y:boat.y,b:S.t});}
+  boat.spin=0;boat.spinAnim=0;}
+
+/* ================= 海怪 ================= */
+function krakenHit(){
+  if(DEV.invul)return;
+  if(G.inv>0)return;
+  G.lives--;G.inv=2;S.shake=12;splashSound(.5);blip(180,.2,.5,70);
+  bigSplash(boat.x,boat.y,20);
+  pop(boat.x,boat.y-46,G.lives>0?'💥 被抓到了！剩余 ❤×'+G.lives:'💥 最后的生命！','#ff8f86',22);
+  if(G.kr)G.kr.d=900;
+  if(G.lives<=0)finishGame('🐙 被海怪抓住了');}
+function krakenUpdate(dt,drive){
+  const kr=G.kr,sec=dt/60;
+  if(drive){G.timeUp+=sec;G.score+=15*sec;
+    kr.spd=Math.min(5.4,kr.spd+0.0125*dt);}
+  kr.d=clamp(kr.d+((drive?boat.sp:1.5)-kr.spd)*dt*.9,80,1400);
+  if(kr.d<95&&boat.z<6&&G.inv<=0)krakenHit();
+  kr.nextT-=sec;
+  if(kr.nextT<=0&&drive){kr.nextT=3+Math.random()*2;
+    const fx=Math.cos(boat.a),fy=Math.sin(boat.a),px=-fy,py=fx;
+    const dd=160+Math.random()*420,off=(Math.random()*2-1)*300;
+    kr.warns.push({x:boat.x+fx*dd+px*off,y:boat.y+fy*dd+py*off,t:1.15});}
+  for(let i=kr.warns.length-1;i>=0;i--){const w=kr.warns[i];w.t-=sec;
+    if(w.t<=0){kr.warns.splice(i,1);splashSound(.35,900);S.shake=Math.max(S.shake,5);
+      kr.shocks.push({x:w.x,y:w.y,r:20,hit:false,near:false});}}
+  for(let i=kr.shocks.length-1;i>=0;i--){const s=kr.shocks[i];s.r+=4.4*dt;
+    if(!s.hit&&G.inv<=0&&boat.z<7){const d=Math.hypot(boat.x-s.x,boat.y-s.y);
+      if(Math.abs(d-s.r)<30){s.hit=true;krakenHit();}
+      else if(d<90)s.near=true;}
+    if(s.r>430){if(!s.hit&&s.near){G.dodges++;G.score+=150;
+        pop(boat.x,boat.y-40,'潇洒躲避 +150','#7ee0ff',20);blip(950,.1,.15,1250);}
+      kr.shocks.splice(i,1);}}}
+
+/* ================= BOSS：深渊之主 ================= */
+function bossBx(){return boat.x+Math.cos(G.boss.ang)*G.boss.d;}
+function bossBy(){return boat.y+Math.sin(G.boss.ang)*G.boss.d;}
+function bossHit(){
+  if(DEV.invul)return;
+  if(G.inv>0)return;
+  G.lives--;G.inv=2;S.shake=12;splashSound(.5);blip(170,.2,.5,70);
+  bigSplash(boat.x,boat.y,18);
+  pop(boat.x,boat.y-46,G.lives>0?'💥 剩余 ❤×'+G.lives:'💀 最后的生命！','#ff8f86',22);
+  if(G.lives<=0)finishGame('👑 被「深渊之主」击败…');
+  else G.boss.d=520;}
+function bossUpdate(dt,drive){
+  const b=G.boss;if(!b||G.finished)return;
+  const sec=dt/60;
+  let da=((boat.a-b.ang+Math.PI)%TAU+TAU)-Math.PI;
+  b.ang+=da*Math.min(1,dt*.006);
+  if(drive)G.timeUp+=sec,G.score+=8*sec;
+  if(b.charging>0){
+    b.charging-=sec;
+    if(b.charging<=.35)b.d=Math.max(120,b.d-14*dt);
+    if(b.charging<=0){
+      if(Math.hypot(boat.x-bossBx(),boat.y-bossBy())<175&&boat.z<10)bossHit();
+      else{pop(boat.x,boat.y-44,'⚡ 极限躲避 +250','#7ee0ff',20);
+        G.score+=250;G.dodges++;blip(950,.12,.2,1300);}
+      b.d=520;S.shake=10;bigSplash(bossBx(),bossBy(),16);splashSound(.45);}}
+  else{
+    b.d+=((360+Math.sin(S.t*.4)*70)-b.d)*Math.min(1,dt*.003);
+    if(b.d<100&&boat.z<9)bossHit();}
+  b.nextT-=sec;
+  if(b.nextT<=0&&drive){
+    b.nextT=(b.hp<b.max/2?2.6:3.6)+Math.random()*1.6;
+    if(Math.random()<.42){b.charging=1.05;
+      pop(bossBx(),bossBy()-80,'⚠ 即将冲锋！侧向闪避！','#ff8f86',22);blip(180,.2,.6,90);}
+    else{const n=b.hp<b.max/2?3:2;
+      for(let i=0;i<n;i++){
+        const dd=180+i*170+Math.random()*140,off=(Math.random()*2-1)*280;
+        const fx=Math.cos(boat.a),fy=Math.sin(boat.a);
+        b.warns.push({x:boat.x+fx*dd-fy*off,y:boat.y+fy*dd+fx*off,t:1.15});}}}
+  for(let i=b.warns.length-1;i>=0;i--){const w=b.warns[i];w.t-=sec;
+    if(w.t<=0){b.warns.splice(i,1);splashSound(.35,900);S.shake=Math.max(S.shake,5);
+      b.shocks.push({x:w.x,y:w.y,r:20,hit:false,near:false});}}
+  for(let i=b.shocks.length-1;i>=0;i--){const s=b.shocks[i];s.r+=4.6*dt;
+    if(!s.hit&&G.inv<=0&&boat.z<8){const d=Math.hypot(boat.x-s.x,boat.y-s.y);
+      if(Math.abs(d-s.r)<30){s.hit=true;bossHit();}
+      else if(d<90)s.near=true;}
+    if(s.r>430){if(!s.hit&&s.near){G.dodges++;G.score+=120;}
+      b.shocks.splice(i,1);}}}
+
+/* ================= 钢铁大战 ================= */
+const WARPOOL=['ship','jet','tank','heli','sub','arty'];
+const WARTYPE={ship:{hp:6,pts:220},jet:{hp:3,pts:160},tank:{hp:4,pts:190},
+  heli:{hp:4,pts:200},sub:{hp:5,pts:210},arty:{hp:4,pts:230}};
+function mkWarUnit(type,tm,px,py){
+  const hpB=WARTYPE[type].hp,aa=Math.atan2(py-boat.y,px-boat.x);
+  return{x:px,y:py,a:aa+Math.PI,type,tm,hp:hpB,max:hpB,sp:0,
+    cd:.8+Math.random()*1.5,ta:aa+Math.PI,ph:Math.random()*TAU,
+    orb:Math.random()<.5?1:-1,dive:false,lx:px,ly:py};}
+function warSpawn(){
+  const w=G.war,el=90-G.timeLeft;
+  const cap=Math.min(4+Math.floor(el/16),9);
+  if(w.enemies.length>=cap)return;
+  const roll=Math.random(),r=650+Math.random()*280,aa=Math.random()*TAU;
+  let type='tank';
+  if(roll<.28)type='ship';else if(roll<.5)type='jet';else if(roll<.68)type='tank';
+  else if(roll<.78)type='heli';else if(roll<.9)type='sub';else type='arty';
+  const u=mkWarUnit(type,1,boat.x+Math.cos(aa)*r,boat.y+Math.sin(aa)*r);
+  u.hp=u.max=Math.round(WARTYPE[type].hp*(1+el/140));
+  w.enemies.push(u);}
+function warExplode(x,y,big){
+  burst(x,y,big?22:14);rings.push({x,y,b:S.t});
+  S.shake=Math.max(S.shake,big?9:5);splashSound(big?.45:.3,big?500:800);
+  for(let i=0;i<(big?8:4);i++)
+    parts.push({x:x+(Math.random()-.5)*20,y:y+(Math.random()-.5)*20,
+      vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,life:.5,max:.6,r:3+Math.random()*3,c:'#ffb43a'});}
+function stepWarBullet(w,b,dt,side){
+  if(b.hom){
+    let nt=null,nd=1e9;
+    if(side>0){for(const e of w.enemies){if(e.dive)continue;
+      const d=Math.hypot(e.x-b.x,e.y-b.y);if(d<nd){nd=d;nt=e;}}}
+    else nt={x:boat.x,y:boat.y};
+    if(nt){const wa=Math.atan2(nt.y-b.y,nt.x-b.x);
+      let ca=Math.atan2(b.vy,b.vx);
+      const da=((wa-ca+Math.PI)%TAU+TAU)-Math.PI;
+      ca+=clamp(da,-1,1)*.05*dt;
+      b.vx=Math.cos(ca)*b.spd;b.vy=Math.sin(ca)*b.spd;}}
+  b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;}
+function warUpdate(dt,drive){
+  const w=G.war;if(!w||G.finished)return;
+  const v=WARVEH[w.veh],sec=dt/60,total=w.team?120:90,el=total-G.timeLeft;
+  G.timeLeft-=sec;
+  if(G.timeLeft<=0){G.timeLeft=0;
+    if(w.team)finishGame(w.kills>=w.ekills?'🏆 团队胜利！':'💀 团队战败…');
+    else finishGame('⏱ 歼灭战结束！');return;}
+  G.score+=5*sec;
+  w.dive=(w.veh==='sub')&&(((S.t*.25)%1)<.45);
+  const dv=w.dive?1.25:1;
+  /* 玩家驾驶 */
+  if(drive){
+    if(keys.u)boat.sp+=v.acc*dt*dv*(keys.boost?1.6:1);
+    if(keys.d)boat.sp-=.07*dt;
+    boat.sp=clamp(boat.sp,-1,v.top*dv);
+    const sf=clamp(Math.abs(boat.sp)/2,0,1);
+    boat.a+=((keys.r?1:0)-(keys.l?1:0))*v.turn*sf*dt;
+    boat.x+=Math.cos(boat.a)*boat.sp*dt;boat.y+=Math.sin(boat.a)*boat.sp*dt;
+    boat.lean=lerp(boat.lean,((keys.r?1:0)-(keys.l?1:0))*sf*.4,.08*dt);}
+  else boat.sp*=Math.pow(.97,dt);
+  /* 波次（单人）或 团队重生 */
+  if(w.team){
+    for(let i=w.allies.length-1;i>=0;i--)if(w.allies[i].hp<=0){
+      const a=w.allies[i];w.allies.splice(i,1);w.ekills++;
+      warExplode(a.x,a.y,false);w.respA=(w.respA||0)+1;}
+    for(let i=w.enemies.length-1;i>=0;i--)if(w.enemies[i].hp<=0){
+      const e=w.enemies[i];w.enemies.splice(i,1);w.kills++;
+      G.score+=WARTYPE[e.type].pts;pop(e.x,e.y-26,'+'+WARTYPE[e.type].pts,'#fff',19);
+      warExplode(e.x,e.y,e.type==='ship');
+      if(Math.random()<.25)w.drops.push({x:e.x,y:e.y,t:Math.random()<.4?'heal':'coin',b:S.t});
+      w.respE=(w.respE||0)+1;}
+    w.respT=(w.respT==null?4:w.respT)-sec;
+    if(w.respT<=0){w.respT=5;
+      while(w.respA>0){w.respA--;const t2=WARPOOL[(Math.random()*6)|0],aa=Math.random()*TAU;
+        w.allies.push(mkWarUnit(t2,0,boat.x+Math.cos(aa)*380,boat.y+Math.sin(aa)*380));}
+      while(w.respE>0){w.respE--;const t2=WARPOOL[(Math.random()*6)|0],aa=Math.random()*TAU;
+        w.enemies.push(mkWarUnit(t2,1,boat.x+Math.cos(aa)*820,boat.y+Math.sin(aa)*820));}}
+  }else{
+    w.waveT-=sec;
+    if(w.waveT<=0&&drive){w.waveT=2.4;warSpawn();}}
+  /* 玩家目标 */
+  let tg=null,td=1e9;
+  for(const e of w.enemies){if(e.dive)continue;
+    const d=Math.hypot(e.x-boat.x,e.y-boat.y);if(d<td){td=d;tg=e;}}
+  /* 自动开火 */
+  w.fireCd-=sec;
+  if(drive&&tg&&td<560&&w.fireCd<=0&&!w.dive){
+    w.fireCd=v.cd;
+    const evx=tg.x-tg.lx,evy=tg.y-tg.ly,lead=clamp(td/(v.hom?5.6:8.5),0,10)*.8;
+    const ba=Math.atan2(tg.y+evy*lead-boat.y,tg.x+evx*lead-boat.x);
+    w.ta=ba;
+    const mx=boat.x+Math.cos(ba)*26,my=boat.y+Math.sin(ba)*26;
+    if(w.veh==='jet'||w.veh==='heli'){
+      w.jetSide=-w.jetSide;const pa=ba+Math.PI/2;
+      w.bullets.push({x:mx+Math.cos(pa)*7*w.jetSide,y:my+Math.sin(pa)*7*w.jetSide,
+        vx:Math.cos(ba)*9.5,vy:Math.sin(ba)*9.5,spd:9.5,dmg:v.dmg,life:55,tm:0,
+        spl:w.veh==='heli'?30:0});
+      blip(w.veh==='jet'?1200:900,.05,.06,1600);
+    }else{
+      w.bullets.push({x:mx,y:my,vx:Math.cos(ba)*(v.hom?5.6:8.5),vy:Math.sin(ba)*(v.hom?5.6:8.5),
+        spd:v.hom?5.6:8.5,dmg:v.dmg,spl:v.splash,life:75,tm:0,hom:!!v.hom});
+      blip(w.veh==='tank'?300:w.veh==='arty'?260:w.veh==='sub'?340:420,.12,.15,180);}
+    parts.push({x:mx,y:my,vx:Math.cos(ba)*2,vy:Math.sin(ba)*2,life:.15,max:.2,r:5,c:'#fff3c4'});}
+  /* AI 单位（队友 + 敌人） */
+  const aiScan=u=>{
+    u.dive=(u.type==='sub')&&(((S.t*.25+u.ph)%1)<.45);
+    let tgu=null,td2=1e9;
+    const foes=u.tm===1?w.allies:w.enemies;
+    for(const f of foes){if(f.dive)continue;
+      const d=Math.hypot(f.x-u.x,f.y-u.y);if(d<td2){td2=d;tgu=f;}}
+    if(u.tm===1&&!w.dive){const d=Math.hypot(boat.x-u.x,boat.y-u.y);
+      if(d*.9<td2){td2=d*.9;tgu={x:boat.x,y:boat.y,lx:boat.x,ly:boat.y,dive:false};}}
+    if(!tgu)return;
+    const dx=tgu.x-u.x,dy=tgu.y-u.y,d=Math.hypot(dx,dy)||.001;
+    const wantR={ship:340,jet:230,tank:300,heli:210,sub:280,arty:520}[u.type];
+    let ha;
+    if(d>wantR+50)ha=Math.atan2(dy,dx);
+    else ha=Math.atan2(dy,dx)+u.orb*Math.PI/2;
+    let da=((ha-u.a+Math.PI)%TAU+TAU)-Math.PI;
+    u.a+=clamp(da,-1,1)*.045*dt;
+    const esp={ship:1.9,jet:4.4,tank:2.6,heli:4.0,sub:2.6,arty:2.0}[u.type]*(1+el/240)*(u.dive?1.25:1);
+    u.sp=lerp(u.sp,esp,.03*dt);
+    u.x+=Math.cos(u.a)*u.sp*dt;u.y+=Math.sin(u.a)*u.sp*dt;
+    u.cd-=sec;
+    const fr=u.type==='arty'?700:440;
+    if(u.cd<=0&&d<fr&&drive&&!u.dive){
+      const spec={ship:{cd:1.35,bs:5.2,n:1},jet:{cd:.55,bs:6.5,n:2},tank:{cd:1.5,bs:5.4,n:1},
+        heli:{cd:.5,bs:6.8,n:2},sub:{cd:1.2,bs:6,n:1},arty:{cd:2.6,bs:5.6,n:1}}[u.type];
+      u.cd=spec.cd*(1-el/240)+.3;
+      const lead=clamp(d/spec.bs,0,10)*.8;
+      const ba=Math.atan2(tgu.y+(tgu.ly!=null?(tgu.y-tgu.ly):0)*lead-u.y,
+                        tgu.x+(tgu.lx!=null?(tgu.x-tgu.lx):0)*lead-u.x);
+      u.ta=ba;
+      const arr=u.tm===1?w.ebullets:w.bullets,pa=u.a+Math.PI/2;
+      for(let k2=0;k2<spec.n;k2++){
+        const off=(k2-(spec.n-1)/2)*9;
+        arr.push({x:u.x+Math.cos(ba)*22+Math.cos(pa)*off,
+          y:u.y+Math.sin(ba)*22+Math.sin(pa)*off,
+          vx:Math.cos(ba)*spec.bs,vy:Math.sin(ba)*spec.bs,spd:spec.bs,
+          dmg:1,life:75,tm:u.tm,
+          spl:u.type==='arty'?110:u.type==='tank'?60:u.type==='sub'?50:u.type==='heli'?30:0,
+          hom:u.type==='arty'});}}
+    u.lx=u.x;u.ly=u.y;};
+  for(const a of w.allies)aiScan(a);
+  for(const e of w.enemies)aiScan(e);
+  /* 我方子弹（含队友） */
+  for(let i=w.bullets.length-1;i>=0;i--){const b=w.bullets[i];
+    stepWarBullet(w,b,dt,1);
+    let dead=b.life<=0;
+    if(!dead)for(const e of w.enemies){
+      if(e.dive)continue;
+      if(Math.hypot(b.x-e.x,b.y-e.y)<24){
+        e.hp-=b.dmg;dead=true;
+        parts.push({x:b.x,y:b.y,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,life:.25,max:.3,r:4,c:'#ffd23e'});
+        if(b.spl)for(const e2 of w.enemies)
+          if(e2!==e&&!e2.dive&&Math.hypot(b.x-e2.x,b.y-e2.y)<b.spl)e2.hp-=Math.ceil(b.dmg/2);
+        break;}}
+    if(dead)w.bullets.splice(i,1);}
+  /* 击毁结算（单人波次模式在此结算；团队在重生区处理） */
+  if(!w.team)for(let i=w.enemies.length-1;i>=0;i--){const e=w.enemies[i];
+    if(e.hp<=0){w.enemies.splice(i,1);w.kills++;
+      G.score+=WARTYPE[e.type].pts;pop(e.x,e.y-26,'+'+WARTYPE[e.type].pts,'#fff',19);
+      warExplode(e.x,e.y,e.type==='ship');
+      if(Math.random()<.25)w.drops.push({x:e.x,y:e.y,t:Math.random()<.4?'heal':'coin',b:S.t});}}
+  /* 敌弹 & 受击 */
+  const dieCheck=()=>{if(w.hp<=0){
+    G.lives--;if(w.team)w.ekills++;
+    if(G.lives<=0){warExplode(boat.x,boat.y,true);finishGame('⚔️ 单位损毁…');return true;}
+    w.hp=v.hp;G.inv=1.2;S.shake=10;w.ebullets=[];
+    pop(boat.x,boat.y-56,'❤×'+G.lives+' · 装甲修复','#ff8f86',20);}return false;};
+  w.hitT-=sec;
+  for(let i=w.ebullets.length-1;i>=0;i--){const b=w.ebullets[i];
+    stepWarBullet(w,b,dt,-1);
+    let dead=b.life<=0;
+    if(!dead)for(const a of w.allies){
+      if(a.dive)continue;
+      if(Math.hypot(b.x-a.x,b.y-a.y)<22){a.hp-=b.dmg;dead=true;burst(b.x,b.y,4);break;}}
+    if(!dead&&w.hitT<=0&&!w.dive&&Math.hypot(b.x-boat.x,b.y-boat.y)<(w.veh==='jet'||w.veh==='heli'?20:26)){
+      dead=true;w.hitT=.35;w.hp--;
+      pop(boat.x,boat.y-36,'💥 -1','#ff8f86',18);
+      burst(b.x,b.y,6);blip(240,.12,.15,120);
+      if(dieCheck())return;
+      if(!w.ebullets.length)break;}
+    if(dead)w.ebullets.splice(i,1);}
+  /* 撞击 */
+  w.ramT-=sec;
+  for(const e of w.enemies){
+    if(e.dive||w.dive)continue;
+    const d=Math.hypot(e.x-boat.x,e.y-boat.y);
+    if(d<36&&d>0&&w.ramT<=0){w.ramT=.8;
+      const nx=(e.x-boat.x)/d,ny=(e.y-boat.y)/d;
+      boat.x-=nx*14;boat.y-=ny*14;e.x+=nx*16;e.y+=ny*16;
+      boat.sp*=.5;e.sp*=.4;
+      e.hp-=v.ramIt;warExplode((boat.x+e.x)/2,(boat.y+e.y)/2,false);
+      if(v.ramMe>0){w.hp-=v.ramMe;if(dieCheck())return;}
+      break;}}
+  /* 掉落拾取 */
+  for(let i=w.drops.length-1;i>=0;i--){const dr=w.drops[i];
+    if(S.t-dr.b>12){w.drops.splice(i,1);continue;}
+    if(Math.hypot(dr.x-boat.x,dr.y-boat.y)<30){
+      if(dr.t==='heal'){w.hp=Math.min(v.hp,w.hp+2);pop(dr.x,dr.y-24,'❤ +2','#7dff5e',18);}
+      else{addCoins(15);pop(dr.x,dr.y-24,'🪙 +15','#ffd23e',18);}
+      blip(1100,.1,.12,1500);w.drops.splice(i,1);}}}
+function drawWarUnit(c,x,y,a,type,side,ta,dive){
+  c.save();c.translate(x,y);
+  c.fillStyle='rgba(10,70,115,.2)';c.beginPath();c.ellipse(5,7,26,12,0,0,TAU);c.fill();
+  c.rotate(a);
+  const P2=side==='p';
+  const acc2=P2?'#37c996':'#ff6157',dk=P2?'#1d8a5a':'#a83a30',hl=P2?'#eafaf2':'#ffecea';
+  c.lineJoin='round';
+  if(type==='ship'){
+    c.fillStyle=hl;c.strokeStyle=dk;c.lineWidth=3;
+    c.beginPath();c.moveTo(34,0);c.lineTo(18,-10);c.lineTo(-24,-10);
+    c.quadraticCurveTo(-32,-10,-32,0);c.quadraticCurveTo(-32,10,-24,10);c.lineTo(18,10);c.closePath();
+    c.fill();c.stroke();
+    c.fillStyle=acc2;c.fillRect(-24,-3,48,6);
+    c.fillStyle='#78909c';c.fillRect(-18,-13,9,26);
+    for(const tp of[10,-8]){
+      c.save();c.translate(tp,0);c.rotate((ta==null?a:ta)-a);
+      c.fillStyle='#37474f';c.beginPath();c.arc(0,0,6,0,TAU);c.fill();
+      c.fillRect(0,-2,15,4);c.restore();}
+  }else if(type==='jet'){
+    c.fillStyle=acc2;c.strokeStyle=dk;c.lineWidth=2.5;
+    c.beginPath();c.moveTo(26,0);c.lineTo(2,-17);c.lineTo(-8,-7);c.lineTo(-16,-12);
+    c.lineTo(-13,0);c.lineTo(-16,12);c.lineTo(-8,7);c.lineTo(2,17);c.closePath();
+    c.fill();c.stroke();
+    c.fillStyle='#134a77';c.beginPath();c.ellipse(8,0,6,3.4,0,0,TAU);c.fill();
+    c.fillStyle='#fff';c.beginPath();c.arc(9.5,-.8,1.8,0,TAU);c.fill();
+    if(P2){c.fillStyle='rgba(255,131,62,.85)';
+      c.beginPath();c.moveTo(-14,-3);c.lineTo(-25-Math.random()*6,0);c.lineTo(-14,3);c.closePath();c.fill();}
+  }else if(type==='heli'){
+    c.fillStyle='rgba(10,70,115,.12)';c.beginPath();c.ellipse(12,16,18,8,0,0,TAU);c.fill();
+    c.fillStyle=acc2;c.strokeStyle=dk;c.lineWidth=2.5;
+    c.beginPath();c.ellipse(2,0,17,8.5,0,0,TAU);c.fill();c.stroke();
+    c.fillRect(-26,-2.6,16,5.2);c.strokeRect(-26,-2.6,16,5.2);
+    c.fillStyle='#134a77';c.beginPath();c.ellipse(9,-1,4.5,3,0,0,TAU);c.fill();
+    c.strokeStyle='#5b6d7d';c.lineWidth=2;
+    c.beginPath();c.moveTo(-6,9);c.lineTo(12,9);c.moveTo(-2,11.5);c.lineTo(9,11.5);c.stroke();
+    c.save();c.translate(2,-12);c.rotate(S.t*10);
+    c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=3;
+    c.beginPath();c.moveTo(-24,0);c.lineTo(24,0);c.stroke();
+    c.strokeStyle='rgba(255,255,255,.3)';
+    c.beginPath();c.moveTo(0,-24);c.lineTo(0,24);c.stroke();c.restore();
+  }else if(type==='sub'){
+    if(dive)c.globalAlpha=.38;
+    c.fillStyle=hl;c.strokeStyle=dk;c.lineWidth=3;
+    c.beginPath();c.ellipse(0,0,30,10,0,0,TAU);c.fill();c.stroke();
+    c.fillStyle=acc2;rr(c,-8,-17,16,10,3);c.fill();c.stroke();
+    c.strokeStyle=dk;c.lineWidth=2.5;
+    c.beginPath();c.moveTo(0,-17);c.lineTo(0,-23);c.lineTo(6,-23);c.stroke();
+    c.fillStyle=acc2;c.fillRect(-31,-2.5,8,5);
+    if(dive){c.fillStyle='rgba(255,255,255,.5)';
+      for(let i=0;i<3;i++){const bx=-34-i*7;
+        c.beginPath();c.arc(bx,(i%2?-4:3),2.2+i*.7,0,TAU);c.fill();}}
+    c.globalAlpha=1;
+  }else if(type==='arty'){
+    c.fillStyle='#7d8aa8';c.strokeStyle='#4a5568';c.lineWidth=3;
+    rr(c,-20,-12,40,24,5);c.fill();c.stroke();
+    c.fillStyle='#5b6d7d';rr(c,-24,-15,8,30,3);c.fill();c.strokeRect(-24,-15,8,30);
+    c.save();c.rotate((ta==null?a:ta)-a);
+    for(let i=0;i<4;i++){c.fillStyle=i%2?'#37474f':'#455a64';
+      rr(c,2,-9+i*4.6,20,3.6,2);c.fill();}
+    c.restore();
+    c.fillStyle=acc2;c.fillRect(-6,-3,12,6);
+  }else{
+    c.fillStyle='#6b7f3a';c.strokeStyle='#49591f';c.lineWidth=3;
+    rr(c,-20,-13,40,26,6);c.fill();c.stroke();
+    c.fillStyle='#3e4d22';rr(c,-22,-17,44,7,3);c.fill();rr(c,-22,10,44,7,3);c.fill();
+    c.save();c.rotate((ta==null?a:ta)-a);
+    c.fillStyle='#556b2f';c.beginPath();c.arc(0,0,9,0,TAU);c.fill();
+    c.strokeStyle='#39471c';c.lineWidth=2;c.stroke();
+    c.fillStyle='#37474f';c.fillRect(6,-2.4,18,4.8);c.restore();
+    c.fillStyle=acc2;c.fillRect(-6,-3,12,6);}
+  c.restore();}
+
+/* ================= 结算 ================= */
+function finishGame(title){if(!G||G.finished)return;G.finished=true;G.endT=S.t;
+  const m=G.mode;let body='',reward=0,newBest=false;
+  P.stats.plays++;mBump('plays',1);
+  P.stats.bestScore=Math.max(P.stats.bestScore,Math.floor(G.score));
+  mBump('score',Math.floor(G.score));
+  const modeKey=G.tt?'tt':(G.daily?'daily':m);P.stats.modes[modeKey]=1;
+  if(m==='free'||m==='coin'||m==='gates'){
+    if(G.score>P.best[m]){P.best[m]=Math.floor(G.score);newBest=true;}
+    reward=Math.floor(G.score/28);
+    body='<div class="bigNum">'+Math.floor(G.score)+'</div>'+
+      '<div class="stat">🛟 浮标 ×'+G.buoysGot+' · 🚪 穿门 ×'+G.gatesGot+' · 🪙 金币 ×'+G.coinsGot+' · 🌀 特技 ×'+G.tricks+'</div>'+
+      '<div class="stat">🔥 最高连击 ×'+G.maxCombo+'</div>'+
+      (newBest?'<div class="stat" style="color:#ff8a1e;font-weight:800">🎉 新纪录！</div>':'');}
+  else if(m==='surv'){const t=Math.floor(G.timeUp);
+    P.stats.survBest=Math.max(P.stats.survBest,t);mBump('survT',t);
+    if(G.score>P.best.surv){P.best.surv=Math.floor(G.score);newBest=true;}
+    reward=t+G.coinsGot*2;
+    body='<div class="bigNum">'+Math.floor(G.score)+'</div>'+
+      '<div class="stat">⏱ 坚持了 <b>'+t+' 秒</b> · 🌀 特技 ×'+G.tricks+' · 终局难度 '+(G.diff*100|0)+'%</div>'+
+      '<div class="stat">🏅 生存最佳：'+P.stats.survBest+'s'+(newBest?' <b style="color:#ff8a1e">新纪录!</b>':'')+'</div>';}
+  else if(m==='kraken'){const t=Math.floor(G.timeUp);
+    P.stats.krakenBest=Math.max(P.stats.krakenBest,t);mBump('survT',t);
+    if(G.score>P.best.krak){P.best.krak=Math.floor(G.score);newBest=true;}
+    reward=Math.floor(t*3)+G.dodges*25;
+    body='<div class="bigNum">'+Math.floor(G.score)+'</div>'+
+      '<div class="stat">🐙 逃离 <b>'+t+' 秒</b> · 💨 极限躲避 ×'+G.dodges+' · 🌀 特技 ×'+G.tricks+'</div>'+
+      '<div class="stat">🏅 海怪最佳：'+P.stats.krakenBest+'s'+(newBest?' <b style="color:#ff8a1e">新纪录!</b>':'')+'</div>';}
+  else if(m==='war'||m==='wteam'){
+    P.stats.warKills=(P.stats.warKills||0)+G.war.kills;
+    if(G.war.kills>P.best.war){P.best.war=G.war.kills;newBest=true;}
+    reward=G.war.kills*12+(G.lives>0?60:0);
+    body=(m==='wteam'
+      ?'<div class="bigNum" style="font-size:44px">🟦 '+G.war.kills+' : '+G.war.ekills+' 🟥</div>'+
+       '<div class="stat">'+(G.war.kills>=G.war.ekills?'🏆 团队胜利！':'💀 团队战败…')+' · 击毁 '+G.war.kills+' / 我方损失 '+G.war.ekills+'</div>'
+      :'<div class="bigNum">⚔️ '+G.war.kills+'</div>')+
+      '<div class="stat">'+WARVEH[G.war.veh].em+' '+WARVEH[G.war.veh].n+' · ❤ 剩余 ×'+Math.max(0,G.lives)+' · 得分 '+Math.floor(G.score)+'</div>'+
+      '<div class="stat">🏅 击毁纪录：'+P.best.war+(newBest?' <b style="color:#ff8a1e">新纪录!</b>':'')+'</div>';}
+  else if(m==='endless'){const t=Math.floor(G.timeUp);
+    P.stats.endBest=Math.max(P.stats.endBest||0,Math.floor(G.score));mBump('survT',t);
+    if(G.score>P.best.end){P.best.end=Math.floor(G.score);newBest=true;}
+    reward=t*2+G.coinsGot*2;
+    body='<div class="bigNum">'+Math.floor(G.score)+'</div>'+
+      '<div class="stat">♾ 坚持了 <b>'+t+' 秒</b> · 🌀 特技 ×'+G.tricks+' · 终局波次 '+((G.ep||0)+1)+'</div>'+
+      '<div class="stat">🏅 无尽最佳：'+P.best.end+(newBest?' <b style="color:#ff8a1e">新纪录!</b>':'')+'</div>';}
+  else if(m==='mushpanic'){
+    if(G.score>P.best.mush){P.best.mush=Math.floor(G.score);newBest=true;}
+    reward=Math.floor(G.score/26);
+    body='<div class="bigNum">'+Math.floor(G.score)+'</div>'+
+      '<div class="stat">🛟 '+G.buoysGot+' · 🪙 '+G.coinsGot+' · 🌀 特技 ×'+G.tricks+' · 连击 ×'+G.maxCombo+'</div>'+
+      '<div class="stat">🏅 最佳：'+P.best.mush+(newBest?' <b style="color:#ff8a1e">新纪录!</b>':'')+'</div>';}
+  else if(m==='boss'){const win=G.bossDead;
+    reward=win?800:120;
+    body='<div class="medal">'+(win?'👑':'🐙')+'</div>'+
+      '<div class="bigNum" style="font-size:38px">'+(win?'讨伐成功！':'挑战失败')+'</div>'+
+      '<div class="stat">❤ 剩余生命 ×'+Math.max(0,G.lives)+' · 💨 躲避 ×'+G.dodges+' · ⏱ '+Math.floor(G.timeUp)+'s</div>'+
+      (win?'<div class="stat" style="color:#ff8a1e;font-weight:800">🏆 深渊之主已陨落，传说诞生！</div>'
+          :'<div class="stat">提示：多收集浮标就是多发射炮弹！</div>');}
+  else if(m==='race'){const tr=G.track;
+    if(G.tt){const bk=tr.id+'_tt';
+      if(!P.tt[bk]||G.ftime<P.tt[bk]){P.tt[bk]=Math.floor(G.ftime*10)/10;newBest=true;}
+      if(newBest&&G.rec&&G.rec.length>10){P.ghost[tr.id]=G.rec.slice(0,3000);}
+      const medal=G.ftime<=tr.par?['🥇','金牌',100]:G.ftime<=tr.par*1.2?['🥈','银牌',50]:G.ftime<=tr.par*1.45?['🥉','铜牌',20]:['🎗','完赛',0];
+      if(medal[1]==='金牌')P.stats.gold++;
+      reward=60+medal[2];
+      body='<div class="medal">'+medal[0]+'</div>'+
+        '<div class="stat">⏱ 单人计时 <b>'+fmtT(G.ftime)+'</b>（'+tr.name+'）</div>'+
+        '<div class="stat">🏅 计时最佳：'+fmtT(P.tt[bk])+(newBest?' <b style="color:#ff8a1e">新纪录!已生成👻幽灵船</b>':'')+'</div>';}
+    else{
+      const rank=1+G.ais.filter(a=>a.finished&&a.ftime<=G.ftime).length;
+      const medal=G.ftime<=tr.par?['🥇','金牌',100]:G.ftime<=tr.par*1.2?['🥈','银牌',50]:G.ftime<=tr.par*1.45?['🥉','铜牌',20]:['🎗','完赛',0];
+      if(medal[1]==='金牌')P.stats.gold++;
+      if(medal[1]!=='完赛')mBump('medal',1);
+      reward=Math.round(([300,160,80][rank-1]+medal[2])*[1,1,1.3][P.raceDiff]);
+      if(rank===1&&P.raceDiff===2)P.stats.hardWin=1;
+      if(!P.best[tr.id]||G.ftime<P.best[tr.id]){P.best[tr.id]=Math.floor(G.ftime*10)/10;newBest=true;}
+      const dName=['简单','普通','困难'][P.raceDiff];
+      body='<div class="medal">'+medal[0]+'</div>'+
+        '<div class="bigNum" style="font-size:40px">'+['第 1 名 🏆','第 2 名','第 3 名'][rank-1]+' · '+medal[1]+'</div>'+
+        '<div class="stat">⏱ 用时 <b>'+fmtT(G.ftime)+'</b>（'+tr.name+' · '+tr.laps+' 圈 · '+dName+'难度）</div>'+
+        '<div class="stat">🏅 赛道最佳：'+fmtT(P.best[tr.id])+(newBest?' <b style="color:#ff8a1e">新纪录!</b>':'')+'</div>';}}
+  else if(m==='custom'){const L=G.level;
+    if(G.daily){const seed=dailySeed();
+      if(P.daily.d!==seed||G.score>P.daily.s){P.daily={d:seed,s:Math.floor(G.score)};newBest=true;}
+      reward=Math.floor(G.score/30);
+      body='<div class="bigNum">'+Math.floor(G.score)+'</div>'+
+        '<div class="stat">🛟 '+G.buoysGot+' · 🪙 '+G.coinsGot+' · 🌀 '+G.tricks+' · 连击 ×'+G.maxCombo+'</div>'+
+        '<div class="stat">🗓 今日最佳：'+P.daily.s+(newBest?' <b style="color:#ff8a1e">新纪录!</b>':'')+'</div>';
+      if(P.dailyR!==seed){P.dailyR=seed;addCoins(150);
+        body+='<div class="stat" style="color:#ff8a1e;font-weight:800">🗓 每日首通奖励 +🪙150</div>';}}
+    else if(G.type==='collect'){reward=Math.floor(G.score/40);
+      body='<div class="bigNum">'+Math.floor(G.score)+'</div><div class="stat">🛟 '+G.buoysGot+' · 🪙 '+G.coinsGot+' · 🌀 '+G.tricks+' · 连击 ×'+G.maxCombo+'</div>';}
+    else{const t=G.timeUp;reward=Math.max(20,200-Math.floor(t*2));
+      if(!L.best||t<L.best){L.best=Math.floor(t*10)/10;newBest=true;}
+      body='<div class="bigNum" style="font-size:44px">🏁 '+fmtT(t)+'</div>'+
+        '<div class="stat">穿越全部 '+G.gates.length+' 道门</div>'+
+        '<div class="stat">最佳：'+fmtT(L.best)+(newBest?' <b style="color:#ff8a1e">新纪录!</b>':'')+'</div>';}
+    saveP();}
+  let xp;
+  if(m==='race')xp=clamp(Math.floor((G.track.par*2.2-G.ftime)*1.2),15,200);
+  else if(m==='war'||m==='wteam')xp=(G.war?G.war.kills*4:0)+10;
+  else if(m==='surv'||m==='kraken'||m==='endless'||m==='boss')xp=Math.floor(G.timeUp*1.2+G.score/25);
+  else xp=Math.floor(G.score/18)+5;
+  gainXP(xp);body+='<div class="stat" style="color:#3b87bd">+'+xp+' 经验</div>';
+  addCoins(reward);saveP();checkAch();
+  body+='<div class="stat" style="margin-top:6px;font-size:19px;color:#ff8a1e;font-weight:800">获得 🪙 ×'+reward+'</div>';
+  setTimeout(()=>{if(!G)return;
+    $('overTitle').textContent=title;
+    $('overBody').innerHTML=body;
+    const btns=$('overBtns');btns.innerHTML='';
+    const again=document.createElement('button');again.className='cta';again.textContent='再来！';
+    again.onclick=()=>{show(null);restartLast();};btns.appendChild(again);
+    if(G.fromEditor){const eb=document.createElement('button');eb.className='btn';eb.textContent='返回编辑器';
+      eb.onclick=backToEditor;btns.appendChild(eb);}
+    else{const mb=document.createElement('button');mb.className='btn';mb.textContent='菜单';
+      mb.onclick=goMenu;btns.appendChild(mb);}
+    setPlayUI(false);show('over');jingle();},(m==='race'&&!G.tt)?1100:400);}
+let LAST={mode:null,opts:null};
+function restartLast(){if(LAST.mode)newGame(LAST.mode,LAST.opts);}
+function backToEditor(){G=null;S.screen='edit';setPlayUI(false);
+  $('ebar').classList.add('on');show(null);syncEbar();}
+
+/* ================= 更新 ================= */
+function togglePause(){S.paused=!S.paused;
+  if(S.paused)show('pause');else show(null);}
+$('btnResume').onclick=()=>togglePause();
+$('btnQuit').onclick=()=>{if(G&&G.fromEditor)backToEditor();else goMenu();};
+
+function update(dt){const sec=dt/60;S.t+=sec;S.shake=Math.max(0,S.shake-.6*dt);
+  if(S.paused)return;
+  if(S.screen==='edit'){edUpdate(dt);tickAudio();return;}
+  if(!G){
+    boat.sp=lerp(boat.sp,1.5,.02*dt);boat.a+=Math.sin(S.t*.3)*.008*dt;
+    boat.x+=Math.cos(boat.a)*boat.sp*dt;boat.y+=Math.sin(boat.a)*boat.sp*dt;
+    boat.lean=lerp(boat.lean,0,.05*dt);camFollow(dt);commonFx(dt);tickAudio();return;}
+  const drive=!G.finished&&G.cd<=0;
+  if(G.cd>0){const p=Math.ceil(G.cd);G.cd-=sec;
+    const n=Math.ceil(G.cd);if(n<p&&n>0)blip(500,.12);
+    if(G.cd<=0){G.goT=.8;blip(880,.2,.5);}}
+  else G.goT=Math.max(0,G.goT-sec);
+  const sp0=G.spec;
+  const boosting=drive&&keys.boost&&(DEV.infBoost||G.boost>0)&&boat.sp>0.5&&boat.z<=0;
+  const regenMul=(hasPk(sp0,'regen')?1.6:1)*(1+.08*P.upg.nos);
+  const drainMul=hasPk(sp0,'drain')?.65:1;
+  const btopMul=hasPk(sp0,'btop')?1.12:1;
+  if(boosting)G.boost=Math.max(0,G.boost-.47*drainMul*dt);
+  else G.boost=Math.min(100,G.boost+.11*regenMul*dt);
+  const top=sp0.top*(G.fx.burst>0?1.18:1),btop=sp0.btop*btopMul*(G.fx.burst>0?1.22:1);
+  const air=boat.z>0;
+  if(G.war){boat.lean=lerp(boat.lean,0,.08*dt);}
+  else if(!air){
+    if(drive){
+      if(keys.u)boat.sp+=sp0.acc*dt*(boosting?1.5:1);
+      if(keys.d)boat.sp-=.085*dt;
+      boat.sp=clamp(boat.sp,-1.3,boosting?btop:top);}
+    boat.sp*=Math.pow(.996,dt);
+    const steer=(keys.r?1:0)-(keys.l?1:0);
+    if(drive){const sf=clamp(Math.abs(boat.sp)/2.4,0,1);
+      boat.a+=steer*sp0.turn*sf*(boat.sp<0?-1:1)*dt;
+      boat.lean=lerp(boat.lean,steer*sf,.09*dt);}
+    else boat.lean=lerp(boat.lean,0,.05*dt);
+  }else{
+    const steer=(keys.r?1:0)-(keys.l?1:0);
+    boat.spin+=steer*.16*dt;boat.spinAnim+=steer*.16*dt;
+    boat.lean=lerp(boat.lean,steer*.7,.06*dt);
+    boat.vz-=.09*dt;boat.z+=boat.vz*dt;
+    if(boat.z<=0)landBoat();}
+  if(!G.war){boat.x+=Math.cos(boat.a)*boat.sp*dt;boat.y+=Math.sin(boat.a)*boat.sp*dt;}
+  if(G.fx.mag>0)G.fx.mag-=sec;if(G.fx.x2>0)G.fx.x2-=sec;
+  if(G.fx.burst>0)G.fx.burst-=sec;if(G.inv>0)G.inv-=sec;
+  if(G.fever>0)G.fever-=sec;
+  if(G.comboT>0){G.comboT-=sec;if(G.comboT<=0)G.combo=0;}
+  if(DEV.fever)G.fever=Math.max(G.fever,9);
+  if(DEV.infBoost)G.boost=100;
+  if(G.poison>0){G.poison-=sec;boat.sp*=Math.pow(.992,dt);}
+  weatherFX(dt);
+  camFollow(dt);commonFx(dt);
+  if(drive&&!G.war)triggerRamp(boat,true);
+  if(G.pads.length&&drive&&boat.z<=0&&!G.war)padBoost(boat,true);
+  /* 漩涡 */
+  if(boat.z<8&&!hasPk(sp0,'hover')&&!G.war){
+    const eachVortex=fn=>{if(G.fixed){for(const v of G.vortexes)fn(v);}
+      else activeChunks(c=>{for(const v of c.vortexes)fn(v);});};
+    eachVortex(v=>{const dx=v.x-boat.x,dy=v.y-boat.y,d=Math.hypot(dx,dy);
+      if(d<240&&d>1){const s=1-d/240,pull=2.4*s*dt,tang=1.9*s*dt;
+        boat.x+=(dx/d)*pull+(-dy/d)*tang;boat.y+=(dy/d)*pull+(dx/d)*tang;}});}
+  /* 毒蘑菇 / 金环 / 传送门 / 鲸鱼 */
+  if(drive&&boat.z<9&&!G.war){
+    const haz=fn=>{if(G.fixed){fn(G.mush,G.rings,G.portals,G.whale);}
+      else activeChunks(c=>fn(c.mush,c.rings,c.portals,c.whale));};
+    haz((mus,rgs,pts,whs)=>{
+      for(const mu of mus)if(G.poison<=0&&G.inv<=0&&Math.hypot(boat.x-mu.x,boat.y-mu.y)<28){
+        G.poison=5;G.combo=0;G.comboT=0;S.shake=6;
+        pop(mu.x,mu.y-30,'🍄 中毒！速度下降','#a8ff7a',20);
+        blip(220,.16,.4,110);burst(mu.x,mu.y,10);}
+      for(const rg of rgs)if(!gone.has(rg.id)&&Math.abs(boat.sp)>2&&Math.hypot(boat.x-rg.x,boat.y-rg.y)<26){
+        gone.set(rg.id,S.t);
+        const x2=G.fx.x2>0?2:1,g=Math.round(120*x2*feverMul());
+        G.score+=g;G.boost=Math.min(100,G.boost+12);G.buoysGot+=0;
+        P.stats.rings=(P.stats.rings||0)+1;
+        pop(rg.x,rg.y-26,'💍 +'+g,'#ffe27a',19);blip(1050,.12,.2,1450);burst(rg.x,rg.y,8);}
+      for(const pt of pts)if(boat.pc2<S.t&&Math.hypot(boat.x-pt.x,boat.y-pt.y)<26){
+        boat.x=pt.dx;boat.y=pt.dy;boat.pc2=S.t+1.2;
+        P.stats.portals=(P.stats.portals||0)+1;
+        rings.push({x:pt.dx,y:pt.dy,b:S.t});bigSplash(pt.dx,pt.dy,10);
+        pop(pt.dx,pt.dy-34,'🌀 时空穿越！','#c9a4ff',20);blip(700,.15,.35,160);S.shake=4;}
+      for(const wh of whs){const up=Math.sin(S.t*.22+wh.ph)>.45;
+        const d=Math.hypot(boat.x-wh.x,boat.y-wh.y);
+        if(up&&d<70&&boat.pc3<S.t){boat.pc3=S.t+2.5;G.boost=100;
+          G.score+=200;P.stats.whales=(P.stats.whales||0)+1;
+          pop(wh.x,wh.y-56,'🐋 鲸跃助推 +200','#bfe6ff',21);jumpSnd();bigSplash(wh.x,wh.y,14);}
+        else if(!up&&d<74&&boat.z<8){const dx2=boat.x-wh.x,dy2=boat.y-wh.y,dd=d||.001;
+          boat.x=wh.x+dx2/dd*74;boat.y=wh.y+dy2/dd*74;boat.sp*=-.25;}}});}
+  /* 小岛 */
+  if(boat.z<8&&!G.war){
+    const hitIslands=fn=>{if(G.fixed){for(const is of G.islands)fn(is);}
+      else activeChunks(c=>{if(c.island)fn(c.island);});};
+    hitIslands(is=>{const dx=boat.x-is.x,dy=boat.y-is.y,d=Math.hypot(dx,dy)||.001,R=is.r+20;
+      if(d<R){const nx=dx/d,ny=dy/d;boat.x=is.x+nx*R;boat.y=is.y+ny*R;
+        if(boat.sp>1.6){S.shake=9;splashSound(.35);bigSplash(boat.x,boat.y);}boat.sp*=-.28;}});}
+  /* 水雷 */
+  if(drive&&boat.z<8&&!G.war){
+    const eachMine=fn=>{if(G.fixed){for(const m of G.mines)if(!gone.has(m.id))fn(m);}
+      else activeChunks(c=>{for(const m of c.mines)if(!gone.has(m.id))fn(m);});};
+    eachMine(m=>{if(Math.hypot(boat.x-m.x,boat.y-m.y)<34)hitMine(m);});}
+  /* 宝箱 */
+  if(drive&&boat.z<8&&!G.war){
+    const tryChest=o=>{if(gone.has(o.id))return;
+      if(Math.hypot(boat.x-o.x,boat.y-o.y)<34)openChest(o);};
+    if(G.fixed){for(const o of G.chests)tryChest(o);}
+    else activeChunks(c=>{for(const o of c.chests)tryChest(o);});}
+  /* 模式逻辑 */
+  if(G.mode==='free'||G.mode==='coin'){
+    G.timeLeft-=sec;if(G.timeLeft<=0){G.timeLeft=0;finishGame('⏱ 时间到！');return;}
+    pickCollectibles(false);}
+  else if(G.mode==='surv'){
+    if(drive){G.timeUp+=sec;G.score+=10*sec;
+      G.diff=Math.min(1,G.timeUp/150);
+      const ep=Math.floor(G.timeUp/25);
+      if(ep!==G.ep){G.ep=ep;cache.clear();
+        CURCFG.mine=.05+G.diff*.3;CURCFG.vortex=.035+G.diff*.22;
+        if(ep>0){toast('⚠ 风浪加剧！水雷与漩涡变多了');blip(300,.15,.4,200);}}}
+    pickCollectibles(false);}
+  else if(G.mode==='kraken'){
+    krakenUpdate(dt,drive);
+    pickCollectibles(true);
+    if(G.finished)return;}
+  else if(G.mode==='endless'){
+    if(drive){G.timeUp+=sec;G.score+=12*sec;
+      G.diff=Math.min(1,G.timeUp/240);
+      const ep=Math.floor(G.timeUp/30);
+      if(ep!==G.ep){G.ep=ep;cache.clear();
+        CURCFG.mine=.05+G.diff*.25;CURCFG.vortex=.03+G.diff*.18;CURCFG.mush=.04+G.diff*.08;
+        if(ep>0){toast('♾ 第 '+(ep+1)+' 波 · 风浪加剧！');blip(300,.14,.35,180);}}}
+    pickCollectibles(false);}
+  else if(G.mode==='mushpanic'){
+    G.timeLeft-=sec;if(G.timeLeft<=0){G.timeLeft=0;finishGame('⏱ 时间到！');return;}
+    pickCollectibles(false);}
+  else if(G.mode==='boss'){
+    bossUpdate(dt,drive);
+    pickCollectibles(false);
+    if(G.finished)return;}
+  else if(G.mode==='war'){
+    warUpdate(dt,drive);
+    if(G.finished)return;}
+  else if(G.mode==='gates'){
+    G.timeLeft-=sec;if(G.timeLeft<=0){G.timeLeft=0;finishGame('⏱ 时间到！');return;}
+    while(G.gates.length>8)G.gates.shift();
+    const g=G.gates.find(g=>!g.done);
+    if(g){const d=Math.hypot(boat.x-g.x,boat.y-g.y);
+      if(d<72){g.done=true;G.gatesGot++;mBump('gate',1);
+        if(G.comboT>0)G.combo++;else G.combo=1;G.comboT=10;G.comboWin=10;
+        G.maxCombo=Math.max(G.maxCombo,G.combo);mBump('combo',G.combo);
+        const m2=Math.min(G.combo,6);
+        feverOn(m2,g.x,g.y);
+        const x2=G.fx.x2>0?2:1,gain=Math.round(150*m2*x2*feverMul());
+        G.score+=gain;G.timeLeft+=5;
+        pop(g.x,g.y-30,'+'+gain,'#7ee0ff',22);if(m2>1)pop(g.x,g.y-58,'×'+m2,'#ffd23e',18);
+        rings.push({x:g.x,y:g.y,b:S.t});burst(g.x,g.y,10);gateSnd();genGatePath();}
+      else if(d>1100){g.done=true;G.combo=0;G.comboT=0;G.fever=0;
+        pop(boat.x,boat.y-40,'错过大门！连击清零','#ff8f86',18);genGatePath();}}}
+  else if(G.mode==='race'){
+    if(!G.finished){G.timeUp+=sec;G.lapT+=sec;}
+    /* 计时赛：记录路线 + 幽灵回放 */
+    if(G.tt&&!G.finished){
+      G.recT+=sec;
+      if(G.recT>=.1&&G.rec.length<3000){G.recT=0;
+        G.rec.push({t:+G.timeUp.toFixed(2),x:Math.round(boat.x),y:Math.round(boat.y),a:+boat.a.toFixed(2)});}
+      if(G.ghost){const gh=G.ghost,pts=gh.pts;
+        while(gh.i<pts.length-1&&pts[gh.i+1].t<=G.timeUp)gh.i++;
+        gh.x=pts[gh.i].x;gh.y=pts[gh.i].y;gh.a=pts[gh.i].a;}}
+    const gl=G.track.gates.length,ng=G.track.gates[G.gi];
+    if(ng&&Math.hypot(boat.x-ng.x,boat.y-ng.y)<80&&!G.finished){
+      rings.push({x:ng.x,y:ng.y,b:S.t});gateSnd();burst(ng.x,ng.y,10);mBump('gate',1);
+      G.gi++;if(G.gi>=gl){G.gi=0;G.lap++;
+        if(!G.tt)pop(boat.x,boat.y-72,'第'+G.lap+'圈 ⏱'+fmtT(G.lapT),'#7ee0ff',20);
+        G.lapT=0;
+        if(G.lap>=G.track.laps){G.ftime=G.timeUp;S.shake=6;
+          pop(boat.x,boat.y-50,'🏁 完赛！','#ffd23e',26);finishGame(G.tt?'⏱ 计时完成！':'🏁 冲线！');}}}
+    updateAIs(dt,gl);boatSeparation(dt);}
+  else if(G.mode==='custom'){
+    if(G.type==='collect'){G.timeLeft-=sec;
+      if(G.timeLeft<=0){G.timeLeft=0;finishGame('⏱ 时间到！');return;}
+      const mag=G.fx.mag>0;
+      for(let i=G.buoys.length-1;i>=0;i--){const b=G.buoys[i];
+        if(Math.hypot(boat.x-b.x,boat.y-b.y)<32){G.buoys.splice(i,1);collectBuoy(b.x,b.y);}}
+      for(let i=G.coins.length-1;i>=0;i--){const co=G.coins[i];
+        if(Math.hypot(boat.x-co.x,boat.y-co.y)<(mag?220:30)){G.coins.splice(i,1);collectCoin(co.x,co.y);}}
+      for(let i=G.items.length-1;i>=0;i--){const it=G.items[i];
+        if(Math.hypot(boat.x-it.x,boat.y-it.y)<(mag?160:32)){G.items.splice(i,1);applyItem(it.tp,it.x,it.y);}}
+      if(G.buoys.length===0&&G.coins.length===0)finishGame('🎉 全部收集完成！');}
+    else{G.timeUp+=sec;
+      if(G.gi<G.gates.length){const g=G.gates[G.gi];
+        if(Math.hypot(boat.x-g.x,boat.y-g.y)<80){G.gi++;G.gatesGot++;mBump('gate',1);
+          rings.push({x:g.x,y:g.y,b:S.t});gateSnd();burst(g.x,g.y,10);
+          pop(g.x,g.y-30,G.gi+' / '+G.gates.length,'#7ee0ff',20);
+          if(G.gi>=G.gates.length)finishGame('🏁 全部穿门！');}
+        else if(Math.hypot(boat.x-g.x,boat.y-g.y)>1600){G.gi++;pop(boat.x,boat.y-40,'跳过此门','#ff8f86',18);}}}}
+  updateHUD();tickAudio();}
+function weatherFX(dt){const sec=dt/60;
+  if(G.weather==='storm'){
+    G.windA+=.0015*dt;
+    const wa=G.windA+Math.sin(S.t*.07)*.8;
+    if(!hasPk(G.spec,'wind')){boat.x+=Math.cos(wa)*.5*dt;boat.y+=Math.sin(wa)*.5*dt;}
+    G.lightT-=sec;
+    if(G.lightT<=0){G.lightT=6+Math.random()*9;G.flash=.18;
+      setTimeout(()=>thunderSnd(),250);}
+    G.flash=Math.max(0,G.flash-sec);}}
+function pickCollectibles(coinsOnly){
+  const mag=G.fx.mag>0,low=boat.z<8;
+  activeChunks(c=>{
+    if(!coinsOnly&&low)for(const b of c.buoys){if(gone.has(b.id))continue;
+      if(Math.hypot(boat.x-b.x,boat.y-b.y)<32){gone.set(b.id,S.t);collectBuoy(b.x,b.y);}}
+    if(low)for(const co of c.coins){if(gone.has(co.id))continue;
+      if(Math.hypot(boat.x-co.x,boat.y-co.y)<(mag?220:30)){gone.set(co.id,S.t);collectCoin(co.x,co.y);}}
+    if(low)for(const it of c.items){if(gone.has(it.id))continue;
+      if(Math.hypot(boat.x-it.x,boat.y-it.y)<(mag?160:32)){gone.set(it.id,S.t);applyItem(it.tp,it.x,it.y);}}});}
+function camFollow(dt){const lead=90+Math.abs(boat.sp)*18,k=1-Math.pow(.93,dt);
+  cam.x=lerp(cam.x,boat.x+Math.cos(boat.a)*lead,k);cam.y=lerp(cam.y,boat.y+Math.sin(boat.a)*lead,k);}
+function commonFx(dt){const sec=dt/60,spd=Math.abs(boat.sp);
+  const noSea=G&&G.war;
+  if(DEV.slime&&G){parts.push({x:boat.x-Math.cos(boat.a)*18,y:boat.y-Math.sin(boat.a)*18,
+    vx:(Math.random()-.5)*.8,vy:(Math.random()-.5)*.8,life:.7,max:.9,r:3+Math.random()*4,c:'#7dff5e'});}
+  if(spd>.7&&boat.z<=0&&!noSea){trail.push({x:boat.x-Math.cos(boat.a)*26,y:boat.y-Math.sin(boat.a)*26,b:S.t});
+    if(trail.length>260)trail.shift();}
+  while(trail.length&&S.t-trail[0].b>1.6)trail.shift();
+  if(spd>2.2&&boat.z<=0&&!noSea){const n=spd>4.5?3:2,fx=Math.cos(boat.a),fy=Math.sin(boat.a),px=-fy,py=fx;
+    for(let i=0;i<n;i++){const side=i%2?1:-1;
+      parts.push({x:boat.x+fx*30+px*side*9,y:boat.y+fy*30+py*side*9,
+        vx:px*side*(1.2+Math.random()*1.4)+fx*.4,vy:py*side*(1.2+Math.random()*1.4)+fy*.4,
+        life:.45+Math.random()*.4,max:.9,r:1.5+Math.random()*3});}}
+  if(G&&G.fever>0&&spd>1){
+    const hue=(S.t*160)%360;
+    parts.push({x:boat.x-Math.cos(boat.a)*24+(Math.random()-.5)*10,
+      y:boat.y-Math.sin(boat.a)*24+(Math.random()-.5)*10,
+      vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,
+      life:.5+Math.random()*.3,max:.8,r:2+Math.random()*3,
+      c:'hsl('+((hue+Math.random()*60)|0)+',95%,65%)'});}
+  if(G&&!G.finished&&keys.boost&&G.boost>0&&spd>3&&boat.z<=0){
+    for(let i=0;i<2;i++)parts.push({x:boat.x-Math.cos(boat.a)*30,y:boat.y-Math.sin(boat.a)*30,
+      vx:-Math.cos(boat.a)*(2+Math.random()*2)+(Math.random()-.5)*2,
+      vy:-Math.sin(boat.a)*(2+Math.random()*2)+(Math.random()-.5)*2,
+      life:.4+Math.random()*.3,max:.8,r:2+Math.random()*3});}
+  for(let i=parts.length-1;i>=0;i--){const p=parts[i];
+    p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.96;p.vy*=.96;p.life-=sec;if(p.life<=0)parts.splice(i,1);}
+  for(let i=pops.length-1;i>=0;i--)if(S.t-pops[i].b>1.1)pops.splice(i,1);
+  for(let i=rings.length-1;i>=0;i--)if(S.t-rings[i].b>.7)rings.splice(i,1);
+  pruneT+=sec;if(pruneT>5){pruneT=0;prune();}}
+function racerProg(){const gl=G.track.gates.length;
+  if(G.finished)return 1e6-G.ftime;
+  const ng=G.track.gates[G.gi];
+  return G.lap*gl+G.gi-(ng?Math.hypot(boat.x-ng.x,boat.y-ng.y)/1500:0);}
+function updateAIs(dt,gl){
+  if(!G.ais.length)return;
+  const pp=racerProg();
+  for(const a of G.ais){
+    let tg=G.track.gates[a.gi];
+    if(!tg){a.finished=true;a.ftime=a.ftime||G.timeUp;tg=G.track.gates[0];}
+    if(!a.finished&&Math.hypot(a.x-tg.x,a.y-tg.y)<80){a.gi++;
+      if(a.gi>=gl){a.gi=0;a.lap++;if(a.lap>=G.track.laps){a.finished=true;a.ftime=G.timeUp;}}}
+    const dx=tg.x-a.x,dy=tg.y-a.y,ta=Math.atan2(dy,dx);
+    let da=((ta-a.a+Math.PI)%TAU+TAU)-Math.PI;
+    for(const is of G.islands){const ix=is.x-a.x,iy=is.y-a.y,d=Math.hypot(ix,iy);
+      if(d<is.r+150){const fx=Math.cos(a.a),fy=Math.sin(a.a);
+        if(fx*ix+fy*iy>0){const side=Math.sign(fx*iy-fy*ix)||1;da-=side*.9;break;}}}
+    da=clamp(da,-1,1);const sf=clamp(a.sp/2,0,1);
+    a.a+=da*.055*sf*dt;
+    let top=a.top0;
+    if(a.prog<pp-1.2)top*=1.1;else if(a.prog>pp+1.8)top*=.93;
+    a.sp=lerp(a.sp,top,.01*dt);
+    a.x+=Math.cos(a.a)*a.sp*dt;a.y+=Math.sin(a.a)*a.sp*dt;
+    triggerRamp(a,false);
+    if(a.z>0){a.vz-=.09*dt;a.z+=a.vz*dt;if(a.z<=0)a.z=0;}
+    if(G.pads.length)padBoost(a,false);
+    a.prog=a.finished?1e6-a.ftime:a.lap*gl+a.gi-Math.hypot(a.x-tg.x,a.y-tg.y)/1500;
+    if(a.sp>.8&&a.z<=0)a.trail.push({x:a.x,y:a.y,b:S.t});
+    while(a.trail.length&&S.t-a.trail[0].b>1.4)a.trail.shift();}}
+function boatSeparation(dt){for(const a of G.ais){
+  const dx=boat.x-a.x,dy=boat.y-a.y,d=Math.hypot(dx,dy);
+  if(d<36&&d>0&&boat.z<8&&a.z<8){const nx=dx/d,ny=dy/d,push=(36-d)/2;
+    boat.x+=nx*push;boat.y+=ny*push;a.x-=nx*push;a.y-=ny*push;
+    if(Math.abs(boat.sp)>2.5){splashSound(.2);bigSplash((boat.x+a.x)/2,(boat.y+a.y)/2,8);S.shake=4;}}}}
+function updateHUD(){$('scoreChip').textContent=(G.mode==='coin'?'🪙 ':'🛟 ')+Math.floor(G.score);
+  $('coinChip').textContent='💰 '+P.coins;
+  const tc=$('timeChip');
+  if(G.mode==='race'||(G.mode==='custom'&&G.type==='gates')){
+    tc.textContent='⏱ '+fmtT(G.timeUp);tc.classList.remove('warn');}
+  else if(G.mode==='surv'||G.mode==='kraken'||G.mode==='boss'||G.mode==='endless'){tc.textContent='⏱ '+Math.floor(G.timeUp)+'s';tc.classList.remove('warn');
+    $('livesChip').textContent='❤'.repeat(Math.max(0,G.lives))||'💀';}
+  else{tc.textContent='⏱ '+Math.ceil(G.timeLeft);tc.classList.toggle('warn',G.timeLeft<10);
+    if(G.mode==='war'||G.mode==='wteam')$('livesChip').textContent='❤'.repeat(Math.max(0,G.lives))||'💀';}
+  if(G.mode==='race'){$('raceChip').textContent=(G.tt?'⏱ 计时'+(G.ghost?' 👻':''):'🏁 竞速')+
+    ' '+Math.min(G.lap+1,G.track.laps)+'/'+G.track.laps+'圈';}
+  if((G.mode==='war'||G.mode==='wteam')&&G.war){const v2=WARVEH[G.war.veh];
+    $('raceChip').textContent=(G.war.team?'🟦 '+G.war.kills+' : '+G.war.ekills+' 🟥'
+      :'🔧 '+Math.max(0,G.war.hp)+'/'+v2.hp)+' · ⚔️ 击毁 '+G.war.kills;}
+  if(G.mode==='kraken'&&G.kr){$('raceChip').textContent='🐙 距离 '+Math.max(0,Math.round(G.kr.d))+'m';}
+  $('speedChip').textContent='⛵ '+Math.round(Math.abs(boat.sp)*26)+' km/h';
+  $('boostFill').style.width=G.boost+'%';
+  let fx='';if(G.fx.mag>0)fx+='<div class="fx">🧲'+Math.ceil(G.fx.mag)+'s</div>';
+  if(G.fx.x2>0)fx+='<div class="fx">✨'+Math.ceil(G.fx.x2)+'s</div>';
+  if(G.fx.burst>0)fx+='<div class="fx">⚡'+Math.ceil(G.fx.burst)+'s</div>';
+  if(G.fx.shield>0)fx+='<div class="fx">🛡</div>';
+  if(G.fever>0)fx+='<div class="fx" style="color:#d84fd0">🌈'+Math.ceil(G.fever)+'s</div>';
+  if(G.poison>0)fx+='<div class="fx" style="color:#4faf2f">🍄 中毒 '+Math.ceil(G.poison)+'s</div>';
+  if((G.mode==='war'||G.mode==='wteam')&&G.war&&G.war.dive)fx+='<div class="fx" style="color:#7ee0ff">⚓ 潜航无敌</div>';
+  $('fxChip').innerHTML=fx;
+  const cc=$('comboChip');
+  cc.textContent=G.combo>1&&G.comboT>0?'连击 ×'+Math.min(G.combo,G.mode==='gates'?6:5):'';}
+
+/* ================= 绘制：精灵 ================= */
+function w2s(x,y){return[x-cam.x+W/2,y-cam.y+H/2];}
+function drawIslandSpr(sx,sy,r,seed){
+  ctx.fillStyle='rgba(140,232,220,.4)';ctx.beginPath();ctx.arc(sx,sy,r+38,0,TAU);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.25)';ctx.beginPath();ctx.arc(sx,sy,r+18,0,TAU);ctx.fill();
+  ctx.fillStyle='rgba(10,70,115,.18)';ctx.beginPath();ctx.ellipse(sx+7,sy+11,r*.98,r*.9,0,0,TAU);ctx.fill();
+  ctx.fillStyle='#ffe9a8';ctx.strokeStyle='#e0a93f';ctx.lineWidth=4;
+  ctx.beginPath();ctx.arc(sx,sy,r,0,TAU);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#f4cf7c';
+  for(let i=0;i<6;i++){const a=rnd(seed,7,80+i)*TAU,d=rnd(seed,7,90+i)*r*.7;
+    ctx.beginPath();ctx.arc(sx+Math.cos(a)*d,sy+Math.sin(a)*d,2.5,0,TAU);ctx.fill();}
+  const px=sx+Math.cos(seed)*r*.35,py=sy+Math.sin(seed)*r*.35,sw=Math.sin(S.t*1.2+seed*8)*.06;
+  ctx.save();ctx.translate(px,py);ctx.rotate(sw);
+  ctx.strokeStyle='#9a6a3a';ctx.lineWidth=6;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(0,6);ctx.quadraticCurveTo(4,-8,1,-18);ctx.stroke();
+  ctx.fillStyle='#2fae66';ctx.strokeStyle='#1d7c47';ctx.lineWidth=2.5;
+  for(let i=0;i<5;i++){const a=-Math.PI/2+(i-2)*.62+sw;
+    ctx.save();ctx.translate(1,-18);ctx.rotate(a);
+    ctx.beginPath();ctx.ellipse(13,0,14,5.5,0,0,TAU);ctx.fill();ctx.stroke();ctx.restore();}
+  ctx.fillStyle='#7c5027';
+  ctx.beginPath();ctx.arc(-3,-16,2.6,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.arc(5,-15,2.6,0,TAU);ctx.fill();ctx.restore();}
+function drawBuoySpr(sx,sy,s,ph){
+  const rp=(S.t*.45+ph)%1;
+  ctx.strokeStyle='rgba(255,255,255,'+((1-rp)*.22).toFixed(3)+')';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(sx,sy,14+rp*22,0,TAU);ctx.stroke();
+  ctx.fillStyle='rgba(10,70,115,.2)';ctx.beginPath();ctx.ellipse(sx+5,sy+9,15*s,7*s,0,0,TAU);ctx.fill();
+  ctx.save();ctx.translate(sx,sy);ctx.scale(s,s);
+  ctx.beginPath();ctx.arc(0,0,15,0,TAU);ctx.fillStyle='#ff6157';ctx.fill();
+  ctx.save();ctx.clip();ctx.fillStyle='#fff';ctx.fillRect(-16,-9,32,5.5);ctx.fillRect(-16,3.5,32,5.5);ctx.restore();
+  ctx.lineWidth=3;ctx.strokeStyle='#c6382e';ctx.beginPath();ctx.arc(0,0,15,0,TAU);ctx.stroke();
+  ctx.fillStyle='#8b98a5';ctx.beginPath();ctx.arc(8,-11,3.5,0,TAU);ctx.fill();
+  ctx.strokeStyle='#5f6b76';ctx.lineWidth=2;ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=3;ctx.lineCap='round';
+  ctx.beginPath();ctx.arc(0,0,10.5,Math.PI*1.15,Math.PI*1.45);ctx.stroke();ctx.restore();}
+function drawCoinSpr(sx,sy){
+  const sc=Math.abs(Math.sin(S.t*3.2+sx*.02));
+  ctx.fillStyle='rgba(10,70,115,.18)';ctx.beginPath();ctx.ellipse(sx+3,sy+8,9,4,0,0,TAU);ctx.fill();
+  ctx.save();ctx.translate(sx,sy);ctx.scale(.4+sc*.6,1);
+  ctx.fillStyle='#ffd23e';ctx.strokeStyle='#d69a00';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(0,0,9,0,TAU);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#fff3c4';ctx.beginPath();ctx.arc(-2.5,-2.5,3,0,TAU);ctx.fill();ctx.restore();}
+const ITEM_ICON={time:['⏱','#7ee0ff'],mag:['🧲','#c9a4ff'],x2:['✨','#ffd23e'],burst:['⚡','#ffb43a'],shield:['🛡','#7ee0ff'],anti:['🧪','#7dff5e']};
+function drawItemSpr(sx,sy,tp){
+  const bob=Math.sin(S.t*2+sx*.01)*3;
+  ctx.fillStyle='rgba(255,255,255,.25)';ctx.beginPath();ctx.ellipse(sx,sy+12,10,4,0,0,TAU);ctx.fill();
+  const it=ITEM_ICON[tp]||ITEM_ICON.mag;
+  ctx.save();ctx.translate(sx,sy+bob);
+  ctx.fillStyle='rgba(255,255,255,.92)';ctx.strokeStyle=it[1];ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(0,0,14,0,TAU);ctx.fill();ctx.stroke();
+  ctx.font='15px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(it[0],0,1);ctx.restore();}
+function drawMineSpr(sx,sy,ph){
+  const bob=Math.sin(S.t*1.4+(ph||0))*2;
+  ctx.fillStyle='rgba(10,70,115,.25)';ctx.beginPath();ctx.ellipse(sx+4,sy+11,15,6,0,0,TAU);ctx.fill();
+  ctx.save();ctx.translate(sx,sy+bob);
+  ctx.strokeStyle='#2d3a4a';ctx.lineWidth=3.5;ctx.lineCap='round';
+  for(let i=0;i<8;i++){const a=i/8*TAU+S.t*.5;
+    ctx.beginPath();ctx.moveTo(Math.cos(a)*12,Math.sin(a)*12);
+    ctx.lineTo(Math.cos(a)*21,Math.sin(a)*21);ctx.stroke();}
+  const g=ctx.createRadialGradient(-4,-4,2,0,0,14);
+  g.addColorStop(0,'#5a6b7d');g.addColorStop(1,'#232f3d');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,13,0,TAU);ctx.fill();
+  ctx.strokeStyle='#141d28';ctx.lineWidth=2.5;ctx.stroke();
+  const bl=.5+.5*Math.sin(S.t*5+(ph||0));
+  ctx.fillStyle='rgba(255,'+(60+bl*60|0)+',60,'+(0.5+bl*.5).toFixed(2)+')';
+  ctx.beginPath();ctx.arc(0,-4,3.2,0,TAU);ctx.fill();ctx.restore();}
+function drawVortexSpr(sx,sy,ph){
+  ctx.save();
+  ctx.setLineDash([6,9]);ctx.strokeStyle='rgba(255,120,120,.4)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(sx,sy,60,0,TAU);ctx.stroke();ctx.setLineDash([]);
+  const rot=S.t*2.2+(ph||0);
+  ctx.lineCap='round';
+  for(let k=0;k<3;k++){
+    ctx.strokeStyle='rgba(255,255,255,'+(.55-k*.13).toFixed(2)+')';ctx.lineWidth=4-k;
+    ctx.beginPath();
+    for(let a=0;a<TAU*1.5;a+=.18){
+      const r=54*(1-a/(TAU*1.5)),ang=a+rot+k*TAU/3;
+      const x=sx+Math.cos(ang)*r,y=sy+Math.sin(ang)*r*.85;
+      if(a)ctx.lineTo(x,y);else ctx.moveTo(x,y);}
+    ctx.stroke();}
+  const g=ctx.createRadialGradient(sx,sy,0,sx,sy,20);
+  g.addColorStop(0,'#0a2f52');g.addColorStop(1,'rgba(10,47,82,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(sx,sy,20,0,TAU);ctx.fill();
+  ctx.restore();}
+function drawRampSpr(sx,sy,ang){
+  ctx.save();ctx.translate(sx,sy);ctx.rotate(ang);
+  ctx.fillStyle='rgba(10,70,115,.18)';
+  ctx.beginPath();ctx.ellipse(6,10,34,10,0,0,TAU);ctx.fill();
+  ctx.fillStyle='#c98d4f';ctx.strokeStyle='#8a5a2b';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(-30,10);ctx.lineTo(28,10);ctx.lineTo(28,-16);ctx.closePath();
+  ctx.fill();ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2.5;
+  for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(-14+i*12,7-i*5.5);ctx.lineTo(-4+i*12,7-i*5.5);ctx.stroke();}
+  ctx.fillStyle='#ffd23e';ctx.strokeStyle='#0d4d7a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(18,-4);ctx.lineTo(8,-9);ctx.lineTo(8,-5);ctx.lineTo(-2,-5);
+  ctx.lineTo(-2,-3);ctx.lineTo(8,-3);ctx.lineTo(8,1);ctx.closePath();ctx.fill();
+  ctx.restore();}
+function drawPadSpr(sx,sy,ang){
+  ctx.save();ctx.translate(sx,sy);ctx.rotate(ang);
+  const pl=.75+.25*Math.sin(S.t*5);
+  ctx.fillStyle='rgba(55,201,150,'+(.35*pl).toFixed(2)+')';
+  ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2.5;
+  ctx.beginPath();rr(ctx,-34,-16,68,32,10);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,'+(.9*pl).toFixed(2)+')';
+  for(let i=0;i<3;i++){const ox=-20+i*16;
+    ctx.beginPath();ctx.moveTo(ox,-9);ctx.lineTo(ox+10,0);ctx.lineTo(ox,9);
+    ctx.lineTo(ox+4,0);ctx.closePath();ctx.fill();}
+  ctx.restore();}
+function drawChestSpr(sx,sy){
+  const bob=Math.sin(S.t*1.6+sx*.013)*3;
+  ctx.fillStyle='rgba(10,70,115,.22)';ctx.beginPath();ctx.ellipse(sx+4,sy+13,17,6,0,0,TAU);ctx.fill();
+  ctx.save();ctx.translate(sx,sy+bob);
+  ctx.fillStyle='#a06a35';ctx.strokeStyle='#6d441d';ctx.lineWidth=2.5;
+  ctx.beginPath();rr(ctx,-15,-8,30,18,4);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#c98d4f';ctx.beginPath();rr(ctx,-15,-12,30,8,4);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#ffd23e';ctx.strokeStyle='#b8860b';ctx.lineWidth=1.5;
+  ctx.beginPath();rr(ctx,-4,-6,8,9,2);ctx.fill();ctx.stroke();
+  const tw=.5+.5*Math.sin(S.t*4+sy*.01);
+  ctx.fillStyle='rgba(255,255,255,'+(tw*.9).toFixed(2)+')';
+  ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('✦',10,-12);
+  ctx.restore();}
+function drawMushroomSpr(sx,sy){
+  const bob=Math.sin(S.t*1.8+sx*.013)*2;
+  ctx.fillStyle='rgba(90,200,60,.14)';ctx.beginPath();ctx.arc(sx,sy,24,0,TAU);ctx.fill();
+  ctx.save();ctx.translate(sx,sy+bob);
+  ctx.fillStyle='#f5ecd7';ctx.strokeStyle='#b09a6a';ctx.lineWidth=2;
+  ctx.beginPath();rr(ctx,-6,-4,12,16,5);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#d84a3a';ctx.strokeStyle='#8e2318';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(0,-6,15,Math.PI,TAU);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(-7,-11,3,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.arc(2,-14,2.4,0,TAU);ctx.fill();
+  ctx.beginPath();ctx.arc(9,-9,2.8,0,TAU);ctx.fill();
+  const gl=.5+.5*Math.sin(S.t*3+sx);
+  ctx.strokeStyle='rgba(125,255,94,'+(gl*.5).toFixed(2)+')';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(0,-2,20,0,TAU);ctx.stroke();
+  ctx.restore();}
+function drawRingSpr(sx,sy){
+  const bob=Math.sin(S.t*2.4+sx*.017)*3,sh=.6+.4*Math.sin(S.t*5+sy*.02);
+  ctx.save();ctx.translate(sx,sy+bob);ctx.scale(.55+.45*Math.abs(Math.sin(S.t*1.6+sx*.01)),1);
+  ctx.strokeStyle='#ffd23e';ctx.lineWidth=6;ctx.globalAlpha=sh;
+  ctx.beginPath();ctx.arc(0,0,17,0,TAU);ctx.stroke();
+  ctx.strokeStyle='#fff3c4';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(0,0,17,-2.2,-.8);ctx.stroke();
+  ctx.globalAlpha=1;ctx.restore();}
+function drawPortalSpr(sx,sy,ph){
+  const rot=S.t*3+(ph||0);
+  ctx.save();ctx.translate(sx,sy);
+  ctx.setLineDash([5,7]);ctx.strokeStyle='rgba(201,164,255,.5)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(0,0,30,rot,rot+TAU);ctx.stroke();ctx.setLineDash([]);
+  for(let k=0;k<2;k++){
+    ctx.strokeStyle=k?'rgba(126,224,255,.85)':'rgba(201,164,255,.85)';ctx.lineWidth=3.5-k;
+    ctx.beginPath();
+    for(let a=0;a<TAU*1.25;a+=.22){
+      const r=26*(1-a/(TAU*1.35)),ang=a+rot+k*Math.PI;
+      const x=Math.cos(ang)*r,y=Math.sin(ang)*r;
+      if(a)ctx.lineTo(x,y);else ctx.moveTo(x,y);}
+    ctx.stroke();}
+  const g=ctx.createRadialGradient(0,0,0,0,0,14);
+  g.addColorStop(0,'rgba(60,20,110,.9)');g.addColorStop(1,'rgba(60,20,110,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,14,0,TAU);ctx.fill();
+  ctx.restore();}
+function drawWhaleSpr(sx,sy,ph){
+  const up=Math.sin(S.t*.22+(ph||0))>.45;
+  const bob=Math.sin(S.t*.8+(ph||0))*3;
+  if(!up){ /* 潜航阴影 */
+    ctx.fillStyle='rgba(10,50,90,.18)';
+    ctx.beginPath();ctx.ellipse(sx,sy+bob,58,30,0,0,TAU);ctx.fill();
+    return;}
+  ctx.save();ctx.translate(sx,sy+bob-8);
+  ctx.fillStyle='#3a6ea8';ctx.strokeStyle='#274d78';ctx.lineWidth=3;
+  ctx.beginPath();ctx.ellipse(0,0,52,28,0,0,TAU);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#bcd9f0';
+  ctx.beginPath();ctx.ellipse(-2,10,42,14,0,0,Math.PI);ctx.fill();
+  ctx.fillStyle='#3a6ea8';
+  ctx.beginPath();ctx.moveTo(48,0);ctx.quadraticCurveTo(70,-16,74,-6);
+  ctx.quadraticCurveTo(66,-2,64,4);ctx.quadraticCurveTo(68,10,62,16);
+  ctx.quadraticCurveTo(56,8,46,8);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#0d2c4c';ctx.beginPath();ctx.arc(36,-8,3.2,0,TAU);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=3;ctx.lineCap='round';
+  const sp=(S.t*2)%1;
+  for(let i=0;i<5;i++){
+    const hgt=i*7+sp*10,a=sp*40+i*4-8;
+    ctx.globalAlpha=(1-sp)*.8;
+    ctx.beginPath();ctx.moveTo(10,-26);ctx.lineTo(10+a*.4,-34-hgt);ctx.stroke();}
+  ctx.globalAlpha=1;ctx.restore();
+  if(Math.random()<.2)parts.push({x:sx,y:sy,vx:(Math.random()-.5)*1.5,vy:-1-Math.random(),
+    life:.6,max:.7,r:2+Math.random()*2});}
+function drawDolphin(sx,sy,ph){
+  const jump=Math.max(0,Math.sin(S.t*1.4+ph));
+  const y=sy-jump*26,rot=-.4+jump*.8;
+  ctx.save();ctx.translate(sx,y-jump*10);ctx.rotate(rot);
+  ctx.fillStyle='#7fb8d8';ctx.strokeStyle='#4a86ad';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(-16,0);ctx.quadraticCurveTo(-6,-9,8,-4);
+  ctx.quadraticCurveTo(16,-1,18,2);ctx.quadraticCurveTo(8,7,-6,6);
+  ctx.quadraticCurveTo(-14,5,-16,0);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-15,0);ctx.lineTo(-22,-7);ctx.lineTo(-18,1);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(2,-6);ctx.lineTo(7,-13);ctx.lineTo(9,-5);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#0d4d7a';ctx.beginPath();ctx.arc(11,-1,1.5,0,TAU);ctx.fill();
+  ctx.restore();}
+function drawKraken(kx,ky,d){
+  const bob=Math.sin(S.t*1.1)*4;
+  const pa=Math.atan2(boat.y-ky,boat.x-kx);
+  ctx.save();ctx.translate(kx,ky+bob);
+  for(let i=0;i<5;i++){
+    const off=(i-2)*.5,tlen=120+Math.sin(S.t*2+i)*22;
+    const tx=Math.cos(pa+off)*tlen,ty=Math.sin(pa+off)*tlen*.8;
+    ctx.strokeStyle=i%2?'#7a4bb5':'#5d3a8c';ctx.lineWidth=16-i*1.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(0,0);
+    ctx.quadraticCurveTo(tx*.5+Math.sin(S.t*3+i)*18,ty*.5-24,tx,ty);ctx.stroke();
+    ctx.fillStyle='#7a4bb5';
+    ctx.beginPath();ctx.arc(tx,ty,7,0,TAU);ctx.fill();}
+  const hg=ctx.createRadialGradient(-12,-14,6,0,0,52);
+  hg.addColorStop(0,'#9a6fd8');hg.addColorStop(1,'#4a2a78');
+  ctx.fillStyle=hg;ctx.strokeStyle='#2d1a52';ctx.lineWidth=4;
+  ctx.beginPath();ctx.ellipse(0,0,48,42,0,0,TAU);ctx.fill();ctx.stroke();
+  for(const s of[-1,1]){
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(s*18,-8,10,11,0,0,TAU);ctx.fill();
+    ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(s*18+Math.cos(pa)*4,-8+Math.sin(pa)*4,5,0,TAU);ctx.fill();
+    ctx.strokeStyle='#2d1a52';ctx.lineWidth=4;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(s*8,-22);ctx.lineTo(s*27,-15);ctx.stroke();}
+  ctx.strokeStyle='#2d1a52';ctx.lineWidth=3.5;
+  ctx.beginPath();ctx.arc(0,14,16,.15*Math.PI,.85*Math.PI);ctx.stroke();
+  ctx.fillStyle='#fff';
+  for(let i=0;i<4;i++){const a=.25+i*.17;
+    ctx.beginPath();ctx.moveTo(Math.cos(a*Math.PI)*12,14+Math.sin(a*Math.PI)*11);
+    ctx.lineTo(Math.cos(a*Math.PI)*12+5,14+Math.sin(a*Math.PI)*11+6);
+    ctx.lineTo(Math.cos(a*Math.PI)*12+10,14+Math.sin(a*Math.PI)*11);ctx.closePath();ctx.fill();}
+  ctx.restore();
+  if(d<300&&Math.random()<.3)parts.push({x:kx+(Math.random()-.5)*70,y:ky+(Math.random()-.5)*50,
+    vx:(Math.random()-.5)*2,vy:-1-Math.random()*2,life:.5,max:.8,r:2+Math.random()*3});}
+function drawGateSpr(sx,sy,ang,num,isNext){
+  const px=Math.cos(ang+Math.PI/2),py=Math.sin(ang+Math.PI/2);
+  ctx.save();ctx.globalAlpha=isNext?1:.55;
+  ctx.setLineDash([8,8]);ctx.strokeStyle=isNext?'#ffd23e':'rgba(255,255,255,.8)';
+  ctx.lineWidth=isNext?5:3;
+  ctx.beginPath();ctx.moveTo(sx-px*40,sy-py*40);ctx.lineTo(sx+px*40,sy+py*40);ctx.stroke();
+  ctx.setLineDash([]);
+  for(const s of[-1,1]){const x=sx+px*40*s,y=sy+py*40*s;
+    ctx.fillStyle='#ff6157';ctx.beginPath();ctx.arc(x,y,9,0,TAU);ctx.fill();
+    ctx.save();ctx.clip();ctx.fillStyle='#fff';ctx.fillRect(x-10,y-5,20,4);ctx.restore();
+    ctx.strokeStyle='#c6382e';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(x,y,9,0,TAU);ctx.stroke();}
+  if(num!=null){ctx.font="800 15px 'Baloo 2',sans-serif";ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.lineWidth=3;ctx.strokeStyle='#0d4d7a';ctx.fillStyle='#fff';
+    ctx.strokeText(num,sx,sy-20);ctx.fillText(num,sx,sy-20);}
+  if(isNext){const p=(S.t*1.4)%1;
+    ctx.strokeStyle='rgba(255,210,62,'+((1-p)*.8).toFixed(2)+')';ctx.lineWidth=4;
+    ctx.beginPath();ctx.arc(sx,sy,44+p*40,0,TAU);ctx.stroke();}
+  ctx.restore();}
+function renderBoat(c,x,y,rot,lean,spec,bob,h,shadow){
+  h=h||0;
+  if(shadow!==false){const sc=1/(1+h*.02);
+    c.save();c.translate(x+7,y+10+h*.5);c.rotate(rot);
+    c.fillStyle='rgba(10,70,115,'+(.25*sc).toFixed(2)+')';
+    c.beginPath();c.ellipse(0,0,30*sc,15*sc,0,0,TAU);c.fill();c.restore();}
+  c.save();c.translate(x,y-h*1.6+bob*3);c.rotate(rot+lean*.22);
+  const hull=()=>{c.beginPath();c.moveTo(33,0);
+    c.quadraticCurveTo(30,-13,8,-13);c.lineTo(-20,-13);c.quadraticCurveTo(-29,-13,-29,-5);
+    c.lineTo(-29,5);c.quadraticCurveTo(-29,13,-20,13);c.lineTo(8,13);
+    c.quadraticCurveTo(30,13,33,0);c.closePath();};
+  hull();c.fillStyle=spec.hull;c.fill();
+  c.save();hull();c.clip();
+  c.fillStyle=spec.stripe;c.fillRect(-29,-3.2,54,6.4);
+  c.fillStyle=spec.nose;c.fillRect(24,-13,9,26);
+  c.fillStyle='rgba(255,255,255,.45)';c.beginPath();c.moveTo(33,0);
+  c.quadraticCurveTo(30,-13,8,-13);c.lineTo(-29,-13);c.lineTo(-29,-8);c.lineTo(33,-5);c.closePath();c.fill();
+  c.restore();
+  hull();c.strokeStyle='#17629a';c.lineWidth=3;c.lineJoin='round';c.stroke();
+  c.strokeStyle='#5b6d7d';c.lineWidth=4;c.lineCap='round';
+  c.beginPath();c.moveTo(15,-8);c.quadraticCurveTo(19,0,15,8);c.stroke();
+  c.fillStyle='#17456b';c.beginPath();rr(c,-21,-7.5,15,15,6);c.fill();
+  c.save();c.translate(0,lean*4.5);
+  c.strokeStyle=spec.rider;c.lineWidth=5;
+  c.beginPath();c.moveTo(-2,-5);c.lineTo(15,-8);c.moveTo(-2,5);c.lineTo(15,8);c.stroke();
+  c.fillStyle='#ffd9b0';c.beginPath();c.arc(15,-8,2.6,0,TAU);c.fill();
+  c.beginPath();c.arc(15,8,2.6,0,TAU);c.fill();
+  c.fillStyle=spec.rider;c.strokeStyle='rgba(0,0,0,.25)';c.lineWidth=2;
+  c.beginPath();c.ellipse(-4,0,7.5,9.5,0,0,TAU);c.fill();c.stroke();
+  c.fillStyle='#fdfefe';c.strokeStyle='#17629a';c.lineWidth=2.6;
+  c.beginPath();c.arc(-4,0,8.4,0,TAU);c.fill();c.stroke();
+  c.fillStyle=spec.stripe;c.beginPath();c.moveTo(-4,0);c.arc(-4,0,8.4,-.55,.55);c.closePath();c.fill();
+  c.fillStyle='#173a5e';c.beginPath();rr(c,1.5,-4,4.5,8,2);c.fill();
+  c.restore();c.restore();}
+
+/* ================= 绘制：场景 ================= */
+function drawWater(){const wl=cam.x-W/2,wt=cam.y-H/2,wr=cam.x+W/2,wb=cam.y+H/2;
+  const BS=760;let g0x=Math.floor(wl/BS)-1,g1x=Math.floor(wr/BS)+1,g0y=Math.floor(wt/BS)-1,g1y=Math.floor(wb/BS)+1;
+  for(let gx=g0x;gx<=g1x;gx++)for(let gy=g0y;gy<=g1y;gy++){
+    const h1=rnd(gx,gy,50),h2=rnd(gx,gy,51),light=rnd(gx,gy,52)>.5;
+    const x=gx*BS+h1*BS-cam.x+W/2+Math.sin(S.t*.12+h2*6.3)*26;
+    const y=gy*BS+h2*BS-cam.y+H/2+Math.cos(S.t*.1+h1*6.3)*22;
+    const r=190+h1*140,g=ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,light?'rgba(255,255,255,.08)':'rgba(13,80,140,.09)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();}
+  const GS=150;ctx.lineCap='round';
+  g0x=Math.floor(wl/GS)-1;g1x=Math.floor(wr/GS)+1;g0y=Math.floor(wt/GS)-1;g1y=Math.floor(wb/GS)+1;
+  for(let gx=g0x;gx<=g1x;gx++)for(let gy=g0y;gy<=g1y;gy++){
+    const h1=rnd(gx,gy,60),h2=rnd(gx,gy,61);
+    const x=gx*GS+h1*GS-cam.x+W/2+Math.sin(S.t*.7+h2*6.3)*9;
+    const y=gy*GS+h2*GS-cam.y+H/2;
+    const a=.14+.2*(0.5+0.5*Math.sin(S.t*1.7+h1*6.3));
+    ctx.strokeStyle='rgba(255,255,255,'+a.toFixed(3)+')';ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(x,y,9+h2*9,Math.PI*1.08,Math.PI*1.92);ctx.stroke();}}
+function drawTrailList(list){for(const p of list){const age=S.t-p.b,a=1-age/1.5;if(a<=0)continue;
+  const xy=w2s(p.x,p.y);ctx.fillStyle='rgba(255,255,255,'+(a*.3).toFixed(3)+')';
+  ctx.beginPath();ctx.arc(xy[0],xy[1],3+age*24,0,TAU);ctx.fill();}}
+function drawGulls(){for(const g of gulls){
+  const x=boat.x+g.ox+Math.sin(S.t*.35+g.ph)*150-cam.x+W/2;
+  const y=boat.y+g.oy+Math.cos(S.t*.28+g.ph)*110-cam.y+H/2;
+  const f=Math.sin(S.t*7+g.ph)*5;
+  ctx.fillStyle='rgba(10,70,115,.12)';ctx.beginPath();ctx.ellipse(x+16,y+22,10,4,0,0,TAU);ctx.fill();
+  ctx.strokeStyle='#1b6fae';ctx.lineWidth=6.5;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x-11,y+2+f);ctx.quadraticCurveTo(x-5,y-5-f,x,y);
+  ctx.quadraticCurveTo(x+5,y-5-f,x+11,y+2+f);ctx.stroke();
+  ctx.strokeStyle='#ffffff';ctx.lineWidth=3.5;
+  ctx.beginPath();ctx.moveTo(x-11,y+2+f);ctx.quadraticCurveTo(x-5,y-5-f,x,y);
+  ctx.quadraticCurveTo(x+5,y-5-f,x+11,y+2+f);ctx.stroke();}}
+function drawDolphins(){if(!G||G.mode==='race')return;
+  const spd=Math.abs(boat.sp);
+  if(spd<2)return;
+  for(const d of dolphins){
+    const lag=90+Math.sin(S.t*.6+d.ph)*20,side=d.side*(46+Math.sin(S.t*.5+d.ph)*14);
+    const fx=Math.cos(boat.a),fy=Math.sin(boat.a);
+    const x=boat.x-fx*lag-fy*side,y=boat.y-fy*lag+fx*side;
+    const xy=w2s(x,y);drawDolphin(xy[0],xy[1],d.ph);}}
+function drawParts(){for(const p of parts){const xy=w2s(p.x,p.y),a=clamp(p.life/p.max,0,1);
+  if(p.c){ctx.globalAlpha=clamp(a,0,1)*.9;ctx.fillStyle=p.c;}
+  else{ctx.globalAlpha=1;ctx.fillStyle='rgba(255,255,255,'+(a*.85).toFixed(3)+')';}
+  ctx.beginPath();ctx.arc(xy[0],xy[1],p.r,0,TAU);ctx.fill();}
+  ctx.globalAlpha=1;}
+function drawRings(){for(const r of rings){const t=(S.t-r.b)/.7,xy=w2s(r.x,r.y);
+  ctx.strokeStyle='rgba(255,255,255,'+((1-t)*.7).toFixed(3)+')';ctx.lineWidth=4*(1-t)+1;
+  ctx.beginPath();ctx.arc(xy[0],xy[1],8+t*46,0,TAU);ctx.stroke();}}
+function drawPops(){ctx.textAlign='center';ctx.textBaseline='middle';
+  for(const p of pops){const t=(S.t-p.b)/1.1,xy=w2s(p.x,p.y-t*46);
+    const a=t<.15?t/.15:1-Math.max(0,(t-.5)/.5);const sc=t<.2?0.5+t*2.5:1;
+    ctx.font='800 '+(p.sz*sc).toFixed(1)+"px 'Baloo 2','ZCOOL KuaiLe',sans-serif";
+    ctx.globalAlpha=clamp(a,0,1);ctx.lineWidth=4;ctx.strokeStyle='#0d4d7a';
+    ctx.strokeText(p.txt,xy[0],xy[1]);ctx.fillStyle=p.c;ctx.fillText(p.txt,xy[0],xy[1]);}
+  ctx.globalAlpha=1;}
+function drawGuide(tx,ty){const sxy=w2s(tx,ty);
+  if(sxy[0]>60&&sxy[0]<W-60&&sxy[1]>90&&sxy[1]<H-90)return;
+  const ang=Math.atan2(ty-boat.y,tx-boat.x);
+  const cx=W/2,cy=H/2,m=Math.min(W/2-70,H/2-100);
+  const ax=cx+Math.cos(ang)*m,ay=cy+Math.sin(ang)*m;
+  ctx.save();ctx.translate(ax,ay);ctx.rotate(ang);
+  ctx.fillStyle='rgba(255,210,62,.95)';ctx.strokeStyle='#0d4d7a';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(20,0);ctx.lineTo(-12,-14);ctx.lineTo(-4,0);ctx.lineTo(-12,14);ctx.closePath();
+  ctx.fill();ctx.stroke();ctx.restore();}
+function drawMinimap(dots,mb){const MW=132,MX=W-MW-16,MY=110;
+  ctx.fillStyle='rgba(255,255,255,.28)';ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2.5;
+  ctx.beginPath();rr(ctx,MX,MY,MW,MW,12);ctx.fill();ctx.stroke();
+  const sx=MW/(mb.x1-mb.x0),sy=MW/(mb.y1-mb.y0),s=Math.min(sx,sy);
+  const mx=x=>MX+(x-mb.x0)*s+(MW-(mb.x1-mb.x0)*s)/2,my=y=>MY+(y-mb.y0)*s+(MW-(mb.y1-mb.y0)*s)/2;
+  for(const d of dots){ctx.fillStyle=d.c;ctx.beginPath();ctx.arc(mx(d.x),my(d.y),d.r||3.5,0,TAU);ctx.fill();}}
+function drawSpeedLines(){if(!G||G.finished)return;
+  const spd=Math.abs(boat.sp);
+  if(spd<4.4)return;const k=clamp((spd-4.4)/2.2,0,1);
+  ctx.save();ctx.translate(W/2,H/2);
+  for(let i=0;i<14;i++){
+    const a=(i/14)*TAU+(S.t*.7)%.3;
+    const r1=170+((S.t*680+i*67)%150),r2=r1+45+k*80;
+    ctx.strokeStyle='rgba(255,255,255,'+(k*.32).toFixed(2)+')';
+    ctx.lineWidth=1.5+k*2.2;
+    ctx.beginPath();ctx.moveTo(Math.cos(a)*r1,Math.sin(a)*r1);
+    ctx.lineTo(Math.cos(a)*r2,Math.sin(a)*r2);ctx.stroke();}
+  ctx.restore();}
+function drawWeatherFX(){
+  if(!G)return;
+  if(G.poison>0){ctx.fillStyle='rgba(90,200,60,'+(0.10+0.06*Math.sin(S.t*6)).toFixed(2)+')';ctx.fillRect(0,0,W,H);}
+  if(G.weather==='sunset'){ctx.fillStyle='rgba(255,120,50,.12)';ctx.fillRect(0,0,W,H);}
+  else if(G.weather==='night'){
+    ctx.fillStyle='rgba(8,16,50,.42)';ctx.fillRect(0,0,W,H);
+    const xy=w2s(boat.x,boat.y);
+    const fx=Math.cos(boat.a),fy=Math.sin(boat.a);
+    const g=ctx.createRadialGradient(xy[0],xy[1],10,xy[0]+fx*180,xy[1]+fy*180,240);
+    g.addColorStop(0,'rgba(255,244,180,.34)');g.addColorStop(1,'rgba(255,244,180,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(xy[0],xy[1]);
+    ctx.lineTo(xy[0]+fx*300-fy*130,xy[1]+fy*300+fx*130);
+    ctx.lineTo(xy[0]+fx*300+fy*130,xy[1]+fy*300-fx*130);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.7)';
+    for(let i=0;i<24;i++){const sx2=rnd(i,3,99)*W,sy2=rnd(i,5,98)*H*.6;
+      const tw2=.4+.6*Math.abs(Math.sin(S.t*1.5+i));
+      ctx.globalAlpha=tw2*.7;ctx.fillRect(sx2,sy2,2,2);}
+    ctx.globalAlpha=1;}
+  else if(G.weather==='storm'){
+    ctx.fillStyle='rgba(25,35,65,.32)';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(200,225,255,.3)';ctx.lineWidth=1.5;
+    for(let i=0;i<60;i++){
+      const x=((i*173+S.t*640)%(W+60))-30,y=((i*97+S.t*920)%(H+60))-30;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-7,y+17);ctx.stroke();}
+    if(G.flash>0){ctx.fillStyle='rgba(255,255,255,'+(G.flash*2.6).toFixed(2)+')';ctx.fillRect(0,0,W,H);}}
+  else if(G.weather==='snow'){
+    ctx.fillStyle='rgba(210,230,255,.10)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,255,255,.85)';
+    for(let i=0;i<70;i++){
+      const sp2=.4+rnd(i,1,71)*.8;
+      const x=(rnd(i,2,72)*W+Math.sin(S.t*.7+i)*40+W)%W;
+      const y=((S.t*sp2*60)+(i*137))%(H+30)-15;
+      ctx.globalAlpha=.35+.5*rnd(i,3,73);
+      ctx.beginPath();ctx.arc(x,y,1.5+sp2*1.6,0,TAU);ctx.fill();}
+    ctx.globalAlpha=1;}
+  else if(G.weather==='ember'){
+    ctx.fillStyle='rgba(50,14,8,.22)';ctx.fillRect(0,0,W,H);
+    for(let i=0;i<45;i++){
+      const x=(rnd(i,4,74)*W+Math.sin(S.t+i*2.3)*26)%W;
+      const y=H-((S.t*(30+rnd(i,5,75)*55))+(i*211))%(H+20);
+      const fl=.5+.5*Math.sin(S.t*7+i);
+      ctx.fillStyle='rgba(255,'+(120+fl*80|0)+',40,'+(.5+.4*fl).toFixed(2)+')';
+      ctx.beginPath();ctx.arc(x,y,1.2+fl*2,0,TAU);ctx.fill();}}}
+function drawCenterText(){
+  if(G&&G.cd>0){const n=Math.ceil(G.cd),fr=G.cd%1;
+    ctx.save();ctx.translate(W/2,H/2-40);ctx.scale(1+fr*.4,1+fr*.4);
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font="900 92px 'Baloo 2','ZCOOL KuaiLe',sans-serif";
+    ctx.lineWidth=10;ctx.strokeStyle='#0d4d7a';ctx.fillStyle='#fff';
+    ctx.strokeText(n,0,0);ctx.fillText(n,0,0);ctx.restore();}
+  else if(G&&G.goT>0){const t=1-G.goT/.8;
+    ctx.save();ctx.translate(W/2,H/2-40);ctx.scale(1+t*.15,1+t*.15);
+    ctx.globalAlpha=Math.min(1,G.goT*3);ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font="900 84px 'Baloo 2','ZCOOL KuaiLe',sans-serif";
+    ctx.lineWidth=10;ctx.strokeStyle='#0d4d7a';ctx.fillStyle='#ffd23e';
+    ctx.strokeText('出发！',0,0);ctx.fillText('出发！',0,0);ctx.restore();}}
+function render(){ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(!waterGrad){const th=THEMES.find(t=>t.id===P.theme)||THEMES[0];
+    waterGrad=ctx.createLinearGradient(0,0,0,H);
+    waterGrad.addColorStop(0,th.g[0]);waterGrad.addColorStop(1,th.g[1]);}
+  if(!vign){vign=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.42,W/2,H/2,Math.max(W,H)*.75);
+    vign.addColorStop(0,'rgba(0,60,110,0)');vign.addColorStop(1,'rgba(0,48,96,.18)');}
+  let shx=0,shy=0;if(S.shake>0){shx=(Math.random()-.5)*S.shake;shy=(Math.random()-.5)*S.shake;}
+  ctx.translate(shx,shy);
+  ctx.fillStyle=waterGrad;ctx.fillRect(-20,-20,W+40,H+40);
+  drawWater();
+  if(S.screen==='edit'&&ED)renderEditor();
+  else if(G)renderGame();
+  else renderIdle();
+  drawWeatherFX();
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.fillStyle=vign;ctx.fillRect(0,0,W,H);
+  drawSpeedLines();
+  drawCenterText();}
+function renderIdle(){drawTrailList(trail);
+  activeChunks(c=>{if(c.island){const xy=w2s(c.island.x,c.island.y);drawIslandSpr(xy[0],xy[1],c.island.r,c.island.seed);}
+    for(const b of c.buoys){const xy=w2s(b.x,b.y);drawBuoySpr(xy[0],xy[1],1+Math.sin(S.t*2.1+b.ph)*.07,b.ph);}});
+  drawGulls();const ixy=w2s(boat.x,boat.y);
+  renderBoat(ctx,ixy[0],ixy[1],boat.a,boat.lean,boatSpec(P.sel),Math.sin(S.t*1.7)*.035,0,true);
+  drawParts();drawRings();drawPops();}
+function renderGame(){drawTrailList(trail);
+  if(G.mode==='race')for(const a of G.ais)drawTrailList(a.trail);
+  const drawV=v=>{const xy=w2s(v.x,v.y);drawVortexSpr(xy[0],xy[1],v.ph);};
+  if(G.fixed){for(const v of G.vortexes)drawV(v);}
+  else activeChunks(c=>{for(const v of c.vortexes)drawV(v);});
+  const drawR=r=>{const xy=w2s(r.x,r.y);drawRampSpr(xy[0],xy[1],r.ang);};
+  const drawPd=p=>{const xy=w2s(p.x,p.y);drawPadSpr(xy[0],xy[1],p.ang);};
+  if(G.fixed){for(const r of G.ramps)drawR(r);}
+  else activeChunks(c=>{for(const r of c.ramps)drawR(r);});
+  for(const p of G.pads)drawPd(p);
+  const drawIs=is=>{const xy=w2s(is.x,is.y);drawIslandSpr(xy[0],xy[1],is.r,is.seed);};
+  if(G.fixed){for(const is of G.islands)drawIs(is);}
+  else activeChunks(c=>{if(c.island)drawIs(c.island);});
+  let guide=null;
+  if(G.mode==='race'){const gs=G.track.gates;
+    gs.forEach((g,i)=>{const xy=w2s(g.x,g.y);
+      drawGateSpr(xy[0],xy[1],g.ang,null,i===G.gi);
+      if(i===G.gi&&G.lap===G.track.laps-1&&i===gs.length-1){
+        ctx.font='24px sans-serif';ctx.textAlign='center';ctx.fillText('🏁',xy[0],xy[1]-38);}});
+    guide=gs[G.gi];if(guide)drawGuide(guide.x,guide.y);}
+  else if(G.mode==='gates'){let idx=0;
+    for(const g of G.gates){const xy=w2s(g.x,g.y);
+      if(!g.done)drawGateSpr(xy[0],xy[1],g.ang,++idx,idx===1);if(idx===1)guide=g;}
+    if(guide)drawGuide(guide.x,guide.y);}
+  else if(G.mode==='custom'&&G.type==='gates'){
+    G.gates.forEach((g,i)=>{const xy=w2s(g.x,g.y);drawGateSpr(xy[0],xy[1],g.ang,i+1,i===G.gi);});
+    if(G.gi<G.gates.length){guide=G.gates[G.gi];drawGuide(guide.x,guide.y);}}
+  if(G.mode==='kraken'&&G.kr){
+    const kr=G.kr;
+    const kx=boat.x-Math.cos(boat.a)*kr.d,ky=boat.y-Math.sin(boat.a)*kr.d;
+    const kxy=w2s(kx,ky);
+    if(kxy[0]>-200&&kxy[0]<W+200&&kxy[1]>-200&&kxy[1]<H+200)drawKraken(kxy[0],kxy[1],kr.d);
+    for(const w of kr.warns){const xy=w2s(w.x,w.y);
+      const pl=.5+.5*Math.sin(S.t*10);
+      ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(255,80,80,'+(0.5+pl*.4).toFixed(2)+')';ctx.lineWidth=3.5;
+      ctx.beginPath();ctx.arc(xy[0],xy[1],46+w.t*30,0,TAU);ctx.stroke();ctx.setLineDash([]);
+      ctx.font="900 26px 'Baloo 2'";ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillStyle='rgba(255,80,80,.9)';ctx.fillText('!',xy[0],xy[1]);}
+    for(const s of kr.shocks){const xy=w2s(s.x,s.y);
+      const a=1-s.r/430;
+      ctx.strokeStyle='rgba(255,255,255,'+(a*.9).toFixed(2)+')';ctx.lineWidth=7;
+      ctx.beginPath();ctx.arc(xy[0],xy[1],s.r,0,TAU);ctx.stroke();
+      ctx.strokeStyle='rgba(255,90,90,'+(a*.7).toFixed(2)+')';ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(xy[0],xy[1],s.r-12,0,TAU);ctx.stroke();}}
+  if(G.mode==='boss'&&G.boss){
+    const b=G.boss,bxy=w2s(bossBx(),bossBy());
+    const rage=b.hp<b.max/2;
+    if(b.charging>0&&b.charging<=.35){
+      ctx.fillStyle='rgba(255,60,60,.14)';ctx.beginPath();ctx.arc(bxy[0],bxy[1],150,0,TAU);ctx.fill();}
+    ctx.save();ctx.translate(bxy[0],bxy[1]);ctx.scale(1.7,1.7);
+    if(rage){ctx.filter='hue-rotate(-30deg) saturate(1.5)';}
+    drawKraken(0,0,b.d);
+    ctx.filter='none';ctx.restore();
+    for(const w of b.warns){const xy=w2s(w.x,w.y);
+      const pl=.5+.5*Math.sin(S.t*10);
+      ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(255,80,80,'+(0.5+pl*.4).toFixed(2)+')';ctx.lineWidth=3.5;
+      ctx.beginPath();ctx.arc(xy[0],xy[1],46+w.t*30,0,TAU);ctx.stroke();ctx.setLineDash([]);}
+    for(const s of b.shocks){const xy=w2s(s.x,s.y),a=1-s.r/430;
+      ctx.strokeStyle='rgba(255,140,220,'+(a*.9).toFixed(2)+')';ctx.lineWidth=7;
+      ctx.beginPath();ctx.arc(xy[0],xy[1],s.r,0,TAU);ctx.stroke();}
+    /* 血条 */
+    const p=Math.max(0,b.hp/b.max);
+    ctx.fillStyle='rgba(13,77,122,.55)';rr(ctx,W/2-142,52,284,20,10);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;rr(ctx,W/2-142,52,284,20,10);ctx.stroke();
+    ctx.fillStyle=rage?'#ff4e42':'#ff6fb5';rr(ctx,W/2-138,56,276*p,12,6);ctx.fill();
+    ctx.font="800 12px 'Baloo 2'";ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#fff';ctx.fillText('👑 深渊之主 '+Math.max(0,b.hp)+'/'+b.max+(rage?' ⚡狂暴':''),W/2,62);}
+  if(G.mode==='war'&&G.war){
+    const w=G.war;
+    for(const dr of w.drops){const xy=w2s(dr.x,dr.y);
+      if(S.t-dr.b>12)continue;
+      ctx.font='20px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(dr.t==='heal'?'❤':'🪙',xy[0],xy[1]+Math.sin(S.t*3+dr.x)*3);}
+    for(const e of w.enemies){const xy=w2s(e.x,e.y);
+      drawWarUnit(ctx,xy[0],xy[1],e.a,e.type,'e',e.ta);
+      if(e.hp<e.max){ctx.fillStyle='rgba(13,77,122,.6)';
+        rr(ctx,xy[0]-20,xy[1]-34,40,6,3);ctx.fill();
+        ctx.fillStyle='#ff6157';rr(ctx,xy[0]-19,xy[1]-33,38*Math.max(0,e.hp)/e.max,4,2);ctx.fill();}}
+    ctx.lineCap='round';
+    for(const b of w.bullets){const xy=w2s(b.x,b.y);
+      ctx.strokeStyle='rgba(255,243,196,.85)';ctx.lineWidth=3.5;
+      ctx.beginPath();ctx.moveTo(xy[0]-b.vx*1.4,xy[1]-b.vy*1.4);ctx.lineTo(xy[0],xy[1]);ctx.stroke();}
+    for(const b of w.ebullets){const xy=w2s(b.x,b.y);
+      ctx.fillStyle='#ff8f66';ctx.beginPath();ctx.arc(xy[0],xy[1],3.4,0,TAU);ctx.fill();
+      ctx.fillStyle='#ffd23e';ctx.beginPath();ctx.arc(xy[0],xy[1],1.7,0,TAU);ctx.fill();}}
+  const drawB=b=>{const xy=w2s(b.x,b.y);drawBuoySpr(xy[0],xy[1],1+Math.sin(S.t*2.1+b.ph)*.07,b.ph);};
+  const drawC=c=>{const xy=w2s(c.x,c.y);drawCoinSpr(xy[0],xy[1]);};
+  const drawI=it=>{const xy=w2s(it.x,it.y);drawItemSpr(xy[0],xy[1],it.tp);};
+  const drawM=m=>{if(gone.has(m.id))return;const xy=w2s(m.x,m.y);drawMineSpr(xy[0],xy[1],m.ph);};
+  const drawH=o=>{if(gone.has(o.id))return;const xy=w2s(o.x,o.y);drawChestSpr(xy[0],xy[1]);};
+  const drawMu=o=>{const xy=w2s(o.x,o.y);drawMushroomSpr(xy[0],xy[1]);};
+  const drawRg=o=>{if(gone.has(o.id))return;const xy=w2s(o.x,o.y);drawRingSpr(xy[0],xy[1]);};
+  const drawPt=o=>{const xy=w2s(o.x,o.y);drawPortalSpr(xy[0],xy[1],o.ph);
+    const xy2=w2s(o.dx,o.dy);drawPortalSpr(xy2[0],xy2[1],(o.ph||0)+Math.PI);};
+  const drawWh=o=>{const xy=w2s(o.x,o.y);drawWhaleSpr(xy[0],xy[1],o.ph);};
+  if(G.fixed){for(const b of G.buoys)drawB(b);for(const c of G.coins)drawC(c);
+    for(const it of G.items)drawI(it);for(const m of G.mines)drawM(m);for(const o of G.chests)drawH(o);}
+  else activeChunks(c=>{
+    for(const b of c.buoys)if(!gone.has(b.id))drawB(b);
+    for(const co of c.coins)if(!gone.has(co.id))drawC(co);
+    for(const it of c.items)if(!gone.has(it.id))drawI(it);
+    for(const m of c.mines)drawM(m);
+    for(const o of c.chests)drawH(o);
+    for(const mu of c.mush)drawMu(mu);
+    for(const rg of c.rings)drawRg(rg);
+    for(const pt of c.portals)drawPt(pt);
+    for(const wh of c.whale)drawWh(wh);});
+  if(G.fx.mag>0){const xy=w2s(boat.x,boat.y);
+    ctx.strokeStyle='rgba(201,164,255,'+(0.25+0.15*Math.sin(S.t*6)).toFixed(2)+')';ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(xy[0],xy[1],220,0,TAU);ctx.stroke();}
+  drawGulls();
+  if(G.mode==='race'){
+    for(const a of G.ais){const axy=w2s(a.x,a.y);
+      renderBoat(ctx,axy[0],axy[1],a.a,0,a.spec,0,a.z,true);}
+    /* 幽灵船（画在玩家下层） */
+    if(G.tt&&G.ghost){const gxy=w2s(G.ghost.x,G.ghost.y);
+      ctx.globalAlpha=.38;
+      renderBoat(ctx,gxy[0],gxy[1],G.ghost.a,0,GHOST_SPEC,0,0,true);
+      ctx.globalAlpha=1;}}
+  const bxy=w2s(boat.x,boat.y);
+  if(G.inv>0)ctx.globalAlpha=.45+.4*Math.sin(S.t*20);
+  const bob=boat.z>0?0:Math.sin(S.t*1.7)*.035;
+  if(G.mode==='war'&&G.war)drawWarUnit(ctx,bxy[0],bxy[1],boat.a+boat.spinAnim,G.war.veh,'p',G.war.ta);
+  else renderBoat(ctx,bxy[0],bxy[1],boat.a+boat.spinAnim,boat.lean,G.spec,bob,boat.z,true);
+  ctx.globalAlpha=1;
+  if(G.fx.shield>0){ctx.strokeStyle='rgba(126,224,255,'+(0.5+0.3*Math.sin(S.t*4)).toFixed(2)+')';
+    ctx.lineWidth=3;ctx.beginPath();ctx.arc(bxy[0],bxy[1]-boat.z*1.6,42,0,TAU);ctx.stroke();}
+  if(boat.z>0&&Math.abs(boat.spin)>1){
+    ctx.font="900 20px 'Baloo 2'";ctx.textAlign='center';
+    ctx.lineWidth=4;ctx.strokeStyle='#0d4d7a';ctx.fillStyle='#ffd23e';
+    const txt='旋转 '+(Math.floor(boat.spin/TAU*10)/10)+' 圈';
+    ctx.strokeText(txt,bxy[0],bxy[1]-boat.z*1.6-52);ctx.fillText(txt,bxy[0],bxy[1]-boat.z*1.6-52);}
+  drawParts();drawRings();drawPops();
+  if(G.mode==='race'&&G.mb){const dots=[];
+    for(const g of G.track.gates)dots.push({x:g.x,y:g.y,c:'rgba(255,255,255,.7)',r:2});
+    if(G.track.gates[G.gi])dots[G.gi]={x:G.track.gates[G.gi].x,y:G.track.gates[G.gi].y,c:'#ffd23e',r:4};
+    for(const a of G.ais)dots.push({x:a.x,y:a.y,c:a.spec.stripe,r:4});
+    dots.push({x:boat.x,y:boat.y,c:'#17629a',r:5});
+    drawMinimap(dots,G.mb);}
+  else if(G.mode==='gates'||(G.mode==='custom'&&G.type==='gates')){
+    let mb=G.mb;
+    if(G.mode==='gates'){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+      for(const g of G.gates){if(g.done)continue;x0=Math.min(x0,g.x);x1=Math.max(x1,g.x);y0=Math.min(y0,g.y);y1=Math.max(y1,g.y);}
+      x0=Math.min(x0,boat.x)-400;x1=Math.max(x1,boat.x)+400;
+      y0=Math.min(y0,boat.y)-400;y1=Math.max(y1,boat.y)+400;mb={x0,y0,x1,y1};}
+    if(mb){const dots=[];let idx=0;
+      for(const g of G.gates)if(!g.done)dots.push({x:g.x,y:g.y,c:++idx===1?'#ffd23e':'rgba(255,255,255,.7)',r:idx===1?4:2.5});
+      dots.push({x:boat.x,y:boat.y,c:'#17629a',r:5});drawMinimap(dots,mb);}}}
+
+/* ================= 编辑器 ================= */
+function openEditor(level){
+  ED={name:level?level.name:'',type:level?level.type:'collect',time:level?level.time:60,
+    objects:level?JSON.parse(JSON.stringify(level.objects)):[],start:level?{...level.start}:{x:0,y:0},
+    tool:'buoy',islandR:60,editId:level?level.id:null};
+  boat.x=ED.start.x;boat.y=ED.start.y;boat.a=-Math.PI/2;boat.sp=0;boat.z=0;
+  cam.x=ED.start.x;cam.y=ED.start.y;
+  S.screen='edit';G=null;setPlayUI(false);show(null);
+  $('ebar').classList.add('on');CURCFG=cfgFor('none');cache.clear();syncEbar();}
+function syncEbar(){$('eName').value=ED.name;$('eType').value=ED.type;$('eTime').value=ED.time;
+  document.querySelectorAll('.etool[data-tool]').forEach(b=>b.classList.toggle('sel',b.dataset.tool===ED.tool));
+  $('eInfo').textContent='物体:'+ED.objects.length;}
+document.querySelectorAll('.etool[data-tool]').forEach(b=>b.onclick=()=>{
+  if(b.dataset.tool==='island'){ED.islandR=ED.islandR===60?85:ED.islandR===85?110:60;
+    toast('小岛大小：'+ED.islandR);}
+  ED.tool=b.dataset.tool;syncEbar();});
+$('eType').onchange=e=>ED.type=e.target.value;
+$('eTime').onchange=e=>ED.time=clamp(+e.target.value||60,20,300);
+$('eName').oninput=e=>ED.name=e.target.value;
+$('eClear').onclick=()=>{if(confirm('清空所有物体？')){ED.objects=[];syncEbar();}};
+$('eExit').onclick=()=>{ED=null;$('ebar').classList.remove('on');S.screen='menu';buildLevels();show('levels');};
+$('eSave').onclick=()=>{
+  const name=ED.name.trim()||'未命名关卡';
+  const data={id:ED.editId||Date.now(),name,type:ED.type,time:ED.time,
+    start:{x:Math.round(ED.start.x),y:Math.round(ED.start.y)},
+    objects:ED.objects.map(o=>({t:o.t,x:Math.round(o.x),y:Math.round(o.y),r:o.t==='i'?o.r:undefined}))};
+  if(data.type==='gates'&&!ED.objects.some(o=>o.t==='g')){toast('穿门模式至少需要 1 道门！');return;}
+  if(ED.objects.length<3){toast('至少放置 3 个物体！');return;}
+  const i=P.levels.findIndex(l=>l.id===data.id);
+  const keepBest=i>=0?P.levels[i].best:undefined;if(keepBest)data.best=keepBest;
+  if(i>=0)P.levels[i]=data;else P.levels.push(data);
+  ED.editId=data.id;saveP();checkAch();toast('已保存「'+name+'」');};
+$('eTest').onclick=()=>{
+  if(ED.objects.length<1){toast('先放点东西吧！');return;}
+  if(ED.type==='gates'&&!ED.objects.some(o=>o.t==='g')){toast('穿门模式需要门！');return;}
+  const data={id:-1,name:ED.name.trim()||'测试',type:ED.type,time:ED.time,
+    start:ED.start,objects:ED.objects,best:0};
+  $('ebar').classList.remove('on');
+  LAST={mode:'custom',opts:{level:data,fromEditor:true}};
+  newGame('custom',{level:data,fromEditor:true});};
+let edDrag=null,edPaint=null;
+function edScreen(e){const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];}
+function edWorld(sx,sy){return[sx-W/2+cam.x,sy-H/2+cam.y];}
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointerdown',e=>{if(!ED)return;
+  const s=edScreen(e);
+  if(e.button===2||ED.tool==='pan'){edDrag={sx:s[0],sy:s[1],cx:cam.x,cy:cam.y};return;}
+  const w=edWorld(s[0],s[1]);edPlace(w[0],w[1]);edPaint={x:s[0],y:s[1]};});
+cv.addEventListener('pointermove',e=>{if(!ED)return;
+  const s=edScreen(e);
+  if(edDrag){cam.x=edDrag.cx-(s[0]-edDrag.sx);cam.y=edDrag.cy-(s[1]-edDrag.sy);return;}
+  if(edPaint&&(ED.tool==='buoy'||ED.tool==='coin'||ED.tool==='island')){
+    if(Math.hypot(s[0]-edPaint.x,s[1]-edPaint.y)>52){
+      const w=edWorld(s[0],s[1]);edPlace(w[0],w[1]);edPaint={x:s[0],y:s[1]};}}});
+addEventListener('pointerup',()=>{edDrag=null;edPaint=null;});
+function edPlace(wx,wy){
+  if(ED.objects.length>=400){toast('物体已达上限 400');return;}
+  const t=ED.tool;
+  if(t==='start'){ED.start={x:wx,y:wy};boat.x=wx;boat.y=wy;return;}
+  if(t==='erase'){let bi=-1,bd=55;
+    ED.objects.forEach((o,i)=>{const d=Math.hypot(o.x-wx,o.y-wy);if(d<bd){bd=d;bi=i;}});
+    if(bi>=0)ED.objects.splice(bi,1);syncEbar();return;}
+  const map={buoy:'b',coin:'c',item:'m',gate:'g',island:'i',mine:'x',vortex:'v',ramp:'j',chest:'h'};
+  if(map[t])ED.objects.push({t:map[t],x:wx,y:wy,r:t==='island'?ED.islandR:undefined});
+  syncEbar();}
+addEventListener('keydown',e=>{if(!ED)return;
+  if(e.code==='ArrowUp'||e.code==='KeyW')cam.y-=40;
+  if(e.code==='ArrowDown'||e.code==='KeyS')cam.y+=40;
+  if(e.code==='ArrowLeft'||e.code==='KeyA')cam.x-=40;
+  if(e.code==='ArrowRight'||e.code==='KeyD')cam.x+=40;});
+function edUpdate(dt){commonFx(dt);}
+function renderEditor(){
+  const GS=120,wl=cam.x-W/2,wt=cam.y-H/2;
+  ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;
+  for(let x=Math.floor(wl/GS)*GS;x<wl+W+GS;x+=GS){const s=w2s(x,0);
+    ctx.beginPath();ctx.moveTo(s[0],0);ctx.lineTo(s[0],H);ctx.stroke();}
+  for(let y=Math.floor(wt/GS)*GS;y<wt+H+GS;y+=GS){const s=w2s(0,y);
+    ctx.beginPath();ctx.moveTo(0,s[1]);ctx.lineTo(W,s[1]);ctx.stroke();}
+  const gates=ED.objects.filter(o=>o.t==='g');
+  gates.forEach((g,i)=>{const p=gates[(i-1+gates.length)%gates.length];g._a=Math.atan2(g.y-p.y,g.x-p.x);});
+  for(const o of ED.objects){const xy=w2s(o.x,o.y);
+    if(o.t==='i')drawIslandSpr(xy[0],xy[1],o.r,o.x*.13+o.y*.07);
+    else if(o.t==='b')drawBuoySpr(xy[0],xy[1],1,o.x*.01);
+    else if(o.t==='c')drawCoinSpr(xy[0],xy[1]);
+    else if(o.t==='m')drawItemSpr(xy[0],xy[1],'mag');
+    else if(o.t==='x')drawMineSpr(xy[0],xy[1],o.x*.01);
+    else if(o.t==='v')drawVortexSpr(xy[0],xy[1],o.y*.01);
+    else if(o.t==='j')drawRampSpr(xy[0],xy[1],0);
+    else if(o.t==='h')drawChestSpr(xy[0],xy[1]);
+    else if(o.t==='g')drawGateSpr(xy[0],xy[1],o._a||0,gates.indexOf(o)+1,false);}
+  const sxy=w2s(ED.start.x,ED.start.y);
+  ctx.globalAlpha=.55;renderBoat(ctx,sxy[0],sxy[1],-Math.PI/2,0,boatSpec(P.sel),0,0,true);ctx.globalAlpha=1;
+  ctx.font="800 13px 'Baloo 2'";ctx.textAlign='center';ctx.fillStyle='#fff';
+  ctx.strokeStyle='#0d4d7a';ctx.lineWidth=3;
+  ctx.strokeText('START',sxy[0],sxy[1]+38);ctx.fillText('START',sxy[0],sxy[1]+38);
+  drawGulls();drawParts();drawPops();}
+
+/* ================= 关卡工坊 UI ================= */
+function levelCode(l){return'JSQ2.'+btoa(unescape(encodeURIComponent(JSON.stringify(l))));}
+function parseCode(s){try{if(!s.startsWith('JSQ2.'))return null;
+  const l=JSON.parse(decodeURIComponent(escape(atob(s.slice(5)))));
+  if(!l.objects||!l.start)return null;l.id=Date.now();return l;}catch(e){return null;}}
+function buildLevels(){const box=$('levelList');box.innerHTML='';
+  if(!P.levels.length){box.innerHTML='<div class="sub">还没有自定义关卡，点上方「新建关卡」开工吧！</div>';return;}
+  for(const l of P.levels){const div=document.createElement('div');div.className='lcard';
+    div.innerHTML='<div style="flex:1"><h4>'+l.name+'</h4>'+
+      '<div class="meta">'+(l.type==='gates'?'🚪 穿门计时':'🛟 限时收集 '+l.time+'s')+' · '+l.objects.length+' 个物体'+(l.best?' · 最佳 '+fmtT(l.best):'')+'</div></div>';
+    const mk=(t,fn,cls)=>{const b=document.createElement('button');b.className=cls||'btn sm';b.textContent=t;b.onclick=fn;div.appendChild(b);};
+    mk('▶ 玩',()=>{LAST={mode:'custom',opts:{level:l}};newGame('custom',{level:l});});
+    mk('✎ 编辑',()=>openEditor(l));
+    mk('📤 导出',()=>{prompt('复制此分享码给好友：',levelCode(l));});
+    mk('🗑',()=>{if(confirm('删除关卡「'+l.name+'」？')){P.levels=P.levels.filter(x=>x!==l);saveP();buildLevels();}},'btn sm danger');
+    box.appendChild(div);}}
+$('btnNewLevel').onclick=()=>openEditor(null);
+$('btnImport').onclick=()=>{const s=prompt('粘贴分享码：');if(!s)return;
+  const l=parseCode(s.trim());
+  if(l){P.levels.push(l);saveP();buildLevels();toast('导入成功「'+l.name+'」');}
+  else toast('分享码无效！');};
+
+/* ================= 船坞 UI ================= */
+function statBars(sp){const f=(v,a,b)=>clamp((v-a)/(b-a),0.05,1);
+  return'<div class="srow"><b>极速</b><div class="sbar"><i style="width:'+(f(sp.top,3.8,6.4)*100)+'%"></i></div></div>'+
+  '<div class="srow"><b>加速</b><div class="sbar"><i style="width:'+(f(sp.acc,.048,.078)*100)+'%"></i></div></div>'+
+  '<div class="srow"><b>操控</b><div class="sbar"><i style="width:'+(f(sp.turn,.038,.064)*100)+'%"></i></div></div>';}
+function boatPreview(cnv,spec){const c=cnv.getContext('2d');
+  c.clearRect(0,0,cnv.width,cnv.height);
+  const g=c.createLinearGradient(0,0,0,cnv.height);
+  g.addColorStop(0,'#8adcf8');g.addColorStop(1,'#3ba5e2');
+  c.fillStyle=g;c.fillRect(0,0,cnv.width,cnv.height);
+  c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=2;
+  for(let i=0;i<3;i++){c.beginPath();
+    c.arc(cnv.width*.3+i*40,cnv.height*.75,12,Math.PI,TAU);c.stroke();}
+  c.save();c.translate(cnv.width/2,cnv.height/2);c.scale(1.6,1.6);
+  renderBoat(c,0,0,0,0,spec,0,0,false);c.restore();}
+function buildGarage(){refreshCoins();const box=$('boatList');box.innerHTML='';
+  const ids=[...Object.keys(BOATS),'c1','c2'];
+  for(const id of ids){const spec=boatSpec(id);
+    const lockedCustom=id==='c2'&&P.c2locked;
+    const owned=BOATS[id]?P.unlocked.includes(id):!lockedCustom;
+    const card=document.createElement('div');card.className='bcard'+(P.sel===id?' sel':'');
+    const cvn=document.createElement('canvas');cvn.width=300;cvn.height=150;
+    cvn.style.cssText='width:100%;height:auto;border-radius:10px;border:2px solid #dceefb';
+    boatPreview(cvn,spec);card.appendChild(cvn);
+    const info=document.createElement('div');
+    let actionTxt,price=0;
+    if(!owned){price=id==='c2'?600:BOATS[id].price;actionTxt='🔓 '+price;}
+    else if(P.sel===id)actionTxt='✓ 使用中';
+    else actionTxt='选择';
+    info.innerHTML='<h3>'+spec.name+(spec.custom?' ✏️':'')+'</h3>'+
+      '<div class="pk">'+(spec.pkd||'—')+'</div>'+
+      '<div class="d">'+(spec.desc||'你的专属定制艇')+'</div>'+statBars(spec);
+    card.appendChild(info);
+    const row=document.createElement('div');row.className='brow';
+    const btn=document.createElement('button');btn.className='btn sm';
+    btn.textContent=actionTxt;
+    btn.onclick=()=>{
+      if(owned){P.sel=id;saveP();buildGarage();toast('已选择「'+spec.name+'」');}
+      else if(P.coins>=price){P.coins-=price;
+        if(id==='c2'){P.c2locked=false;P.customs.c2={hull:'#eafae9',stripe:'#2fae66',nose:'#ffd23e',rider:'#2fae66',pts:{spd:4,acc:4,trn:4}};}
+        else P.unlocked.push(id);
+        saveP();checkAch();buildGarage();toast('🎉 解锁成功！');blip(660,.15,.4);}
+      else toast('金币不足，去比赛赚吧！');};
+    row.appendChild(btn);
+    if(!BOATS[id]&&!lockedCustom){const cb=document.createElement('button');cb.className='btn sm';
+      cb.textContent='🎨 定制';cb.onclick=()=>openCustomizer(id);row.appendChild(cb);}
+    card.appendChild(row);box.appendChild(card);}}
+let CUST=null;
+function openCustomizer(slot){CUST=JSON.parse(JSON.stringify(P.customs[slot]));CUST.slot=slot;
+  $('custTitle').textContent='🎨 '+CSLOT[slot];
+  $('cHull').value=CUST.hull;$('cStripe').value=CUST.stripe;$('cNose').value=CUST.nose;$('cRider').value=CUST.rider;
+  syncCust();$('customizer').classList.remove('hide');}
+function syncCust(){$('vSpd').textContent=CUST.pts.spd;$('vAcc').textContent=CUST.pts.acc;$('vTrn').textContent=CUST.pts.trn;
+  const tot=CUST.pts.spd+CUST.pts.acc+CUST.pts.trn;
+  $('custTotal').textContent='属性点：'+tot+' / 16（每项 2~8）';
+  $('custTotal').style.color=tot>16?'#e23b2e':'#3b87bd';}
+['cHull','cStripe','cNose','cRider'].forEach(id=>$(id).oninput=e=>{CUST[id.slice(1).toLowerCase()]=e.target.value;});
+document.querySelectorAll('#statRow button').forEach(b=>b.onclick=()=>{
+  const f=b.dataset.f,d=+b.dataset.d,v=CUST.pts[f]+d;
+  const tot=CUST.pts.spd+CUST.pts.acc+CUST.pts.trn;
+  if(v<2||v>8)return;
+  if(d>0&&tot>=16){toast('属性点已用完！');return;}
+  CUST.pts[f]=v;syncCust();blip(500+v*40,.08,.08);});
+$('custSave').onclick=()=>{const slot=CUST.slot;const data=JSON.parse(JSON.stringify(CUST));delete data.slot;
+  P.customs[slot]=data;P.sel=slot;saveP();
+  $('customizer').classList.add('hide');buildGarage();toast('已保存定制艇！');};
+$('custClose').onclick=()=>$('customizer').classList.add('hide');
+function drawCustPrev(){if(!CUST||$('customizer').classList.contains('hide'))return;
+  boatPreview($('custPrev'),{hull:CUST.hull,stripe:CUST.stripe,nose:CUST.nose,rider:CUST.rider});}
+
+/* ================= 菜单构建 ================= */
+const MODES=[
+ {id:'free',em:'🛟',name:'自由收集',desc:'90 秒撞浮标连击，宝箱跳板等你发现'},
+ {id:'coin',em:'🪙',name:'金币狂潮',desc:'60 秒疯狂捡金币，磁铁双倍助你暴富'},
+ {id:'gates',em:'🚪',name:'无尽之门',desc:'依次穿门 +5 秒，看你能连穿多少'},
+ {id:'surv',em:'💥',name:'生存挑战',desc:'3 条命躲避水雷漩涡，风浪每 25 秒加剧'},
+ {id:'kraken',em:'🐙',name:'海怪来袭',desc:'全速逃离巨兽！躲触手冲击波，贴脸躲避有奖'},
+ {id:'endless',em:'♾',name:'无尽狂潮',desc:'没有时限！每 30 秒风浪升级，看你能撑几波'},
+ {id:'mushpanic',em:'🍄',name:'蘑菇危机',desc:'毒蘑菇遍布海面！保持清醒收集，中毒会减速'},
+ {id:'boss',em:'👑',name:'深渊之主',desc:'浮标就是炮弹！轰击巨兽 20 次，小心它的冲锋'},
+ {id:'war',em:'⚔️',name:'钢铁大战',desc:'🚢战舰 ✈️战机 🚜坦克 🚁直升机 ⚓潜艇 🚀火箭炮，90秒歼灭战！'},
+ {id:'wteam',em:'🤝',name:'团队对抗',desc:'3v3 团队死斗！与AI队友并肩作战，120秒定胜负'},
+ {id:'daily',em:'🗓',name:'每日挑战',desc:'每天一张新地图，首通 +150 金币'},
+ {id:'race',em:'🏁',name:'竞速大赛',desc:'4 赛道 vs AI（三档难度）· 计时赛带👻幽灵船'}];
+function bestOf(id){switch(id){
+  case'free':return P.best.free?'⭐ 最佳 '+P.best.free:'';
+  case'coin':return P.best.coin?'⭐ 最佳 '+P.best.coin:'';
+  case'gates':return P.best.gates?'⭐ 最佳 '+P.best.gates:'';
+  case'surv':return P.stats.survBest?'⭐ 生存 '+P.stats.survBest+'s':'';
+  case'kraken':return P.stats.krakenBest?'⭐ 逃离 '+P.stats.krakenBest+'s':'';
+  case'endless':return P.best.end?'⭐ 最佳 '+P.best.end:'';
+  case'mushpanic':return P.best.mush?'⭐ 最佳 '+P.best.mush:'';
+  case'boss':return (P.stats.bossWin||0)?'⭐ 已讨伐 ×'+P.stats.bossWin:'🆕 巨兽盘踞中';
+  case'war':return P.best.war?'⭐ 击毁纪录 '+P.best.war+' ⚔️':'';
+  case'daily':return P.daily.d===dailySeed()?'⭐ 今日 '+P.daily.s+(P.dailyR===dailySeed()?' ✓已打卡':''):'🆕 今日待挑战';
+  case'race':{let g=0;for(const t of TRACKS)if(P.best[t.id])g++;
+    return g?'⭐ 已获 '+g+'/'+TRACKS.length+' 赛道奖牌':'';}
+  default:return'';}}
+function buildModes(){const box=$('modeCards');box.innerHTML='';
+  for(const m of MODES){const d=document.createElement('div');d.className='mcard';
+    d.innerHTML='<div class="em">'+m.em+'</div><h3>'+m.name+'</h3><p>'+m.desc+'</p>'+
+      '<div class="bst">'+(bestOf(m.id)||'尚无记录')+'</div>';
+    d.onclick=()=>{if(AC&&AC.state==='suspended')AC.resume();
+      if(m.id==='race'){buildTracks();show('tracks');return;}
+      if(m.id==='war'||m.id==='wteam'){vehFor=m.id;buildVehPick();show('vehPick');return;}
+      if(m.id==='daily'){const L=dailyLevel();
+        LAST={mode:'custom',opts:{level:L,daily:true}};
+        newGame('custom',{level:L,daily:true});return;}
+      LAST={mode:m.id,opts:{}};newGame(m.id,{});};
+    box.appendChild(d);}}
+function buildDiffRow(){const row=$('diffRow');row.innerHTML='';
+  const lab=document.createElement('span');lab.style.cssText='color:#3b87bd;font-size:15px';
+  lab.textContent='对手难度：';row.appendChild(lab);
+  ['😀 简单','⚔️ 普通','😈 困难'].forEach((n,i)=>{
+    const b=document.createElement('button');
+    b.className='btn sm';
+    if(P.raceDiff===i){b.style.background='#1b6fae';b.style.color='#fff';b.style.borderColor='#1b6fae';}
+    b.textContent=n+(i===2?'(奖金+30%)':'');
+    b.onclick=()=>{P.raceDiff=i;saveP();buildDiffRow();};
+    row.appendChild(b);});}
+function buildTracks(){buildDiffRow();const box=$('trackCards');box.innerHTML='';
+  const wIcon={clear:'☀️',sunset:'🌇',night:'🌙',storm:'⛈',snow:'❄️',ember:'🌋'};
+  for(const tr of TRACKS){const d=document.createElement('div');d.className='mcard';
+    const cnv=document.createElement('canvas');cnv.width=340;cnv.height=200;
+    cnv.style.cssText='width:100%;border-radius:10px;border:2px solid #dceefb';
+    const c=cnv.getContext('2d');const g=c.createLinearGradient(0,0,0,200);
+    const wg=tr.weather==='storm'?['#3a4a72','#202a48']:tr.weather==='night'?['#2a3a68','#16224a']:tr.weather==='sunset'?['#f8b06e','#d87848']:tr.weather==='snow'?['#cfe4f7','#7fb2d9']:tr.weather==='ember'?['#5a2a20','#241010']:['#8adcf8','#3ba5e2'];
+    g.addColorStop(0,wg[0]);g.addColorStop(1,wg[1]);c.fillStyle=g;c.fillRect(0,0,340,200);
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    for(const gt of tr.gates){x0=Math.min(x0,gt.x);x1=Math.max(x1,gt.x);y0=Math.min(y0,gt.y);y1=Math.max(y1,gt.y);}
+    const s=Math.min(280/(x1-x0),150/(y1-y0));
+    const mx=x=>170+(x-(x0+x1)/2)*s,my=y=>100+(y-(y0+y1)/2)*s;
+    for(const is of tr.islands){c.fillStyle='#ffe9a8';c.strokeStyle='#e0a93f';
+      c.beginPath();c.arc(mx(is.x),my(is.y),Math.max(4,is.r*s),0,TAU);c.fill();c.stroke();}
+    c.strokeStyle='#fff';c.lineWidth=3;c.setLineDash([6,6]);c.beginPath();
+    tr.gates.forEach((gt,i)=>{if(i)c.lineTo(mx(gt.x),my(gt.y));else c.moveTo(mx(gt.x),my(gt.y));});
+    c.closePath();c.stroke();c.setLineDash([]);
+    c.fillStyle='#c98d4f';
+    for(const rp of tr.ramps){c.fillRect(mx(rp.x)-4,my(rp.y)-4,8,8);}
+    c.fillStyle='#37c996';
+    for(const pd of tr.pads){c.beginPath();c.arc(mx(pd.x),my(pd.y),4,0,TAU);c.fill();}
+    c.fillStyle='#ff6157';
+    for(const gt of tr.gates){c.beginPath();c.arc(mx(gt.x),my(gt.y),5,0,TAU);c.fill();}
+    c.fillStyle='#2d3a4a';
+    for(const mn of tr.mines){c.beginPath();c.arc(mx(mn.x),my(mn.y),4,0,TAU);c.fill();}
+    d.appendChild(cnv);
+    const info=document.createElement('div');
+    info.innerHTML='<h3>'+(wIcon[tr.weather]||'☀️')+' '+tr.name+'</h3>'+
+      '<p>'+tr.desc+'<br/>'+tr.gates.length+' 检查点 × '+tr.laps+' 圈'+(tr.ramps.length?' · 🔺'+tr.ramps.length:'')+(tr.pads.length?' · ➡️'+tr.pads.length:'')+(tr.mines.length?' · 💣'+tr.mines.length:'')+'</p>'+
+      '<div class="bst">'+(P.best[tr.id]?'🏁 最佳 '+fmtT(P.best[tr.id]):'🥇 金牌线 '+tr.par+'s')+(P.tt[tr.id+'_tt']?'<br/>⏱ 计时 '+fmtT(P.tt[tr.id+'_tt'])+(P.ghost[tr.id]?' 👻':''):'')+'</div>';
+    d.appendChild(info);
+    const tb=document.createElement('div');tb.className='tbtns';
+    const b1=document.createElement('button');b1.className='btn sm';b1.textContent='🏁 竞速';
+    b1.onclick=e=>{e.stopPropagation();LAST={mode:'race',opts:{track:tr}};newGame('race',{track:tr});};
+    const b2=document.createElement('button');b2.className='btn sm';b2.textContent='⏱ 计时';
+    b2.onclick=e=>{e.stopPropagation();LAST={mode:'race',opts:{track:tr,tt:true}};newGame('race',{track:tr,tt:true});};
+    tb.appendChild(b1);tb.appendChild(b2);d.appendChild(tb);
+    box.appendChild(d);}}
+
+/* ================= 按钮 ================= */
+$('btnPlay').onclick=()=>{buildModes();show('modeSel');};
+$('btnModeBack').onclick=()=>show('menu');
+$('btnTrackBack').onclick=()=>show('modeSel');
+$('btnGarage').onclick=()=>{buildGarage();show('garage');};
+$('btnGarageBack').onclick=goMenu;
+$('btnShop').onclick=()=>{buildShop();show('shop');};
+$('btnShopBack').onclick=goMenu;
+$('btnWork').onclick=()=>{buildLevels();show('levels');};
+$('btnLevelsBack').onclick=goMenu;
+$('btnAch').onclick=()=>{buildAch();show('ach');};
+$('btnAchBack').onclick=goMenu;
+$('btnMis').onclick=()=>{buildMissions();show('mis');};
+$('btnMisBack').onclick=goMenu;
+$('btnReset').onclick=()=>{if(confirm('确定重置全部存档？（金币/船只/关卡/成就/等级/改装都会清空）')){
+  try{localStorage.removeItem('jsq2_profile');}catch(e){}location.reload();}};
+function toggleMute(){S.muted=!S.muted;localStorage.setItem('jsq2_mute',S.muted?'1':'0');
+  if(master)master.gain.value=S.muted?0:S.vol;
+  $('btnSound').textContent=S.muted?'🔇 声音':'🔊 声音';$('muteBtn').textContent=S.muted?'🔇':'🔊';}
+$('btnSound').onclick=toggleMute;
+$('muteBtn').onclick=toggleMute;
+$('muteBtn').textContent=S.muted?'🔇':'🔊';
+$('btnSound').textContent=S.muted?'🔇 声音':'🔊 声音';
+
+/* ================= 设置 & 开发者面板 ================= */
+function backTarget(){if(S.screen==='play'||S.screen==='edit')show(null);else show('menu');}
+$('setBtn').onclick=()=>{uiSnd();show('settings');};
+$('btnSetBack').onclick=backTarget;
+let vc=0,vt=0;
+$('verNum').addEventListener('click',()=>{
+  vc++;clearTimeout(vt);vt=setTimeout(()=>vc=0,1400);
+  const el=$('verNum');el.classList.remove('spin');void el.offsetWidth;el.classList.add('spin');
+  blip(600+vc*120,.08,.08,700+vc*120);
+  if(vc>=3){vc=0;P.dev=true;saveP();
+    $('devBtn').classList.remove('hide');
+    $('verCode').textContent="function enableCheatMode(){\n  profile.dev = true;\n  saveProfile();\n  ui.devButton.show();   // \u{1F6E0}\uFE0F\n}";
+    $('verCode').classList.remove('hide');
+    toast('\u{1F6E0}\uFE0F 作弊模式已开启！右下角出现开发者按钮');achSnd();}});
+const DEVACTS={
+  coin1(){addCoins(10000);refreshCoins();saveP();toast('∞ 金币 +10000');},
+  coin2(){addCoins(100000);refreshCoins();saveP();toast('∞ 金币 +100000');},
+  xp(){gainXP(10000);},
+  lv(){P.xp=120*P.lv*P.lv;gainXP(0);},
+  ships(){P.unlocked=Object.keys(BOATS);P.c2locked=false;
+    if(!P.customs.c2)P.customs.c2={hull:'#eafae9',stripe:'#2fae66',nose:'#ffd23e',rider:'#2fae66',pts:{spd:4,acc:4,trn:4}};
+    saveP();checkAch();refreshCoins();toast('🔓 全部船只已解锁（含黑神）');},
+  c2(){P.c2locked=false;
+    if(!P.customs.c2)P.customs.c2={hull:'#eafae9',stripe:'#2fae66',nose:'#ffd23e',rider:'#2fae66',pts:{spd:4,acc:4,trn:4}};
+    saveP();checkAch();toast('🔓 二号自定义艇已解锁');},
+  inf(){DEV.infBoost=!DEV.infBoost;tog(this,DEV.infBoost);toast(DEV.infBoost?'⚡ 无限冲刺：开':'⚡ 无限冲刺：关');},
+  inv(){DEV.invul=!DEV.invul;tog(this,DEV.invul);toast(DEV.invul?'🛡 无敌模式：开':'🛡 无敌模式：关');},
+  fev(){DEV.fever=!DEV.fever;tog(this,DEV.fever);toast(DEV.fever?'🌈 狂热常驻：开':'🌈 狂热常驻：关');},
+  items(){if(!G)return toast('先开始一局');
+    G.fx.shield=1;G.fx.mag=15;G.fx.x2=15;G.fx.burst=3;G.boost=100;toast('📈 道具全满！');},
+  finish(){if(!G||G.finished)return toast('当前没有进行中的比赛');
+    if(G.mode==='race'){G.ftime=G.timeUp||60;}
+    else if(G.mode==='custom'&&G.type==='gates'){G.gi=G.gates.length;}
+    else if(G.mode==='custom'){G.buoys.length=0;G.coins.length=0;}
+    finishGame('🛠 调试：立即完成');},
+  krak(){if(G&&G.kr){G.kr.d=Math.min(1400,G.kr.d+500);toast('🐙 海怪距离 '+Math.round(G.kr.d)+'m');}else toast('海怪模式未运行');},
+  t30(){if(G){G.timeLeft=(G.timeLeft||0)+30;toast('⏱ 时间 +30 秒');}else toast('先开始一局');},
+  best(){if(!G)return toast('先开始一局');const m=G.mode;
+    const v=m==='surv'?P.best.surv:m==='kraken'?P.best.krak:m==='custom'?9999:(P.best[m]||9999);
+    G.score=Math.max(G.score,v);updateHUD();toast('💯 得分已设为 '+v);},
+  reset(){if(LAST.mode){restartLast();toast('🌊 已重置当前局');}else toast('没有可重开的对局');},
+  clrlv(){P.levels=[];saveP();buildLevels();toast('🗑 自定义关卡已清空');},
+  ach(){for(const a of ACH)P.ach[a.id]=1;saveP();checkAch();toast('🏆 成就全部解锁');},
+  mis(){ensureMissions();let s=0;
+    for(const m of P.missions.items){if(!m.done)s+=m.rew;m.done=true;m.prog=m.tgt;}
+    addCoins(s);saveP();buildMissions();toast('📋 任务全部完成 +🪙'+s);},
+  upg(){P.upg={eng:5,nos:5,mag:5,fin:5};saveP();toast('🔧 改装全部满级');},
+  rec(){P.stats.modes={free:1,coin:1,gates:1,surv:1,kraken:1,race:1,daily:1,tt:1};
+    saveP();checkAch();toast('🗺 模式记录全解锁');},
+  ghost(){if(G&&G.tt&&G.rec&&G.rec.length>10){P.ghost[G.track.id]=G.rec.slice(0,3000);saveP();toast('👻 幽灵船已保存');}
+    else toast('需在计时赛中航行一段距离后再试');},
+  mute(){toggleMute();},
+  save(){saveP();refreshCoins();toast('💾 已强制存档');},
+  wipe(){if(confirm('清除存档并恢复默认？（不可恢复）')){
+    try{localStorage.removeItem('jsq2_profile');localStorage.removeItem('jsq2_mute');
+      localStorage.removeItem('jsq2_vol');localStorage.removeItem('jsq2_bri');}catch(e){}
+    location.reload();}},
+  glass(){const on=document.body.classList.toggle('tglass');tog(this,on);toast(on?'💧 液态玻璃 UI：开':'💧 液态玻璃 UI：关');},
+  tslime(){const on=document.body.classList.toggle('tslime');tog(this,on);toast(on?'🟢 史莱姆 UI：开':'🟢 史莱姆 UI：关');},
+  rain(){const on=document.body.classList.toggle('train');tog(this,on);toast(on?'🌈 彩虹背景：开':'🌈 彩虹背景：关');},
+  trail(){DEV.slime=!DEV.slime;tog(this,DEV.slime);toast(DEV.slime?'🌀 粘液拖尾：开':'🌀 粘液拖尾：关');},
+  fx(){DEV.fx=!DEV.fx;tog(this,DEV.fx);toast(DEV.fx?'⭐ 全屏特效：开':'⭐ 全屏特效：关');},
+  close(){backTarget();}
+};
+function tog(b,on){if(b&&b.classList)b.classList.toggle('on',on);}
+$('devPanel').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');
+  if(b&&DEVACTS[b.dataset.act])DEVACTS[b.dataset.act].call(b);});
+$('devBtn').onclick=()=>{uiSnd();show('devPanel');
+  if(P.troll){$('trollLock').classList.add('hide');$('trollGrid').classList.remove('hide');}};
+$('trollLock').onclick=()=>{const p=prompt('🧪 输入巨魔分区密码：');
+  if(p===null)return;
+  if(p.trim().toUpperCase()==='NB666'){P.troll=1;saveP();
+    $('trollLock').classList.add('hide');$('trollGrid').classList.remove('hide');
+    toast('🧪 巨魔分区已解锁');blip(520,.15,.3,1040);}
+  else toast('❌ 密码错误');};
+setInterval(()=>{if(DEV.fx&&S.screen==='play'&&!S.paused&&!document.hidden){
+  const x=cam.x+(Math.random()-.5)*W*.85,y=cam.y+(Math.random()-.5)*H*.85;
+  burst(x,y,8);if(Math.random()<.35)rings.push({x,y,b:S.t});}},430);
+if(P.dev)$('devBtn').classList.remove('hide');
+(function(){
+  try{const b=localStorage.getItem('jsq2_bri');
+    if(b){$('brightSlider').value=b;$('brightVal').textContent=b+'%';
+      document.body.style.filter='brightness('+(b/100)+')';}}catch(e){}
+  const bs=$('brightSlider');
+  bs.addEventListener('input',()=>{const v=+bs.value;$('brightVal').textContent=v+'%';
+    document.body.style.filter='brightness('+(v/100)+')';
+    try{localStorage.setItem('jsq2_bri',String(v));}catch(e){}});
+  const vs=$('volSlider');
+  vs.addEventListener('input',()=>{const k=+vs.value;S.vol=k/100;$('volVal').textContent=k+'%';
+    try{localStorage.setItem('jsq2_vol',String(S.vol));}catch(e){}
+    if(master&&!S.muted)master.gain.value=S.vol;});})();
+
+/* ================= 幸运转盘 ================= */
+const WSEG=[
+ {l:'🪙50',col:'#ffd23e',v:()=>addCoins(50)},
+ {l:'🪙100',col:'#fff3c4',v:()=>addCoins(100)},
+ {l:'⚡满冲刺',col:'#ffb43a',buff:'boost'},
+ {l:'🪙200',col:'#ffd23e',v:()=>addCoins(200)},
+ {l:'🏅XP80',col:'#c9a4ff',v:()=>gainXP(80)},
+ {l:'🪙500',col:'#ff9de2',v:()=>addCoins(500)},
+ {l:'🛡护盾',col:'#7ee0ff',buff:'shield'},
+ {l:'再接再厉',col:'#e8f4ff',empty:1}];
+let wheelRot=0,wheelBusy=false;
+function wheelFreeToday(){return P.lastSpin!==dailySeed();}
+function buildWheel(){
+  const f=wheelFreeToday();
+  $('wheelInfo').textContent=f?'🎁 今日免费一次！之后每次 🪙100':'今日已转，下次 🪙100 / 次';
+  $('btnSpin').textContent=f?'免费转！':'🪙100 转！';
+  drawWheel(wheelRot);}
+function drawWheel(rot){
+  const cv2=$('wheelCv'),c=cv2.getContext('2d');
+  c.clearRect(0,0,600,600);c.save();c.translate(300,300);c.rotate(rot);
+  for(let i=0;i<8;i++){const a0=i/8*TAU,a1=(i+1)/8*TAU;
+    c.beginPath();c.moveTo(0,0);c.arc(0,0,286,a0,a1);c.closePath();
+    c.fillStyle=WSEG[i].col;c.fill();c.strokeStyle='#1b6fae';c.lineWidth=5;c.stroke();
+    c.save();c.rotate(a0+TAU/16);c.textAlign='center';c.textBaseline='middle';
+    c.font="800 30px 'Baloo 2','ZCOOL KuaiLe'";c.fillStyle='#134a77';
+    c.fillText(WSEG[i].l,178,0);c.restore();}
+  c.restore();
+  c.fillStyle='#1b6fae';c.beginPath();c.arc(300,300,46,0,TAU);c.fill();
+  c.fillStyle='#ffd23e';c.beginPath();c.arc(300,300,34,0,TAU);c.fill();
+  c.fillStyle='#134a77';c.font="900 28px 'Baloo 2'";c.textAlign='center';c.textBaseline='middle';
+  c.fillText('GO',300,302);
+  c.fillStyle='#e23b2e';c.beginPath();c.moveTo(300,16);c.lineTo(283,54);c.lineTo(317,54);c.closePath();
+  c.fill();c.strokeStyle='#0d4d7a';c.lineWidth=3;c.stroke();}
+function spinWheel(){
+  if(wheelBusy)return;
+  const f=wheelFreeToday();
+  if(!f){if(P.coins<100)return toast('金币不足（需 🪙100）');P.coins-=100;refreshCoins();}
+  P.lastSpin=dailySeed();P.stats.wheel=(P.stats.wheel||0)+1;saveP();checkAch();
+  wheelBusy=true;$('btnSpin').disabled=true;$('btnSpin').style.opacity=.6;
+  const idx=Math.floor(Math.random()*8);
+  const target=-Math.PI/2-(idx/8*TAU+TAU/16);
+  const start=wheelRot,end=start+TAU*5+(((target-start)%TAU)+TAU)%TAU;
+  const t0=performance.now(),dur=4200;
+  blip(880,.15,.4);
+  (function anim(){
+    const t=Math.min(1,(performance.now()-t0)/dur),e=1-Math.pow(1-t,4);
+    wheelRot=start+(end-start)*e;drawWheel(wheelRot);
+    if(t<1)requestAnimationFrame(anim);
+    else{wheelBusy=false;$('btnSpin').disabled=false;$('btnSpin').style.opacity=1;
+      const seg=WSEG[idx];
+      if(seg.empty)toast('🎡 谢谢参与，再接再厉！');
+      else if(seg.buff){P.startBuff=seg.buff;saveP();
+        toast(seg.buff==='shield'?'🛡 下局开局自带护盾！':'⚡ 下局开局冲刺全满！');}
+      else{seg.v();refreshCoins();toast('🎡 获得 '+seg.l+'！');}
+      achSnd();buildWheel();}})();}
+$('btnWheel').onclick=()=>{uiSnd();buildWheel();show('wheelO');};
+$('btnWheelBack').onclick=goMenu;
+$('btnSpin').onclick=spinWheel;
+
+/* ================= 钢铁大战：选车 ================= */
+let vehFor='war';
+function buildVehPick(){
+  const box=$('vehCards');box.innerHTML='';
+  for(const k in WARVEH){const v=WARVEH[k];
+    const d=document.createElement('div');d.className='mcard';
+    d.innerHTML='<div class="em">'+v.em+'</div><h3>'+v.n+'</h3><p>'+v.desc+'</p>'+
+      '<div class="bst">❤ 装甲 '+v.hp+' · 极速 '+(v.top*26|0)+' km/h</div>';
+    d.onclick=()=>{if(AC&&AC.state==='suspended')AC.resume();
+      const md=vehFor==='wteam'?'wteam':'war';
+      LAST={mode:md,opts:{veh:k}};
+      newGame(md,{veh:k});};
+    box.appendChild(d);}}
+$('btnVehBack').onclick=goMenu;
+
+/* ================= 主循环 ================= */
+let last=performance.now();
+function tick(now){const dt=clamp((now-last)/16.667,0.1,3);last=now;
+  update(dt);render();drawCustPrev();bgmTick();
+  requestAnimationFrame(tick);}
+requestAnimationFrame(tick);
+ensureMissions();refreshCoins();buildModes();
+$('lvChip').textContent='🏅 Lv.'+P.lv+' · '+titleOf(P.lv);
+</script>
+</body>
+</html>
+
