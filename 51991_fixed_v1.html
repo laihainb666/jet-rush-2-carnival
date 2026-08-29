@@ -407,6 +407,10 @@ input[type=range]{flex:1;accent-color:#1b6fae;height:26px;cursor:pointer}
         <button class="etool" data-act="ult">💥 超武能量满</button>
         <button class="etool" data-act="kill">☠️ 秒杀全部敌人</button>
         <button class="etool" data-act="heal">💚 满血+护盾</button>
+        <button class="etool" data-act="nuke">💥 全屏核爆</button>
+        <button class="etool" data-act="freeze">❄ 冰封全场</button>
+        <button class="etool" data-act="turbo">🚀 极速模式</button>
+        <button class="etool" data-act="vacu">🧲 一键吸金币</button>
         <button class="etool" data-act="reset">🌊 重置当前局</button>
         <button class="etool" data-act="clrlv">🗑 清空自定义关卡</button>
         <button class="etool" data-act="ach">🏆 解锁全部成就</button>
@@ -505,17 +509,17 @@ const BOATS={
   dolphin:{name:'海豚号',price:1200,hull:'#eaf6ff',stripe:'#4aa8e0',nose:'#ffd23e',rider:'#4aa8e0',top:4.9,btop:6.9,acc:.065,turn:.057,desc:'聪明的小伙伴',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
   waverider:{name:'浪尖号',price:1500,hull:'#fff0f5',stripe:'#ff6fb5',nose:'#37c996',rider:'#ff6fb5',top:5.0,btop:7.1,acc:.062,turn:.054,desc:'气垫悬浮黑科技',pk:'hover',pkd:'🌀 免疫漩涡吸力'},
   shark:{name:'碎浪鲨',price:1800,hull:'#e8f4ff',stripe:'#38506b',nose:'#e23b2e',rider:'#e23b2e',top:5.9,btop:8.2,acc:.06,turn:.041,desc:'狂暴极速，转向迟缓',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
-  phoenix:{name:'火凤凰',price:2200,hull:'#fff2e8',stripe:'#ff6a3d',nose:'#ffd23e',rider:'#ff6a3d',top:5.3,btop:7.5,acc:.068,turn:.055,desc:'浴火重生的表演家',pk:'trick',pkd:'🌀 特技得分 ×2'},
+  phoenix:{fx:'phoenix',name:'火凤凰',price:2200,hull:'#fff2e8',stripe:'#ff6a3d',nose:'#ffd23e',rider:'#ff6a3d',top:5.3,btop:7.5,acc:.068,turn:.055,desc:'浴火重生的表演家',pk:'trick',pkd:'🌀 特技得分 ×2'},
   unicorn:{name:'独角兽号',price:3500,hull:'#fdf4ff',stripe:'#d86ff0',nose:'#ffd23e',rider:'#d86ff0',top:5.3,btop:7.4,acc:.067,turn:.056,desc:'梦境彩虹坐骑',pk:'fever',pkd:'🌈 狂热得分×1.9 且更久'},
   ghost:{name:'深海幽灵',price:2600,hull:'#eef2ff',stripe:'#7f8fb0',nose:'#c9d6f0',rider:'#7f8fb0',top:5.4,btop:7.6,acc:.066,turn:.052,desc:'半透明的神秘之影',pk:'shield',pkd:'🛡 每局开局带护盾'},
   aurora:{name:'极光号',price:3000,hull:'#f4ecff',stripe:'#8e6cf0',nose:'#8e6cf0',rider:'#c05df0',top:5.6,btop:8.0,acc:.072,turn:.058,desc:'全能旗舰，物有所值',pk:'item',pkd:'🎁 道具时长 +50%'},
   king:{name:'金色传说',price:4500,hull:'#fff8e0',stripe:'#e0a93f',nose:'#ffd23e',rider:'#e0a93f',top:5.8,btop:8.1,acc:.07,turn:.056,desc:'闪耀的传说之艇',pk:'combo',pkd:'🔥 连击窗口 +1.2s'},
   dragon:{name:'龙王号',price:6000,hull:'#f0fff4',stripe:'#1d8a5a',nose:'#ffd23e',rider:'#1d8a5a',top:6.2,btop:8.6,acc:.074,turn:.054,desc:'统御四海的霸主',pk:'royal',pkd:'🛡开局护盾+🪙金币×1.15'},
   leviathan:{name:'利维坦',price:7000,hull:'#e3f2fd',stripe:'#0d47a1',nose:'#00bcd4',rider:'#0d47a1',top:6.4,btop:8.9,acc:.076,turn:.053,desc:'深海巨兽，冲刺无与伦比',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
-  manta:{name:'魔鬼鱼',price:6500,hull:'#f3e5f5',stripe:'#6a1b9a',nose:'#00e5ff',rider:'#6a1b9a',top:5.9,btop:8.4,acc:.07,turn:.059,desc:'优雅的滑翔专家',pk:'trick',pkd:'🌀 特技得分 ×2'},
+  manta:{fx:'manta',name:'魔鬼鱼',price:6500,hull:'#f3e5f5',stripe:'#6a1b9a',nose:'#00e5ff',rider:'#6a1b9a',top:5.9,btop:8.4,acc:.07,turn:.059,desc:'优雅的滑翔专家',pk:'trick',pkd:'🌀 特技得分 ×2'},
   tempest:{name:'风暴信使',price:7200,hull:'#eceff1',stripe:'#37474f',nose:'#ffd600',rider:'#37474f',top:6.3,btop:8.8,acc:.073,turn:.052,desc:'驾驭风暴，无视漂移',pk:'wind',pkd:'🌪 免疫风暴漂移'},
   corsair:{name:'黑珍珠号',price:5800,hull:'#efebe9',stripe:'#3e2723',nose:'#ffab00',rider:'#3e2723',top:5.7,btop:8.0,acc:.068,turn:.057,desc:'劫掠金币的幽灵海盗船',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
-  titan:{name:'泰坦巨舰',price:8500,hull:'#fff8e1',stripe:'#bf360c',nose:'#ffd600',rider:'#bf360c',top:6.0,btop:8.5,acc:.071,turn:.055,desc:'坚不可摧的海上堡垒',pk:'shield',pkd:'🛡 每局开局带护盾'},
+  titan:{fx:'titan',name:'泰坦巨舰',price:8500,hull:'#fff8e1',stripe:'#bf360c',nose:'#ffd600',rider:'#bf360c',top:6.0,btop:8.5,acc:.071,turn:.055,desc:'坚不可摧的海上堡垒',pk:'shield',pkd:'🛡 每局开局带护盾'},
   nimbus:{name:'七彩祥云',price:7800,hull:'#fce4ec',stripe:'#c2185b',nose:'#ffeb3b',rider:'#c2185b',top:5.8,btop:8.3,acc:.069,turn:.06,desc:'驾着彩虹创造狂热',pk:'fever',pkd:'🌈 狂热得分×1.9 且更久'},
   vortex:{name:'漩涡行者',price:6800,hull:'#e0f7fa',stripe:'#006064',nose:'#00e676',rider:'#006064',top:5.6,btop:8.1,acc:.067,turn:.058,desc:'在漩涡中如履平地',pk:'hover',pkd:'🌀 免疫漩涡吸力'},
   megashark:{name:'巨齿鲨号',price:9000,hull:'#eceff1',stripe:'#455a64',nose:'#ff1744',rider:'#455a64',top:6.5,btop:9.1,acc:.077,turn:.05,desc:'远古霸主，一口咬碎纪录',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
@@ -528,48 +532,50 @@ const BOATS={
   rocketray:{name:'火箭鳐',price:10500,hull:'#efebe9',stripe:'#dd2c00',nose:'#ffea00',rider:'#dd2c00',top:6.6,btop:9.3,acc:.078,turn:.052,desc:'背绑火箭推进器的魔鬼鱼',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
   xuanwu:{name:'玄武龟甲',price:9800,hull:'#e8f5e9',stripe:'#1b5e20',nose:'#aeea00',rider:'#1b5e20',top:5.7,btop:8.2,acc:.066,turn:.055,desc:'北方守护神兽，防御无双',pk:'shield',pkd:'🛡 每局开局带护盾'},
   ghostfleet:{name:'幽灵舰队',price:11500,hull:'#eceffc',stripe:'#78909c',nose:'#cfd8dc',rider:'#546e7a',top:6.2,btop:9.0,acc:.073,turn:.056,desc:'沉船湾驶来的亡灵旗舰',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
-  abyss:{name:'深渊巡洋舰',price:12500,hull:'#101828',stripe:'#00bfa5',nose:'#64ffda',rider:'#00bfa5',top:6.4,btop:9.2,acc:.075,turn:.053,desc:'从海沟深处升起的钢铁巨影',pk:'item',pkd:'🎁 道具时长 +50%'},
+  abyss:{fx:'abyss',name:'深渊巡洋舰',price:12500,hull:'#101828',stripe:'#00bfa5',nose:'#64ffda',rider:'#00bfa5',top:6.4,btop:9.2,acc:.075,turn:.053,desc:'从海沟深处升起的钢铁巨影',pk:'item',pkd:'🎁 道具时长 +50%'},
   heishen:{name:'黑神',price:99999,hull:'#111418',stripe:'#ffd23e',nose:'#ff4060',rider:'#ffd23e',top:6.4,btop:9.0,acc:.078,turn:.064,desc:'六边形战士 · 数据对比基准艇',pk:'none',pkd:'📊 六边形全满 · 对比图专用'},
   /* ===== 嘉年华大升级：20 艘全新船型（shape 决定独特造型） ===== */
-  viper:{name:'毒蛇号',price:9800,shape:'blade',hull:'#1a2e1f',stripe:'#7ac74f',nose:'#a6e22e',rider:'#7ac74f',top:6.7,btop:9.4,acc:.079,turn:.05,desc:'利刃蛇形艇，贴海狂飙',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
-  swordfish:{name:'剑鱼号',price:10200,shape:'blade',hull:'#e8f4ff',stripe:'#1b6fae',nose:'#ffd23e',rider:'#1b6fae',top:6.8,btop:9.6,acc:.077,turn:.049,desc:'尖喙破浪，直线撕开海面',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
-  lancet:{name:'长枪号',price:8800,shape:'long',hull:'#f4f7fa',stripe:'#5b7d99',nose:'#37c996',rider:'#5b7d99',top:6.2,btop:8.9,acc:.074,turn:.05,desc:'拉长舰身，续航王者',pk:'regen',pkd:'⚡ 冲刺回复 +60%'},
-  mantis:{name:'螳螂号',price:9200,shape:'long',hull:'#eafaf2',stripe:'#2fae66',nose:'#9ccc65',rider:'#2fae66',top:6.3,btop:9.0,acc:.076,turn:.054,desc:'长臂出击，腾空更稳',pk:'trick',pkd:'🌀 特技得分 ×2'},
-  falcon:{name:'猎鹰号',price:10800,shape:'wing',hull:'#fff4e0',stripe:'#e07b1e',nose:'#ffd23e',rider:'#e07b1e',top:6.5,btop:9.2,acc:.078,turn:.056,desc:'双翼展开，弯道如鹰掠水',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
-  eagle:{name:'雄鹰号',price:11200,shape:'wing',hull:'#eef2ff',stripe:'#3f51b5',nose:'#ffd600',rider:'#3f51b5',top:6.7,btop:9.5,acc:.076,turn:.052,desc:'翼展最宽的空中霸主',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
-  pancake:{name:'松饼号',price:8600,shape:'round',hull:'#fff3e0',stripe:'#e07b1e',nose:'#ffd23e',rider:'#e07b1e',top:5.8,btop:8.3,acc:.072,turn:.062,desc:'圆滚滚萌系气垫，转向如丝',pk:'shield',pkd:'🛡 每局开局带护盾'},
-  bubble:{name:'泡泡号',price:8900,shape:'round',hull:'#e0f7fa',stripe:'#00acc1',nose:'#ffeb3b',rider:'#00acc1',top:5.9,btop:8.4,acc:.073,turn:.064,desc:'透明泡泡舱，风暴也吹不动',pk:'wind',pkd:'🌪 免疫风暴漂移'},
-  twin:{name:'双子号',price:11500,shape:'cat',hull:'#eceff1',stripe:'#f06292',nose:'#ffd23e',rider:'#f06292',top:6.3,btop:9.0,acc:.078,turn:.06,desc:'双体船身，连击节奏大师',pk:'combo',pkd:'🔥 连击窗口 +1.2s'},
-  catamaran:{name:'双体帆船',price:11800,shape:'cat',hull:'#f4fbfd',stripe:'#4aa8e0',nose:'#ffb43a',rider:'#4aa8e0',top:6.4,btop:9.1,acc:.075,turn:.058,desc:'海上双塔，金币双倍磁吸',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
-  hoverx:{name:'悬浮者X',price:10600,shape:'hover',hull:'#e8eaf6',stripe:'#5c6bc0',nose:'#00e5ff',rider:'#5c6bc0',top:6.1,btop:8.8,acc:.079,turn:.06,desc:'全气垫悬浮，漩涡吸不住',pk:'hover',pkd:'🌀 免疫漩涡吸力'},
-  skyship:{name:'空天号',price:10900,shape:'hover',hull:'#f3e5f5',stripe:'#7b1fa2',nose:'#e040fb',rider:'#7b1fa2',top:6.2,btop:8.9,acc:.077,turn:.061,desc:'低空掠海飞行器',pk:'wind',pkd:'🌪 免疫风暴漂移'},
-  barge:{name:'巨驳船',price:12300,shape:'wide',hull:'#fff8e1',stripe:'#8d6e63',nose:'#ffd600',rider:'#8d6e63',top:5.9,btop:8.5,acc:.068,turn:.049,desc:'宽体重甲，撞开一切障碍',pk:'shield',pkd:'🛡 每局开局带护盾'},
-  plate:{name:'装甲板',price:12600,shape:'wide',hull:'#eceff1',stripe:'#455a64',nose:'#ff9100',rider:'#455a64',top:6.0,btop:8.6,acc:.069,turn:.05,desc:'装甲巡洋，冲刺不费油',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
-  sleekr:{name:'流光号',price:11600,shape:'sleek',hull:'#111827',stripe:'#38bdf8',nose:'#a5f3fc',rider:'#38bdf8',top:6.6,btop:9.4,acc:.08,turn:.057,desc:'超细流线，极速美学',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
-  needle:{name:'银针号',price:11900,shape:'sleek',hull:'#f8fafc',stripe:'#64748b',nose:'#38bdf8',rider:'#64748b',top:6.5,btop:9.3,acc:.079,turn:.059,desc:'针尖破风，冲刺回能飞快',pk:'regen',pkd:'⚡ 冲刺回复 +60%'},
-  explorer:{name:'探索者号',price:12100,shape:'sub',hull:'#0f2027',stripe:'#2b7a9e',nose:'#7ee0ff',rider:'#2b7a9e',top:6.1,btop:8.8,acc:.074,turn:.056,desc:'潜艇造型，狂热更持久',pk:'fever',pkd:'🌈 狂热得分×1.9 且更久'},
-  diveking:{name:'潜龙号',price:12800,shape:'sub',hull:'#10222e',stripe:'#ffb300',nose:'#ffea00',rider:'#ffb300',top:6.3,btop:9.0,acc:.075,turn:.057,desc:'深海龙王，护盾金币双收',pk:'royal',pkd:'🛡开局护盾+🪙金币×1.15'},
-  nova:{name:'新星号',price:13200,shape:'wing',hull:'#1a1030',stripe:'#ff40ff',nose:'#00e5ff',rider:'#ff40ff',top:6.6,btop:9.4,acc:.081,turn:.06,desc:'开局即巅峰，起跑就狂热',pk:'nova',pkd:'🔥 开局直接触发 8 秒狂热'},
-  odin:{name:'奥丁号',price:15000,shape:'long',hull:'#1e293b',stripe:'#94a3b8',nose:'#ffd23e',rider:'#e2e8f0',top:6.8,btop:9.6,acc:.082,turn:.058,desc:'北欧神王旗舰，狂热爆发翻倍',pk:'rage',pkd:'💥 狂热得分 ×2.2'},
-  manta:{name:'蝠鲼号',price:16000,shape:'blade',hull:'#123a4a',stripe:'#00bcd4',nose:'#ffd23e',rider:'#00e5ff',top:6.7,btop:9.4,acc:.083,turn:.062,desc:'刃形高速巡航，掠过水面如幽灵',pk:'wind',pkd:'🌬 尾流加速 +15%'},
-  krakenx:{name:'海妖X号',price:16400,shape:'round',hull:'#2b1b3d',stripe:'#8e44ad',nose:'#e84393',rider:'#a55eea',top:6.4,btop:9.2,acc:.085,turn:.064,desc:'深海巨兽血脉，火力凶悍',pk:'drain',pkd:'🩸 击杀回复血量'},
-  titan:{name:'泰坦号',price:16800,shape:'wide',hull:'#3a3a3a',stripe:'#ffb300',nose:'#ff6d00',rider:'#ffcc80',top:6.2,btop:9.0,acc:.078,turn:.056,desc:'钢铁巨舰，装甲厚重',pk:'shield',pkd:'🛡 开局获得护盾'},
-  wraith:{name:'幽灵王号',price:17200,shape:'sleek',hull:'#1a1a2e',stripe:'#9b59b6',nose:'#3498db',rider:'#d6a2ff',top:6.9,btop:9.6,acc:.086,turn:.063,desc:'无声穿梭的午夜幽灵',pk:'regen',pkd:'♻ 缓慢自动回血'},
-  inferno:{name:'炼狱号',price:17600,shape:'long',hull:'#4a0f0f',stripe:'#ff5722',nose:'#ffc107',rider:'#ff8a65',top:6.6,btop:9.5,acc:.084,turn:.058,desc:'熔岩驱动的火焰快艇',pk:'fever',pkd:'🌈 狂热时间 +40%'},
-  volt:{name:'伏特号',price:18000,shape:'cat',hull:'#0d2137',stripe:'#fdd835',nose:'#29b6f6',rider:'#fff176',top:6.8,btop:9.7,acc:.087,turn:.061,desc:'双体电击猫，转向如闪电',pk:'royal',pkd:'👑 金币收益 ×1.4'},
-  glacier:{name:'冰川号',price:18400,shape:'sub',hull:'#0e3a4a',stripe:'#a9d6e5',nose:'#7fd1f0',rider:'#e0f7fa',top:6.3,btop:9.1,acc:.079,turn:.057,desc:'极地冰壳潜艇，免疫高温',pk:'shield',pkd:'🛡 开局获得护盾'},
-  phoenix:{name:'凤凰号',price:18800,shape:'wing',hull:'#5e0f0f',stripe:'#ff7043',nose:'#ffd54f',rider:'#ffab91',top:6.9,btop:9.8,acc:.086,turn:.06,desc:'烈焰双翼，浴火重生',pk:'rage',pkd:'💥 狂热得分 ×2.0'},
-  comet:{name:'彗星号',price:19200,shape:'blade',hull:'#101c3a',stripe:'#7c4dff',nose:'#18ffff',rider:'#b388ff',top:7.0,btop:9.9,acc:.088,turn:.062,desc:'拖曳星光的极速彗尾',pk:'coin',pkd:'🪙 金币收益 ×1.3'},
-  hydra:{name:'九头蛇号',price:19600,shape:'cat',hull:'#1b3a1b',stripe:'#4caf50',nose:'#8bc34a',rider:'#a5d6a7',top:6.7,btop:9.5,acc:.084,turn:.063,desc:'多头再生，越战越勇',pk:'drain',pkd:'🩸 击杀回复血量'},
-  merlin:{name:'梅林号',price:20000,shape:'round',hull:'#1a1a4a',stripe:'#5e35b1',nose:'#00e5ff',rider:'#b39ddb',top:6.6,btop:9.4,acc:.083,turn:.065,desc:'奥术符文护体的法师快艇',pk:'trick',pkd:'🌀 特技得分 ×1.6'},
-  stardust:{name:'星尘号',price:20500,shape:'hover',hull:'#2a1b3d',stripe:'#ff80ab',nose:'#40c4ff',rider:'#f8bbd0',top:6.9,btop:9.8,acc:.087,turn:.061,desc:'气垫悬浮，星光粒子拖尾',pk:'combo',pkd:'🔥 连击上限 +1'},
-  thunder:{name:'雷霆号',price:21000,shape:'long',hull:'#1b2a4a',stripe:'#ffee58',nose:'#ffb300',rider:'#fff59d',top:7.1,btop:10.0,acc:.088,turn:.06,desc:'雷鸣般的狂暴加速',pk:'btop',pkd:'💨 冲刺极速 +6%'},
-  abyss:{name:'深渊号',price:21500,shape:'sub',hull:'#05121f',stripe:'#00897b',nose:'#4dd0e1',rider:'#80deea',top:6.5,btop:9.3,acc:.081,turn:.058,desc:'无底深渊的寂静猎手',pk:'regen',pkd:'♻ 缓慢自动回血'},
-  solaris:{name:'日冕号',price:22000,shape:'wide',hull:'#3d1a00',stripe:'#ff9100',nose:'#ffd54f',rider:'#ffcc80',top:6.8,btop:9.7,acc:.085,turn:.059,desc:'太阳表面般的炽热装甲',pk:'fever',pkd:'🌈 狂热时间 +40%'},
-  umbra:{name:'暗影号',price:23000,shape:'sleek',hull:'#111122',stripe:'#37474f',nose:'#607d8b',rider:'#90a4ae',top:7.0,btop:9.9,acc:.087,turn:.064,desc:'融于夜色的暗影之刃',pk:'item',pkd:'🎁 道具时长 +50%'},
-  zephyr:{name:'和风号',price:24000,shape:'hover',hull:'#0e3a2e',stripe:'#26a69a',nose:'#80deea',rider:'#b2dfdb',top:7.1,btop:10.1,acc:.089,turn:.062,desc:'御风而行，灵动无双',pk:'wind',pkd:'🌬 尾流加速 +15%'},
-  draco:{name:'天龙号',price:26000,shape:'blade',hull:'#3a0f1f',stripe:'#ff5252',nose:'#ffd740',rider:'#ff8a80',top:7.2,btop:10.2,acc:.09,turn:.061,desc:'龙翼破浪，王者气势',pk:'royal',pkd:'👑 金币收益 ×1.4'},
-  eterna:{name:'永恒号',price:32000,shape:'long',hull:'#0d1b2a',stripe:'#e0c341',nose:'#fff6d5',rider:'#ffd700',top:7.3,btop:10.4,acc:.091,turn:.063,desc:'传说级旗舰，跨越时代的永恒之舟',pk:'btop',pkd:'💨 冲刺极速 +8% · 隐藏彩蛋'}
+  viper:{fx:'snake',name:'毒蛇号',price:9800,shape:'blade',hull:'#1a2e1f',stripe:'#7ac74f',nose:'#a6e22e',rider:'#7ac74f',top:6.7,btop:9.4,acc:.079,turn:.05,desc:'利刃蛇形艇，贴海狂飙',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
+  swordfish:{fx:'sword',name:'剑鱼号',price:10200,shape:'blade',hull:'#e8f4ff',stripe:'#1b6fae',nose:'#ffd23e',rider:'#1b6fae',top:6.8,btop:9.6,acc:.077,turn:.049,desc:'尖喙破浪，直线撕开海面',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
+  lancet:{fx:'lance',name:'长枪号',price:8800,shape:'long',hull:'#f4f7fa',stripe:'#5b7d99',nose:'#37c996',rider:'#5b7d99',top:6.2,btop:8.9,acc:.074,turn:.05,desc:'拉长舰身，续航王者',pk:'regen',pkd:'⚡ 冲刺回复 +60%'},
+  mantis:{fx:'mantis',name:'螳螂号',price:9200,shape:'long',hull:'#eafaf2',stripe:'#2fae66',nose:'#9ccc65',rider:'#2fae66',top:6.3,btop:9.0,acc:.076,turn:.054,desc:'长臂出击，腾空更稳',pk:'trick',pkd:'🌀 特技得分 ×2'},
+  falcon:{fx:'falcon',name:'猎鹰号',price:10800,shape:'wing',hull:'#fff4e0',stripe:'#e07b1e',nose:'#ffd23e',rider:'#e07b1e',top:6.5,btop:9.2,acc:.078,turn:.056,desc:'双翼展开，弯道如鹰掠水',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
+  eagle:{fx:'eagle',name:'雄鹰号',price:11200,shape:'wing',hull:'#eef2ff',stripe:'#3f51b5',nose:'#ffd600',rider:'#3f51b5',top:6.7,btop:9.5,acc:.076,turn:.052,desc:'翼展最宽的空中霸主',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
+  pancake:{fx:'pancake',name:'松饼号',price:8600,shape:'round',hull:'#fff3e0',stripe:'#e07b1e',nose:'#ffd23e',rider:'#e07b1e',top:5.8,btop:8.3,acc:.072,turn:.062,desc:'圆滚滚萌系气垫，转向如丝',pk:'shield',pkd:'🛡 每局开局带护盾'},
+  bubble:{fx:'bubble',name:'泡泡号',price:8900,shape:'round',hull:'#e0f7fa',stripe:'#00acc1',nose:'#ffeb3b',rider:'#00acc1',top:5.9,btop:8.4,acc:.073,turn:.064,desc:'透明泡泡舱，风暴也吹不动',pk:'wind',pkd:'🌪 免疫风暴漂移'},
+  twin:{fx:'twin',name:'双子号',price:11500,shape:'cat',hull:'#eceff1',stripe:'#f06292',nose:'#ffd23e',rider:'#f06292',top:6.3,btop:9.0,acc:.078,turn:.06,desc:'双体船身，连击节奏大师',pk:'combo',pkd:'🔥 连击窗口 +1.2s'},
+  catamaran:{fx:'catamaran',name:'双体帆船',price:11800,shape:'cat',hull:'#f4fbfd',stripe:'#4aa8e0',nose:'#ffb43a',rider:'#4aa8e0',top:6.4,btop:9.1,acc:.075,turn:.058,desc:'海上双塔，金币双倍磁吸',pk:'coin',pkd:'🪙 金币收益 ×1.25'},
+  hoverx:{fx:'hoverx',name:'悬浮者X',price:10600,shape:'hover',hull:'#e8eaf6',stripe:'#5c6bc0',nose:'#00e5ff',rider:'#5c6bc0',top:6.1,btop:8.8,acc:.079,turn:.06,desc:'全气垫悬浮，漩涡吸不住',pk:'hover',pkd:'🌀 免疫漩涡吸力'},
+  skyship:{fx:'skyship',name:'空天号',price:10900,shape:'hover',hull:'#f3e5f5',stripe:'#7b1fa2',nose:'#e040fb',rider:'#7b1fa2',top:6.2,btop:8.9,acc:.077,turn:.061,desc:'低空掠海飞行器',pk:'wind',pkd:'🌪 免疫风暴漂移'},
+  barge:{fx:'barge',name:'巨驳船',price:12300,shape:'wide',hull:'#fff8e1',stripe:'#8d6e63',nose:'#ffd600',rider:'#8d6e63',top:5.9,btop:8.5,acc:.068,turn:.049,desc:'宽体重甲，撞开一切障碍',pk:'shield',pkd:'🛡 每局开局带护盾'},
+  plate:{fx:'plate',name:'装甲板',price:12600,shape:'wide',hull:'#eceff1',stripe:'#455a64',nose:'#ff9100',rider:'#455a64',top:6.0,btop:8.6,acc:.069,turn:.05,desc:'装甲巡洋，冲刺不费油',pk:'drain',pkd:'⚡ 冲刺消耗 -35%'},
+  sleekr:{fx:'sleekr',name:'流光号',price:11600,shape:'sleek',hull:'#111827',stripe:'#38bdf8',nose:'#a5f3fc',rider:'#38bdf8',top:6.6,btop:9.4,acc:.08,turn:.057,desc:'超细流线，极速美学',pk:'btop',pkd:'⚡ 冲刺极速 +12%'},
+  needle:{fx:'needle',name:'银针号',price:11900,shape:'sleek',hull:'#f8fafc',stripe:'#64748b',nose:'#38bdf8',rider:'#64748b',top:6.5,btop:9.3,acc:.079,turn:.059,desc:'针尖破风，冲刺回能飞快',pk:'regen',pkd:'⚡ 冲刺回复 +60%'},
+  explorer:{fx:'explorer',name:'探索者号',price:12100,shape:'sub',hull:'#0f2027',stripe:'#2b7a9e',nose:'#7ee0ff',rider:'#2b7a9e',top:6.1,btop:8.8,acc:.074,turn:.056,desc:'潜艇造型，狂热更持久',pk:'fever',pkd:'🌈 狂热得分×1.9 且更久'},
+  diveking:{fx:'diveking',name:'潜龙号',price:12800,shape:'sub',hull:'#10222e',stripe:'#ffb300',nose:'#ffea00',rider:'#ffb300',top:6.3,btop:9.0,acc:.075,turn:.057,desc:'深海龙王，护盾金币双收',pk:'royal',pkd:'🛡开局护盾+🪙金币×1.15'},
+  nova:{fx:'nova',name:'新星号',price:13200,shape:'wing',hull:'#1a1030',stripe:'#ff40ff',nose:'#00e5ff',rider:'#ff40ff',top:6.6,btop:9.4,acc:.081,turn:.06,desc:'开局即巅峰，起跑就狂热',pk:'nova',pkd:'🔥 开局直接触发 8 秒狂热'},
+  odin:{fx:'odin',name:'奥丁号',price:15000,shape:'long',hull:'#1e293b',stripe:'#94a3b8',nose:'#ffd23e',rider:'#e2e8f0',top:6.8,btop:9.6,acc:.082,turn:.058,desc:'北欧神王旗舰，狂热爆发翻倍',pk:'rage',pkd:'💥 狂热得分 ×2.2'},
+  manta:{fx:'manta',name:'蝠鲼号',price:16000,shape:'blade',hull:'#123a4a',stripe:'#00bcd4',nose:'#ffd23e',rider:'#00e5ff',top:6.7,btop:9.4,acc:.083,turn:.062,desc:'刃形高速巡航，掠过水面如幽灵',pk:'wind',pkd:'🌬 尾流加速 +15%'},
+  krakenx:{fx:'kraken',name:'海妖X号',price:16400,shape:'round',hull:'#2b1b3d',stripe:'#8e44ad',nose:'#e84393',rider:'#a55eea',top:6.4,btop:9.2,acc:.085,turn:.064,desc:'深海巨兽血脉，火力凶悍',pk:'drain',pkd:'🩸 击杀回复血量'},
+  titan:{fx:'titan',name:'泰坦号',price:16800,shape:'wide',hull:'#3a3a3a',stripe:'#ffb300',nose:'#ff6d00',rider:'#ffcc80',top:6.2,btop:9.0,acc:.078,turn:.056,desc:'钢铁巨舰，装甲厚重',pk:'shield',pkd:'🛡 开局获得护盾'},
+  wraith:{fx:'wraith',name:'幽灵王号',price:17200,shape:'sleek',hull:'#1a1a2e',stripe:'#9b59b6',nose:'#3498db',rider:'#d6a2ff',top:6.9,btop:9.6,acc:.086,turn:.063,desc:'无声穿梭的午夜幽灵',pk:'regen',pkd:'♻ 缓慢自动回血'},
+  inferno:{fx:'inferno',name:'炼狱号',price:17600,shape:'long',hull:'#4a0f0f',stripe:'#ff5722',nose:'#ffc107',rider:'#ff8a65',top:6.6,btop:9.5,acc:.084,turn:.058,desc:'熔岩驱动的火焰快艇',pk:'fever',pkd:'🌈 狂热时间 +40%'},
+  volt:{fx:'volt',name:'伏特号',price:18000,shape:'cat',hull:'#0d2137',stripe:'#fdd835',nose:'#29b6f6',rider:'#fff176',top:6.8,btop:9.7,acc:.087,turn:.061,desc:'双体电击猫，转向如闪电',pk:'royal',pkd:'👑 金币收益 ×1.4'},
+  glacier:{fx:'glacier',name:'冰川号',price:18400,shape:'sub',hull:'#0e3a4a',stripe:'#a9d6e5',nose:'#7fd1f0',rider:'#e0f7fa',top:6.3,btop:9.1,acc:.079,turn:.057,desc:'极地冰壳潜艇，免疫高温',pk:'shield',pkd:'🛡 开局获得护盾'},
+  phoenix:{fx:'phoenix',name:'凤凰号',price:18800,shape:'wing',hull:'#5e0f0f',stripe:'#ff7043',nose:'#ffd54f',rider:'#ffab91',top:6.9,btop:9.8,acc:.086,turn:.06,desc:'烈焰双翼，浴火重生',pk:'rage',pkd:'💥 狂热得分 ×2.0'},
+  comet:{fx:'comet',name:'彗星号',price:19200,shape:'blade',hull:'#101c3a',stripe:'#7c4dff',nose:'#18ffff',rider:'#b388ff',top:7.0,btop:9.9,acc:.088,turn:.062,desc:'拖曳星光的极速彗尾',pk:'coin',pkd:'🪙 金币收益 ×1.3'},
+  hydra:{fx:'hydra',name:'九头蛇号',price:19600,shape:'cat',hull:'#1b3a1b',stripe:'#4caf50',nose:'#8bc34a',rider:'#a5d6a7',top:6.7,btop:9.5,acc:.084,turn:.063,desc:'多头再生，越战越勇',pk:'drain',pkd:'🩸 击杀回复血量'},
+  merlin:{fx:'merlin',name:'梅林号',price:20000,shape:'round',hull:'#1a1a4a',stripe:'#5e35b1',nose:'#00e5ff',rider:'#b39ddb',top:6.6,btop:9.4,acc:.083,turn:.065,desc:'奥术符文护体的法师快艇',pk:'trick',pkd:'🌀 特技得分 ×1.6'},
+  stardust:{fx:'stardust',name:'星尘号',price:20500,shape:'hover',hull:'#2a1b3d',stripe:'#ff80ab',nose:'#40c4ff',rider:'#f8bbd0',top:6.9,btop:9.8,acc:.087,turn:.061,desc:'气垫悬浮，星光粒子拖尾',pk:'combo',pkd:'🔥 连击上限 +1'},
+  thunder:{fx:'thunder',name:'雷霆号',price:21000,shape:'long',hull:'#1b2a4a',stripe:'#ffee58',nose:'#ffb300',rider:'#fff59d',top:7.1,btop:10.0,acc:.088,turn:.06,desc:'雷鸣般的狂暴加速',pk:'btop',pkd:'💨 冲刺极速 +6%'},
+  abyss:{fx:'abyss',name:'深渊号',price:21500,shape:'sub',hull:'#05121f',stripe:'#00897b',nose:'#4dd0e1',rider:'#80deea',top:6.5,btop:9.3,acc:.081,turn:.058,desc:'无底深渊的寂静猎手',pk:'regen',pkd:'♻ 缓慢自动回血'},
+  solaris:{fx:'solaris',name:'日冕号',price:22000,shape:'wide',hull:'#3d1a00',stripe:'#ff9100',nose:'#ffd54f',rider:'#ffcc80',top:6.8,btop:9.7,acc:.085,turn:.059,desc:'太阳表面般的炽热装甲',pk:'fever',pkd:'🌈 狂热时间 +40%'},
+  umbra:{fx:'umbra',name:'暗影号',price:23000,shape:'sleek',hull:'#111122',stripe:'#37474f',nose:'#607d8b',rider:'#90a4ae',top:7.0,btop:9.9,acc:.087,turn:.064,desc:'融于夜色的暗影之刃',pk:'item',pkd:'🎁 道具时长 +50%'},
+  zephyr:{fx:'zephyr',name:'和风号',price:24000,shape:'hover',hull:'#0e3a2e',stripe:'#26a69a',nose:'#80deea',rider:'#b2dfdb',top:7.1,btop:10.1,acc:.089,turn:.062,desc:'御风而行，灵动无双',pk:'wind',pkd:'🌬 尾流加速 +15%'},
+  draco:{fx:'draco',name:'天龙号',price:26000,shape:'blade',hull:'#3a0f1f',stripe:'#ff5252',nose:'#ffd740',rider:'#ff8a80',top:7.2,btop:10.2,acc:.09,turn:.061,desc:'龙翼破浪，王者气势',pk:'royal',pkd:'👑 金币收益 ×1.4'},
+  eterna:{fx:'eterna',name:'永恒号',price:32000,shape:'long',hull:'#0d1b2a',stripe:'#e0c341',nose:'#fff6d5',rider:'#ffd700',top:7.3,btop:10.4,acc:.091,turn:.063,desc:'传说级旗舰，跨越时代的永恒之舟',pk:'btop',pkd:'💨 冲刺极速 +8% · 隐藏彩蛋',fx:'eterna'},
+  golden:{name:'黄金帝皇号',price:18800,hull:'#fff8dc',stripe:'#d4af37',nose:'#ffffff',rider:'#b8860b',top:7.5,btop:10.8,acc:.095,turn:.066,desc:'帝国荣光，黄金不沉',pk:'coin',pkd:'🪙 金币收益 ×1.5 · 黄金尾浪',fx:'gold'},
+  neon:{name:'霓虹穿梭者',price:16600,hull:'#0b0b1e',stripe:'#ff2d95',nose:'#00e5ff',rider:'#7c4dff',top:7.6,btop:10.9,acc:.092,turn:.058,desc:'赛博幽灵，漂移之王',pk:'drain',pkd:'⚡ 冲刺消耗 -50% · 霓虹残影',fx:'neon'}
 };
 const CSLOT={c1:'自定义一号艇',c2:'自定义二号艇'};
 const GHOST_SPEC={hull:'#f2f8ff',stripe:'#bcd8f0',nose:'#bcd8f0',rider:'#bcd8f0'};
@@ -678,7 +684,7 @@ const WARVEH={
 /* ================= 全局状态 ================= */
 const S={t:0,screen:'menu',paused:false,shake:0,muted:localStorage.getItem('jsq2_mute')==='1'};
 /* 调试/巨魔开关（开发者面板控制） */
-const DEV={infBoost:false,invul:false,fever:false,slime:false,fx:false};
+const DEV={infBoost:false,invul:false,fever:false,slime:false,fx:false,turbo:false};
 S.vol=(function(){const v=parseFloat(localStorage.getItem('jsq2_vol'));return isFinite(v)?clamp(v,0,1):1;})();
 const cam={x:0,y:0};
 const boat={x:0,y:0,a:-Math.PI/2,sp:0,lean:0,z:0,vz:0,spin:0,spinAnim:0,rc:0,pc:0};
@@ -1832,6 +1838,7 @@ function update(dt){const sec=dt/60;S.t+=sec;S.shake=Math.max(0,S.shake-.6*dt);
       if(keys.u)boat.sp+=sp0.acc*dt*(boosting?1.5:1);
       if(keys.d)boat.sp-=.085*dt;
       boat.sp=clamp(boat.sp,-1.3,boosting?btop:top);}
+    if(DEV.turbo)boat.sp*=1.5;
     boat.sp*=Math.pow(.996,dt);
     const steer=(keys.r?1:0)-(keys.l?1:0);
     if(drive){const sf=clamp(Math.abs(boat.sp)/2.4,0,1);
@@ -2440,7 +2447,88 @@ function renderBoat(c,x,y,rot,lean,spec,bob,h,shadow){
   c.beginPath();c.arc(-4,0,8.4,0,TAU);c.fill();c.stroke();
   c.fillStyle=spec.stripe;c.beginPath();c.moveTo(-4,0);c.arc(-4,0,8.4,-.55,.55);c.closePath();c.fill();
   c.fillStyle='#173a5e';c.beginPath();rr(c,1.5,-4,4.5,8,2);c.fill();
+  if(spec.fx)drawFx(c,spec,shp);
   c.restore();c.restore();}
+
+function drawFx(c,spec,shp){
+  const fx=spec.fx||'',F=spec.hull,S=spec.stripe,N=spec.nose;
+  c.save();
+  if(fx==='snake'){c.strokeStyle=S;c.lineWidth=3;c.beginPath();c.moveTo(-30,0);c.quadraticCurveTo(-24,-10,-14,-4);c.quadraticCurveTo(-6,6,2,0);c.stroke();
+    c.fillStyle='#e33';c.beginPath();c.moveTo(34,0);c.lineTo(42,-3);c.lineTo(40,0);c.lineTo(42,3);c.closePath();c.fill();}
+  else if(fx==='sword'){c.fillStyle='#dfe9f2';c.beginPath();c.moveTo(42,0);c.lineTo(58,-2);c.lineTo(58,2);c.closePath();c.fill();
+    c.fillStyle=S;c.beginPath();c.moveTo(34,-8);c.lineTo(44,-14);c.lineTo(38,-2);c.closePath();c.fill();}
+  else if(fx==='lance'){c.fillStyle='#c8d8e6';c.beginPath();c.moveTo(40,0);c.lineTo(60,-1.5);c.lineTo(60,1.5);c.closePath();c.fill();
+    c.fillStyle='#ffd23e';c.beginPath();c.moveTo(60,-3);c.lineTo(66,0);c.lineTo(60,3);c.closePath();c.fill();}
+  else if(fx==='mantis'){c.strokeStyle=S;c.lineWidth=3;c.beginPath();c.moveTo(18,-6);c.lineTo(40,-22);c.lineTo(52,-16);c.moveTo(18,6);c.lineTo(40,22);c.lineTo(52,16);c.stroke();
+    c.fillStyle=N;c.beginPath();c.moveTo(40,-22);c.lineTo(54,-18);c.lineTo(52,-14);c.closePath();c.fill();
+    c.beginPath();c.moveTo(40,22);c.lineTo(54,18);c.lineTo(52,14);c.closePath();c.fill();}
+  else if(fx==='falcon'){c.fillStyle=N;c.beginPath();c.moveTo(-24,-8);c.lineTo(-44,-26);c.lineTo(-36,-4);c.lineTo(-48,-14);c.lineTo(-40,2);c.closePath();c.fill();
+    c.beginPath();c.moveTo(-24,8);c.lineTo(-44,26);c.lineTo(-36,4);c.lineTo(-48,14);c.lineTo(-40,-2);c.closePath();c.fill();}
+  else if(fx==='eagle'){c.fillStyle=S;c.beginPath();c.moveTo(-18,-9);c.lineTo(-52,-34);c.lineTo(-34,-8);c.lineTo(-56,-16);c.lineTo(-40,0);c.closePath();c.fill();
+    c.beginPath();c.moveTo(-18,9);c.lineTo(-52,34);c.lineTo(-34,8);c.lineTo(-56,16);c.lineTo(-40,0);c.closePath();c.fill();}
+  else if(fx==='pancake'){c.fillStyle='rgba(255,183,77,.9)';c.beginPath();c.ellipse(-4,4,20,9,0,0,TAU);c.fill();
+    c.strokeStyle='#8d5524';c.lineWidth=2.5;c.beginPath();c.moveTo(-16,6);c.lineTo(12,2);c.stroke();c.beginPath();c.moveTo(-6,9);c.lineTo(16,6);c.stroke();}
+  else if(fx==='bubble'){c.strokeStyle='rgba(160,230,255,.85)';c.lineWidth=2;c.beginPath();c.arc(-6,0,19,0,TAU);c.stroke();
+    c.strokeStyle='rgba(255,255,255,.8)';c.beginPath();c.arc(-12,-6,5,Math.PI,TAU*1.35);c.stroke();}
+  else if(fx==='twin'){c.fillStyle=S;c.beginPath();rr(c,-6,-19,20,6,2);c.fill();c.beginPath();rr(c,-6,13,20,6,2);c.fill();}
+  else if(fx==='catamaran'){c.fillStyle='#fff';c.beginPath();c.moveTo(6,-14);c.lineTo(24,-14);c.lineTo(20,-2);c.lineTo(8,-2);c.closePath();c.fill();
+    c.fillStyle=S;c.beginPath();c.moveTo(16,-14);c.lineTo(28,-34);c.lineTo(6,-14);c.closePath();c.fill();}
+  else if(fx==='hoverx'){c.fillStyle='rgba(0,229,255,.7)';c.beginPath();c.ellipse(-22,0,8,4,0,0,TAU);c.fill();
+    c.fillStyle='rgba(255,210,62,.8)';c.beginPath();c.ellipse(-6,0,6,3,0,0,TAU);c.fill();}
+  else if(fx==='skyship'){c.fillStyle='rgba(255,255,255,.85)';c.beginPath();c.ellipse(-8,-16,22,11,0,0,TAU);c.fill();
+    c.strokeStyle='rgba(30,100,150,.4)';c.lineWidth=1.5;c.beginPath();c.moveTo(-26,-16);c.lineTo(10,-16);c.stroke();}
+  else if(fx==='barge'){c.fillStyle='#a9743e';c.beginPath();rr(c,-26,-14,16,12,2);c.fill();
+    c.strokeStyle='#6d4c21';c.lineWidth=2;c.beginPath();c.moveTo(-24,-14);c.lineTo(-24,-2);c.moveTo(-12,-14);c.lineTo(-12,-2);c.stroke();}
+  else if(fx==='plate'){c.strokeStyle='#cfd8e3';c.lineWidth=2;c.beginPath();c.moveTo(-28,-10);c.lineTo(6,-10);c.moveTo(-28,10);c.lineTo(6,10);c.stroke();
+    c.strokeStyle='rgba(255,255,255,.5)';c.beginPath();c.moveTo(-30,-14);c.lineTo(4,-14);c.stroke();}
+  else if(fx==='sleekr'){c.fillStyle=S;c.beginPath();c.moveTo(-26,-10);c.lineTo(-38,-4);c.lineTo(-26,0);c.closePath();c.fill();}
+  else if(fx==='needle'){c.fillStyle='#b8c6d4';c.beginPath();c.moveTo(42,0);c.lineTo(64,-1);c.lineTo(64,1);c.closePath();c.fill();}
+  else if(fx==='explorer'){c.fillStyle='#ffe082';c.beginPath();c.moveTo(30,-4);c.lineTo(52,0);c.lineTo(30,4);c.closePath();c.fill();
+    c.strokeStyle='rgba(255,224,130,.6)';c.lineWidth=3;c.beginPath();c.moveTo(52,0);c.lineTo(66,0);c.stroke();}
+  else if(fx==='diveking'){c.fillStyle=S;c.beginPath();rr(c,-8,-24,16,8,2);c.fill();
+    c.fillStyle='#ffd23e';c.beginPath();rr(c,-4,-30,6,6,1);c.fill();}
+  else if(fx==='nova'){c.strokeStyle='rgba(255,210,62,.9)';c.lineWidth=2;c.beginPath();c.arc(-8,0,22,0,TAU);c.stroke();
+    c.fillStyle='#fff';c.beginPath();c.arc(-8,0,4,0,TAU);c.fill();}
+  else if(fx==='odin'){c.fillStyle='#ffd23e';c.beginPath();c.moveTo(-4,-14);c.lineTo(2,-24);c.lineTo(8,-14);c.closePath();c.fill();
+    c.fillStyle='#b8860b';c.beginPath();c.moveTo(30,-6);c.lineTo(52,-16);c.lineTo(48,-2);c.closePath();c.fill();}
+  else if(fx==='manta'){c.fillStyle=S;c.beginPath();c.moveTo(6,-6);c.lineTo(-26,-20);c.lineTo(-18,-8);c.lineTo(-32,0);c.lineTo(-18,8);c.lineTo(-26,20);c.lineTo(6,6);c.closePath();c.fill();}
+  else if(fx==='kraken'){c.strokeStyle=S;c.lineWidth=4;c.beginPath();c.moveTo(-20,-4);c.quadraticCurveTo(-34,-18,-42,-6);c.quadraticCurveTo(-30,-4,-22,2);c.stroke();
+    c.beginPath();c.moveTo(-20,4);c.quadraticCurveTo(-34,18,-42,6);c.quadraticCurveTo(-30,4,-22,-2);c.stroke();}
+  else if(fx==='titan'){c.strokeStyle='#37474f';c.lineWidth=3;c.beginPath();c.moveTo(-26,-12);c.lineTo(10,-12);c.moveTo(-26,12);c.lineTo(10,12);c.stroke();
+    c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.moveTo(-18,-12);c.lineTo(-8,-2);c.lineTo(-18,12);c.closePath();c.fill();}
+  else if(fx==='wraith'){c.strokeStyle='rgba(160,220,255,.5)';c.lineWidth=2;c.beginPath();c.moveTo(-30,0);c.quadraticCurveTo(-40,-6,-46,0);c.quadraticCurveTo(-40,6,-30,0);c.stroke();}
+  else if(fx==='inferno'){c.fillStyle='rgba(255,90,30,.8)';c.beginPath();c.moveTo(-30,0);c.lineTo(-42,-8);c.lineTo(-38,0);c.lineTo(-44,8);c.closePath();c.fill();
+    c.fillStyle='rgba(255,210,62,.9)';c.beginPath();c.moveTo(-32,0);c.lineTo(-40,-4);c.lineTo(-37,0);c.lineTo(-41,4);c.closePath();c.fill();}
+  else if(fx==='volt'){c.strokeStyle='#ffd600';c.lineWidth=3;c.beginPath();c.moveTo(2,-10);c.lineTo(-4,-2);c.lineTo(0,-2);c.lineTo(-6,8);c.stroke();}
+  else if(fx==='glacier'){c.fillStyle='rgba(200,240,255,.8)';c.beginPath();c.moveTo(-26,-6);c.lineTo(-34,-16);c.lineTo(-18,-10);c.closePath();c.fill();
+    c.beginPath();c.moveTo(-26,6);c.lineTo(-34,16);c.lineTo(-18,10);c.closePath();c.fill();}
+  else if(fx==='phoenix'){c.fillStyle='rgba(255,120,40,.9)';c.beginPath();c.moveTo(-20,-8);c.lineTo(-48,-26);c.lineTo(-34,-6);c.lineTo(-52,-12);c.lineTo(-38,4);c.closePath();c.fill();
+    c.fillStyle='rgba(255,210,62,.9)';c.beginPath();c.moveTo(-20,8);c.lineTo(-48,26);c.lineTo(-34,6);c.lineTo(-52,12);c.lineTo(-38,-4);c.closePath();c.fill();}
+  else if(fx==='comet'){c.strokeStyle='rgba(255,210,62,.85)';c.lineWidth=3;c.beginPath();c.moveTo(-26,0);c.lineTo(-44,4);c.lineTo(-52,0);c.stroke();}
+  else if(fx==='hydra'){c.fillStyle=S;c.beginPath();c.moveTo(12,-10);c.lineTo(26,-20);c.lineTo(16,-2);c.closePath();c.fill();
+    c.beginPath();c.moveTo(12,10);c.lineTo(26,20);c.lineTo(16,2);c.closePath();c.fill();
+    c.beginPath();c.moveTo(16,0);c.lineTo(32,0);c.lineTo(20,2);c.closePath();c.fill();}
+  else if(fx==='merlin'){c.strokeStyle='#b39ddb';c.lineWidth=2;c.beginPath();c.arc(-4,0,18,0,TAU);c.stroke();
+    c.fillStyle='#fff';c.beginPath();c.arc(-4,0,3,0,TAU);c.fill();
+    c.strokeStyle='rgba(179,157,219,.7)';c.beginPath();c.moveTo(-4,-18);c.lineTo(-4,-26);c.stroke();}
+  else if(fx==='stardust'){c.fillStyle='#fff';for(let i=0;i<5;i++){const a=i*TAU/5;c.beginPath();c.arc(Math.cos(a)*20-4,Math.sin(a)*20,2,0,TAU);c.fill();}}
+  else if(fx==='thunder'){c.strokeStyle='#90a4ae';c.lineWidth=2;c.beginPath();c.arc(-6,-14,9,0,TAU);c.stroke();
+    c.fillStyle='#e0e0e0';c.beginPath();c.arc(-6,-14,9,0,TAU);c.globalAlpha=.25;c.fill();c.globalAlpha=1;}
+  else if(fx==='abyss'){c.fillStyle='#4dd0e1';c.beginPath();c.ellipse(-14,0,7,5,0,0,TAU);c.fill();
+    c.fillStyle='#0b3d5c';c.beginPath();c.arc(-14,0,2.5,0,TAU);c.fill();}
+  else if(fx==='solaris'){c.strokeStyle='#ffb300';c.lineWidth=2.5;c.beginPath();c.arc(-6,0,18,0,TAU);c.stroke();
+    c.strokeStyle='rgba(255,179,0,.7)';for(let i=0;i<8;i++){const a=i*Math.PI/4;c.beginPath();c.moveTo(Math.cos(a)*18-6,Math.sin(a)*18);c.lineTo(Math.cos(a)*24-6,Math.sin(a)*24);c.stroke();}}
+  else if(fx==='umbra'){c.fillStyle='rgba(20,10,40,.55)';c.beginPath();c.moveTo(-26,-8);c.lineTo(-40,-2);c.lineTo(-26,8);c.closePath();c.fill();}
+  else if(fx==='zephyr'){c.strokeStyle='rgba(140,220,255,.8)';c.lineWidth=2;c.beginPath();c.moveTo(-24,0);c.quadraticCurveTo(-32,-6,-40,0);c.quadraticCurveTo(-32,6,-24,0);c.stroke();}
+  else if(fx==='draco'){c.fillStyle='rgba(100,60,160,.9)';c.beginPath();c.moveTo(-18,-8);c.lineTo(-46,-22);c.lineTo(-32,-4);c.lineTo(-50,-8);c.lineTo(-36,4);c.closePath();c.fill();
+    c.fillStyle='#ff5252';c.beginPath();c.moveTo(36,-6);c.lineTo(46,-10);c.lineTo(40,-2);c.closePath();c.fill();}
+  else if(fx==='eterna'){c.strokeStyle='rgba(255,215,0,.85)';c.lineWidth=2.5;c.beginPath();c.arc(-6,0,20,0,TAU);c.stroke();
+    c.fillStyle='rgba(255,215,0,.35)';c.beginPath();c.arc(-6,0,20,0,TAU);c.fill();}
+  else if(fx==='gold'){c.fillStyle='#ffd700';c.beginPath();c.moveTo(-8,-13);c.lineTo(-2,-22);c.lineTo(4,-13);c.closePath();c.fill();
+    c.strokeStyle='rgba(255,215,0,.7)';c.lineWidth=2;c.beginPath();c.arc(-2,0,20,0,TAU);c.stroke();}
+  else if(fx==='neon'){c.strokeStyle='rgba(0,229,255,.8)';c.lineWidth=2;c.beginPath();c.moveTo(-30,-10);c.lineTo(-22,0);c.lineTo(-30,10);c.stroke();
+    c.strokeStyle='rgba(255,45,149,.8)';c.beginPath();c.moveTo(-34,-6);c.lineTo(-26,0);c.lineTo(-34,6);c.stroke();}
+  c.restore();}
 
 /* ================= 绘制：场景 ================= */
 function drawWater(){const wl=cam.x-W/2,wt=cam.y-H/2,wr=cam.x+W/2,wb=cam.y+H/2;
@@ -3167,7 +3255,10 @@ const DEVACTS={
   ult(){if(G&&G.war){G.war.ult=100;updateHUD();toast('💥 超武能量已满，按 Z 释放！');}
     else toast('需在战斗模式中');},
   kill(){if(G&&G.war){const w=G.war;
-      for(const e of w.enemies.slice())onKill(e);
+      for(const e of w.enemies.slice()){
+        w.kills++;w.streak++;w.streakT=260;w.uplvC=(w.uplvC||0)+1;
+        const pts=WARTYPE[e.type]?WARTYPE[e.type].pts:50;
+        G.score+=pts;pop(e.x,e.y-26,'+'+pts,'#fff',19);warExplode(e.x,e.y,e.type==='ship');}
       w.enemies.length=0;updateHUD();toast('☠️ 已清场！');}
     else toast('需在战斗模式中');},
   heal(){if(!G)return toast('先开始一局');
@@ -3175,6 +3266,23 @@ const DEVACTS={
     if(G.war){G.war.hp=G.war.max;G.lives=Math.max(G.lives,3);}
     else G.lives=Math.max(G.lives,3);
     updateHUD();toast('💚 满血+护盾+道具');},
+  nuke(){if(!(G&&G.war))return toast('需在战斗模式中');
+    const w=G.war;
+    for(const e of w.enemies.slice()){
+      const pts=WARTYPE[e.type]?WARTYPE[e.type].pts:50;
+      G.score+=pts;w.kills++;w.streak++;w.streakT=260;
+      pop(e.x,e.y-26,'+'+pts,'#fff',19);warExplode(e.x,e.y,e.type==='ship');}
+    w.enemies.length=0;updateHUD();toast('💥 全屏核爆，敌人已清场！');},
+  freeze(){if(!(G&&G.war))return toast('需在战斗模式中');
+    G.war.freezeT=600;pop(boat.x,boat.y-74,'❄ 冰霜冻结！敌人定身 10s','#a8f0ff',21);toast('❄ 全场冻结 10 秒');},
+  turbo(){DEV.turbo=!DEV.turbo;tog(this,DEV.turbo);toast(DEV.turbo?'🚀 极速模式：开':'🚀 极速模式：关');},
+  vacu(){if(!G)return toast('先开始一局');
+    if(G.coins&&G.coins.length){for(const c of G.coins.slice())collectCoin(c.x,c.y);
+      G.coins.length=0;updateHUD();refreshCoins();toast('🧲 吸走全部金币！');}
+    else if(G.war&&G.war.golds&&G.war.golds.length){let s=0;
+      for(const g of G.war.golds.slice()){s+=g.val;addCoins(g.val);G.score+=25;}
+      G.war.golds.length=0;updateHUD();refreshCoins();toast('🧲 吸走金条 +🪙'+s);}
+    else toast('当前没有金币可吸');},
   reset(){if(LAST.mode){restartLast();toast('🌊 已重置当前局');}else toast('没有可重开的对局');},
   clrlv(){P.levels=[];saveP();buildLevels();toast('🗑 自定义关卡已清空');},
   ach(){for(const a of ACH)P.ach[a.id]=1;saveP();checkAch();toast('🏆 成就全部解锁');},
